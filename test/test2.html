@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+  </head>
+  <body>
+    <div id="app">
+      <my-test></my-test>
+    </div>
+    <script src="../js/vue.global.js"></script>
+    <script src="Mytest.js"></script>
+    <script>
+      const { createApp, ref } = Vue;
+
+      const config = {
+        setup() {
+          return {};
+        },
+      };
+
+      const app = createApp();
+      app.component("my-test", MyTest);
+      app.mount("#app");
+    </script>
+  </body>
+</html>
