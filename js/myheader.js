@@ -1,7 +1,7 @@
 const myHeader = {
   template: `
   <div>
-    <header v-if="showAd" class="ad-banner text-center ">Welcom to Chimo! 
+    <header v-if="showAd" class="ad-banner text-center ">Welcome to Chimo! 
       <button v-on:click="closeAd" class="btn btn-outline-light btn-sm ms-2 ps-">X</button>
     </header>
     <header class="navbarA  pt-3 pb-2 border-bottom border-2">
@@ -55,15 +55,14 @@ const myHeader = {
        </div>
        </template>
     </header>
-    </div>`,    
-    setup() {
-      const showAd = ref(true);
-      const isLoggedIn = ref(true);
-  
-      const closeAd = () => {
-        showAd.value = false;
-      };
+    </div>`,
+  setup() {
+    const showAd = ref(true);
+    const isLoggedIn = ref(true);
 
+    const closeAd = () => {
+      showAd.value = false;
+    };
 
     return {
       showAd,
