@@ -1,0 +1,63 @@
+﻿@model sb_admin2_Test.Models.ViewModels.CourseDetailVm.CourseDetailViewModel
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <title>課程詳細資訊</title>
+</head>
+<body>
+
+
+    <div class="container">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h1 class="my-4">@Model.CourseTitle</h1>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="coursesTable" width="100%" cellspacing="0">
+                        <thead>
+                            
+                        </thead>
+                        <tbody>
+                            @if (Model.Buyers != null && Model.Buyers.Any())
+                            {
+                                foreach (var buyer in Model.Buyers)
+                                {
+                                    <tr>
+                                        <th>學生</th>
+                                        <th>購買時間</th>
+
+                                    </tr>
+<td>@Html.DisplayFor(modelItem => buyer.Name)</td>
+                                <td>@Html.DisplayFor(modelItem => buyer.PurchaseDate)</td>
+                            }
+                                 }
+                         else
+                        {
+                            <tr>
+                                <td colspan="2">此課程尚無購買者</td>
+                            </tr>
+                        }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="text-right mb-2" style="margin-right: 20px;">
+                    <!-- 添加右側間距 -->
+                    <button class="mr-3 btn btn-outline-primary" id="refreshButton">更新資料</button>
+                    <a class="btn btn-outline-danger" href="/Courses/GetAllCourses">回到列表</a>
+                </div>
+            </div>
+        </div>
+        @section scripts{
+            <script>
+    $(document).ready(function () {
+                    // 重新整理按鈕事件
+                    $('#refreshButton').click(function () {
+                        location.reload(); // 重新加載頁面
+                    });
+                });</script>
+            }
+        </body>
+</html>
