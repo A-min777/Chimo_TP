@@ -1,0 +1,154 @@
+﻿@model IEnumerable<sb_admin2_Test.Models.EFmodels.Member>
+@{
+    ViewBag.Title = "GetAllMembers";
+}
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">會員管理</h1>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="membersTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>Email</th>
+                                <th>持有點數</th>
+                                <th>生日</th>
+                                <th>手機號碼</th>
+                                <th>創建日期</th>
+                                <th>更新日期</th>
+                                <th>會員狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr data-id="@item.Id" data-original-status="@item.Status">
+                                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                    <td style="text-align:right">@Html.DisplayFor(modelItem => item.Point)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Birthday)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.UpdatedDate)</td>
+                                    <td>
+                                        <select class="form-control status-select">
+                                            <option value="1" @(item.Status == 1 ? "selected" : "")>啟用</option>
+                                            <option value="0" @(item.Status == 0 ? "selected" : "")>停用</option>
+                                        </select>
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="text-right mb-2" style="margin-right: 20px;">
+                <!-- 添加右側間距 -->
+                <button class="btn btn-primary" id="updateButton">更新</button>
+            </div>
+        </div>
+        </div>
+
+
+        <!-- 模態對話框 -->
+        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">確認更新</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>以下會員的狀態已變更：</p>
+                        <ul id="changesList"></ul>
+                        <p>是否確認更新？</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="confirmUpdate">確定更新</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @section scripts{
+                <script>
+                $(document).ready(function () {
+                    $('#membersTable').DataTable({
+                        "paging": true,
+                        "searching": true,
+                        "ordering": true,
+                        "info": true,
+
+                    });
+
+                     $('#updateButton').click(function () {
+                var changes = [];
+                var changesList = $('#changesList');
+                changesList.empty(); // 清空變更列表
+
+                $('#membersTable tbody tr').each(function () {
+                    var $row = $(this);
+                    var memberName = $row.find('td').first().text(); // 從 <td> 中獲取會員名字
+                    var memberId = $row.data('id'); // 從 <tr> 的 data-id 屬性獲取會員ID
+                    var originalStatus = $row.data('original-status'); // 從 <tr> 的 data-original-status 獲取原始狀態
+                    var newStatus = $row.find('.status-select').val();
+                   
+
+                    // 比較原始狀態和新狀態
+                    if (originalStatus != newStatus) {
+                        changes.push({
+                            id: memberId,
+                            status: newStatus
+                            
+                        });
+                        // 顯示變更列表
+                        changesList.append(`<li>${memberName} 的狀態已變更為: ${newStatus == '1' ? '啟用' : '停用'}</li>`);
+                    }
+                });
+
+                if (changes.length > 0) {
+                    // 顯示模態對話框
+                    $('#confirmModal').modal('show');
+
+                    // 確定更新按鈕
+                    $('#confirmUpdate').off('click').on('click', function () {
+                        $.ajax({
+                            url: '@Url.Action("UpdateMemberStatus", "Member")', 
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(changes),
+                            success: function (response) {
+                                alert('更新成功');
+                                $('#confirmModal').modal('hide');
+                            },
+                            error: function (xhr, status, error) {
+                                alert('更新失敗');
+                                $('#confirmModal').modal('hide');
+                            }
+                        });
+                    });
+                } else {
+                    alert('沒有變更需要更新');
+                }
+                     });
+                });
+
+
+                </script>
+        }
+</body>
+</html>
