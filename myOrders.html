@@ -13,7 +13,7 @@
     }
     .list-group {
       position: sticky;
-      top: 17vh;
+      top: 17.5vh;
     }
     .list-group-item img {
       max-height: 10vw;
@@ -130,44 +130,7 @@
                 <h4 class="fw-bolder">購買紀錄</h4>
               </div>
               <hr />
-              <div class="d-flex flex-wrap">
-                <div class="cardContainer d-flex flex-wrap">
-                  <div
-                    v-for="card in cards"
-                    :key="card.id"
-                    class="mycard col-lg-4 col-md-6 col-sm-12 p-3 pb-5 ps-0"
-                  >
-                    <a href="product.html">
-                      <img
-                        :src="card.img"
-                        alt="course-thumbnail "
-                        class="thumbnail pb-2 img-fluid rounded"
-                      />
-                    </a>
-                    <div class="prodct-info">
-                      <small class="tag p-1 rounded-1 fw-bolder">課程</small>
-                      <p class="title pt-1">{{card.title}}</p>
-                      <small>{{card.teacher}}</small>
-                    </div>
-                    <p class="price border-top border-bottom pt-2 pb-2">
-                      NT${{card.price}}
-                    </p>
-                    <div class="refund d-flex justify-content-between">
-                      <button class="btn btn-warning text-nowrap me-1">
-                        購買課程
-                      </button>
-
-                      <button class="rounded btn border">
-                        <img
-                          src="images/cart.png"
-                          alt="cart"
-                          class="img-fluid"
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              
             </section>
           </div>
         </div>

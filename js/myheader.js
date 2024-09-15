@@ -6,28 +6,33 @@ const myHeader = {
     </header>
     <header class="navbarA  pt-3 pb-2 border-bottom border-2">
        <a href="index.html"><img src="../images/LOGO.png" alt="Logo" height="60px" class="headerLogo ps-5"></a>
-       <div class="navLeft d-flex ">
-       <div class="dropdown">
-          <button
-            class="dropdown-toggle btn btn-lg ms-3 text-nowrap fw-bolder"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
+       <div class="navLeft d-flex">
+          <div class="dropdown">
+            <button
+             class="dropdown-toggle btn btn-lg ms-3 text-nowrap fw-bolder"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+              >
              分類
-          </button>
-          <ul class="dropdown-menu mt-2 me-4">
-            <li class="dropdown-item p-3 text-center">語言學習</li>
-            <li class="dropdown-item p-3 text-center">設計創作</li>
-            <li class="dropdown-item p-3 text-center">程式語言</li>
-            <li class="dropdown-item p-3 text-center">職場技能</li>
-            <li class="dropdown-item p-3 text-center">健康生活</li>
-         </ul>
-       </div>
-        <form id="searchbar" class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="搜尋課程" aria-label="Search">
-        </form>
+            </button>
+            <ul class="dropdown-menu mt-2 ">
+              <li class="dropdown-item p-3 text-center">語言學習</li>
+              <li class="dropdown-item p-3 text-center">設計創作</li>
+              <li class="dropdown-item p-3 text-center">程式語言</li>
+              <li class="dropdown-item p-3 text-center">職場技能</li>
+               <li class="dropdown-item p-3 text-center">健康生活</li>
+             </ul>
+          </div>
+          <div class="searchbar d-flex justify-content-between">
+            <form id="searchbar" class="searchbar  d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="搜尋課程" aria-label="Search" style="max-width: 800px;">
+            </form>      
+            <a href="myCart.html" >
+              <img src="../images/cart.png" alt="cart" class="btn " style="height: 45px;">
+            </a>  
+          </div>
        </div> 
        <template v-if="!isLoggedIn">
           <a class="headerLogin btn btn-md fw-bolder me-3" href="login.html">登入 | 註冊</a>

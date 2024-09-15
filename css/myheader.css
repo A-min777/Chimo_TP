@@ -1,6 +1,7 @@
 * {
   font-family: Arial, Helvetica, sans-serif;
 }
+
 a{
   text-decoration: none;
   color: #000;
@@ -23,14 +24,11 @@ a{
 .navLeft {
   flex-grow: 1;
 }
-#searchbar {
-  padding-left: 30px;
+.searchbar {
   height: 50px;
-  min-width: 400px;
+  flex-grow: 1;
 }
-#searchbar button {
-  text-wrap: nowrap;
-}
+
 .headerLogin {
   text-wrap: nowrap;
 }

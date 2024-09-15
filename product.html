@@ -68,11 +68,7 @@
               </div>
             </div>
             <div class="col-xs-12 col-md-6 col-lg-4">
-              <img
-                src="images/video.jpg"
-                alt="video"
-                class="img-fluid rounded-4 border border-light border-2"
-              />
+              <video ref="videoPlayer" controls :src="courses.video"  muted type="video/mp4" class="container rounded-5"></video>
             </div>
           </div>
         </div>
@@ -200,9 +196,20 @@
     <script src="js/vue.global.js"></script>
     <script src="js/myheader.js"></script>
     <script>
-      const { createApp, ref } = Vue;
+      const { createApp, ref,onMounted } = Vue;
       const config = {
         setup() {
+          const videoPlayer = ref(null);
+          function checkVideoTime() {
+            if(videoPlayer.value && videoPlayer.value.currentTime >= 10){
+              videoPlayer.value.currentTime = 0;
+            }
+          }
+          onMounted(() => {
+          if (videoPlayer.value) {
+            videoPlayer.value.addEventListener('timeupdate', checkVideoTime);
+          }
+        });
           const courseContents = ref([
             {
               id: 1,
@@ -223,6 +230,7 @@
             },
           ]);
           const courses = ref({
+            video:"video/testVideo2.mp4",
             name: "課程名稱",
             totalContent: 10,
             buyer: 100,
@@ -236,7 +244,7 @@
               工藝章節，歡迎我去本地下載常見規劃總體國內外構成檢索，
               不喜歡保健讓她適用於。`,
           });
-          return { courseContents, courses };
+          return { courseContents, courses ,videoPlayer, checkVideoTime };
         },
       };
 
