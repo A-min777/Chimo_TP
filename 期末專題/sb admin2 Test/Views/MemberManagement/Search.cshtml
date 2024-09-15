@@ -1,0 +1,202 @@
+﻿@model sb_admin2_Test.Models.ViewModels.MemberSearchVm
+
+@{
+    ViewBag.Title = "會員搜尋";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 左上方：搜尋條 -->
+        <div class="col-md-4">
+            <h2>會員搜尋</h2>
+            <form id="searchForm" onsubmit="return checkSearchName()" method="get" action="@Url.Action("Search", "MemberManagement")" class="d-flex">
+                <input type="text" id="searchName" name="name" class="form-control me-2" placeholder="輸入會員名稱" value="@Request.QueryString["name"]" />
+                <button type="submit" class="btn btn-light">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- 右上方：會員資訊和功能按鈕 -->
+        <div class="col-md-4 text-end @(string.IsNullOrEmpty(Model.MemberName) ? "d-none" : "")" id="memberInfo">
+            <h3>搜尋結果</h3>
+            <p>會員名稱：<span id="memberName">@Model.MemberName</span></p>
+            <p>創建時間：<span id="createdDate">@Model.CreatedDate</span></p>
+            <div>
+                <button type="button" class="btn btn-info me-2" onclick="showDetails('orderHistory')">訂單紀錄</button>
+                <button type="button" class="btn btn-info me-2" onclick="showDetails('enrolledCourses')">持有課程</button>
+                <button type="button" class="btn btn-info" onclick="showDetails('pointsHistory')">點數歷史紀錄</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 警告訊息 -->
+    <div id="notificationBox" class="toast d-none position-fixed top-0 start-50 translate-middle-x mt-3" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">警告</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            請輸入會員名稱。
+        </div>
+    </div>
+
+    <!-- 詳細資料區塊 -->
+
+    <div id="detailsSection" class="@(string.IsNullOrEmpty(Model.MemberName) ? "d-none" : "") fade-in mt-3">
+        <div class="card shadow mb-4 ">
+            <div class="card-body d-none" id="cardbody">
+                <!-- 顯示訂單紀錄 -->
+                <div id="orderHistory" class="d-none">
+                    <h3>訂單紀錄</h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>訂單編號</th>
+                                    <th>訂單項目</th>
+                                    <th>訂單金額</th>
+                                    <th>訂單日期</th>
+                                    <th>狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.OrderHistory)
+                                {
+                                    <tr>
+                                        <td>@order.Id</td>
+                                        <td>
+                                            @foreach (var item in order.OrderItems)
+                                            {
+                                                <div>@item.Cours.Title</div>
+                                            }
+                                        </td>
+                                        <td>@order.TotalAmount</td>
+                                        <td>@order.CreatedDate</td>
+                                        <td>
+                                            @if (order.Status == 1)
+                                            {
+                                                <span>已結帳</span>
+                                            }
+                                            else if (order.Status == -1)
+                                            {
+                                                <span>退貨</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 顯示持有課程 -->
+                <div id="enrolledCourses" class="d-none">
+                    <h3>持有課程</h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>課程標題</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var course in Model.EnrolledCourses)
+                                {
+                                    <tr>
+                                        <td>@course.Title</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 顯示點數歷史紀錄 -->
+                <div id="pointsHistory" class="d-none">
+                    <h3>點數歷史紀錄</h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>儲值金額</th>
+                                    <th>變動點數</th>
+                                    <th>使用者剩餘點數</th>
+                                    <th>獲得點數方式</th>
+                                    <th>獲得點數時間</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var points in Model.PointsHistory)
+                                {
+                                    <tr>
+                                        <td>@points.Cash</td>
+                                        <td>
+                                            @if (points.GetPointType == 1 || points.GetPointType == -1) // 現金儲值或退款
+                                            {
+                                                <text>+@points.Amount</text> // 在前面加上加號
+                                            }
+                                            else // 購買課程
+                                            {
+                                                <text>-@points.Amount</text>// 在前面加上減號
+                                            }
+                                        </td>
+                                        <td>@points.Point</td>
+                                        <td>
+                                            @if (points.GetPointType == 1)
+                                            {
+                                                <span>現金儲值</span>
+                                            }
+                                            else if (points.GetPointType == -1)
+                                            {
+                                                <span>購買課程</span>
+                                            }
+                                            else if (points.GetPointType == 0)
+                                            {
+                                                <span>退款</span>
+                                            }
+                                        </td>
+                                        <td>@points.GetPointDate</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    @section Scripts {
+        <script>
+            function checkSearchName() {
+                var searchName = document.getElementById('searchName').value.trim();
+                var notificationBox = document.getElementById('notificationBox');
+
+                if (searchName === null || searchName === '') {
+                    // 顯示通知框
+                    var toast = new bootstrap.Toast(notificationBox);
+                    toast.show();
+                    return false;  // 阻止表單提交
+                }
+
+                return true;  // 允許表單提交
+            }
+
+            function showDetails(sectionId) {
+                // 隱藏所有詳細列表
+                document.getElementById('orderHistory').classList.add('d-none');
+                document.getElementById('enrolledCourses').classList.add('d-none');
+                document.getElementById('pointsHistory').classList.add('d-none');
+                document.getElementById('cardbody').classList.add('d-none');
+
+
+                // 顯示選中的詳細列表
+                let selectedSection = document.getElementById(sectionId);
+                document.getElementById('cardbody').classList.remove('d-none');
+                selectedSection.classList.remove('d-none');
+
+            }
+        </script>
+    }
+</div>

@@ -1,0 +1,154 @@
+﻿@model IEnumerable<sb_admin2_Test.Models.EFmodels.Cours>
+
+
+@{
+    ViewBag.Title = "GetAllCourses";
+}
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">課程管理</h1>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="coursesTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>課程</th>
+                                <th>課程分類</th>
+                                <th>描述</th>
+                                <th>教師</th>
+                                <th>價格</th>
+                                <th>創建日期</th>
+                                <th>更新日期</th>
+                                <th>狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr data-id="@item.Id" data-original-status="@item.Status">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Title)
+                                        <br />
+                                        <a href="@Url.Action("ViewCoureseDetail", "Courses", new { id =item.Id })" class="btn btn-outline-primary btn-sm">詳細資料</a>
+                                    </td>
+
+                                    <td>@Html.DisplayFor(modelItem => item.CourseCategory.Name)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Teacher.Name)</td>
+                                    <td style="text-align:right">@Html.DisplayFor(modelItem => item.Price)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.UpdatedDate)</td>
+                                    <td>
+                                        <select class="form-control status-select">
+                                            <option value="1" @(item.Status == 1 ? "selected" : "")>上架</option>
+                                            <option value="0" @(item.Status == 0 ? "selected" : "")>下架</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="text-right mb-2" style="margin-right: 20px;">
+                <!-- 添加右側間距 -->
+                <button class="btn btn-primary" id="updateButton">更新</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 確認更新模組begin -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">確認更新</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>以下課程的狀態已變更：</p>
+                    <ul id="changesList"></ul>
+                    <p>是否確認更新？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="confirmUpdate">確定更新</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 確認更新模組end -->
+  
+
+
+    @section scripts{
+        <script>
+    $(document).ready(function () {
+        // 初始化 DataTable
+        var table = $('#coursesTable').DataTable({
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+        });
+       // 當按下更新按鈕時觸發
+        $('#updateButton').click(function () {
+            var changes = [];
+            var $changesList = $('#changesList').empty();
+
+            // 遍歷表格中的每一行
+            table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                var $row = $(this.node());
+                var courseTitle = $row.find('td').eq(0).text(); // 獲取課程標題
+                var courseId = $row.data('id'); // 獲取課程ID
+                var originalStatus = $row.data('original-status'); // 獲取原始狀態
+                var newStatus = $row.find('.status-select').val(); // 獲取新的狀態
+
+                // 如果狀態有變化，加入到變更列表中
+                if (parseInt(originalStatus) !== parseInt(newStatus)) {
+                    changes.push({ id: courseId, status: newStatus });
+                    $changesList.append(`<li>${courseTitle} 的狀態已變更為: ${newStatus == '1' ? '上架' : '下架'}</li>`);
+                }
+            });
+
+            // 如果有變更的項目
+            if (changes.length > 0) {
+                $('#confirmModal').modal('show'); // 顯示確認模態框
+
+                // 當確認更新按鈕被點擊時
+                $('#confirmUpdate').off('click').on('click', function () {
+                    $.ajax({
+                        url: '@Url.Action("UpdateCourseStatus", "Courses")', // 更新後端路由
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(changes), // 傳遞變更數據
+                        success: function () {
+                            alert('更新成功');
+                            $('#confirmModal').modal('hide');
+                        },
+                        error: function (xhr, status, error) {
+                            alert('更新失敗: ' + error);
+                            $('#confirmModal').modal('hide');
+                        }
+                    });
+                });
+            } else {
+                alert('沒有變更需要更新');
+            }
+        });
+    });
+        </script>
+    }
+</body>
+</html>
