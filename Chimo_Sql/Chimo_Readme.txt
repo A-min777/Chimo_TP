@@ -1,0 +1,38 @@
+Chimo_Sql資料夾總共有3個sql檔 + 這個Readme
+ChimoDemo_Table 是我們的資料表規格，請先建立一個ChimoDemo資料庫後執行 ChimoDemo_Table
+ChimoDemo_Data 是我為各資料表準備的測試用紀錄，請建完ChimoDemo_Table後再執行 ChimoDemo_Data
+如果剛建完table要建data時有很多紅線，重啟SSMS應該就沒問題了
+ChimoSqlTest 是我針對組長開的每個頁面要做的查詢測試所寫的查詢語法
+除了大概有兩頁我真的無法只用一個查詢就顯示所有結果(就算辦得到感覺也不太適合，會多很多不必要的欄位)
+其他目前測下來應該是沒什麼問題
+
+以下是我覺得流程上適合寫成trigger的部分，已經寫到資料庫裡了，在建table時應該也會跟著一起被建進去
+我有大概測過應該是沒什麼問題
+
+
+CourseChapters
+	新增2個trigger
+	1. 當有CourseChapter發生變動時(包含新增，修改，刪除)自動去更新相對應CourseCatalogs的UpdatedDate
+	2. 當有CourseChapter內容被修改時自動更新自己的UpdatedDate
+
+CourseCatalogs
+	新增2個trigger, 
+	1. 當有CourseCatalog發生變動時(包含新增，修改，刪除)自動去更新相對應Courses的UpdatedDate, 
+	2. 當有CourseCatalog內容被修改時自動更新自己的UpdatedDate
+
+Courses
+	新增1個trigger，當有Course內容被修改時自動更新自己的UpdatedDate
+
+Members
+	新增1個trigger，當有Member內容被修改時自動更新自己的UpdatedDate (包含被管理員設定Status)
+
+CartItems
+	新增1個trigger,當有CartItem被刪除時自動去更新相對應Carts的UpdatedDate
+
+OrderItems
+	新增1個trigger,當有OrderItem被更新時(包含新增跟修改)，自動去更新相對應Orders的UpdatedDate,
+	同時重新計算TotalAmount為沒被退費課程的價錢總和，並根據該Orders所對應的所有OrderItems的Status,
+	更新Order的Status為1(已結帳),0(部分退款)或-1(全課程退款)
+
+Orders 
+	新增1個trigger，當有Order內容被修改時自動更新自己的UpdatedDate
