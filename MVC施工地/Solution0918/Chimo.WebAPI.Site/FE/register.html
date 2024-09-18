@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/myheader.css" />
+  </head>
+  <style>
+    @media screen and (min-width: 768px) {
+      .loginPic img {
+        width: 70vw;
+        height: 100%;
+        object-fit: cover;
+        background-position: right;
+      }
+    }
+
+    .loginForm {
+      align-items: center;
+    }
+    .loginBtn {
+      background-color: #5b468b;
+      color: #fff;
+    }
+    .loginBtn:hover {
+      background-color: #2b1b41;
+      color: #fff;
+    }
+  </style>
+  <body>
+    <div id="app">
+      <div class="sticky-top"><my-header></my-header></div>
+      <div class="row">
+        <div class="loginPic col-sm-12 col-md-8">
+          <img src="images/loginPic.jpg" alt="loginPic" class="img-fluid" />
+        </div>
+        <div class="loginForm col-md-4 p-5">
+          <h2 class="mb-3">註冊</h2>
+
+          <input
+            type="text"
+            name="userName"
+            id="userEmail"
+            placeholder="使用者名稱"
+            class="form-control mb-3"
+          />
+          <input
+            type="text"
+            name="userEmail"
+            id="userEmail"
+            placeholder="電子信箱"
+            class="form-control mb-3"
+          />
+          <input
+            type="password"
+            name="userPassword"
+            id="userPassword"
+            placeholder="密碼"
+            class="form-control mb-3"
+            style="color: #5b468b"
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            id="confirmPassword"
+            placeholder="確認密碼"
+            class="form-control mb-3"
+            style="color: #5b468b"
+          />
+          <a href="registerDetail.html"
+            ><button
+              style="height: 65px"
+              class="loginBtn btn align-center col-12 mb-3 p-3"
+            >
+              註冊
+            </button></a
+          >
+        </div>
+      </div>
+    </div>
+
+    <footer
+      style="
+        height: 150px;
+        background-color: #5b468b;
+        display: grid;
+        place-items: center;
+      "
+    >
+      <img
+        src="images/logo2_w.png"
+        alt="logo"
+        style="width: 300px; padding-top: 10px"
+      />
+      <small class="text-light">&copy; chimo!</small>
+    </footer>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/vue.global.js"></script>
+    <script src="js/myheader.js"></script>
+    <script>
+      const { createApp, ref } = Vue;
+      const config = {
+        setup() {
+          return {};
+        },
+      };
+      const app = createApp();
+      app.component("my-header", myHeader);
+      app.mount("#app");
+    </script>
+  </body>
+</html>
