@@ -13,18 +13,11 @@
       display: flex;
       height: 70px;
       width: 300px;
-      background-color: #efa625;
-      color: #2b1b40;
       border: none;
       justify-content: center;
       align-items: center;
       margin-left: 55px;
       transition: transform 0.15s;
-    }
-
-    .goBuy:hover {
-      transform: scale(1.1);
-      cursor: pointer;
     }
 
     .goBuy p {
@@ -54,7 +47,7 @@
     .solution-img {
       width: 70px;
       height: 70px;
-      margin-left: 25px;
+      margin-left: 30px;
     }
 
     .solution-price {
@@ -128,7 +121,7 @@
   }
 
   .border-selected{
-    border-color: #93FF93 !important;
+    border-color: #e5a12d !important;
     border-width: 5px !important;
   }
 
@@ -185,8 +178,8 @@
                     class="img-fluid rounded-4 solution-img mb-3"
                   />
                   <div class="solution-price">
-                    <p class="points">{{solution.point}}pt</p>
-                    <p class="">NT${{solution.cash}}</p>
+                    <p class="points ms-1">{{solution.point}}pt</p>
+                    <p >NT${{solution.cash}}</p>
                   </div>
                 </div>
               </div>
@@ -335,7 +328,7 @@
               </div>
               <hr class="mt-4"/>
               <div>
-                <button class="goBuy rounded-3">
+                <button class="rounded-3 btn btn-warning goBuy">
                   <p class="mb-0">確認付款</p>
                 </button>
               </div>
@@ -384,49 +377,49 @@
             {
               id: 1,
               img: "/images/point.png",
-              point: 30,
+              point: 33,
               cash: 30,
             },
             {
               id: 2,
               img: "/images/point.png",
-              point: 100,
+              point: 110,
               cash: 100,
             },
             {
               id: 3,
               img: "/images/point.png",
-              point: 250,
+              point: 275,
               cash: 250,
             },
             {
               id: 4,
               img: "/images/point.png",
-              point: 500,
+              point: 550,
               cash: 500,
             },
             {
               id: 5,
               img: "/images/point.png",
-              point: 1000,
+              point: 1100,
               cash: 1000,
             },
             {
               id: 6,
               img: "/images/point.png",
-              point: 1500,
+              point: 1650,
               cash: 1500,
             },
             {
               id: 7,
               img: "/images/point.png",
-              point: 3000,
+              point: 3300,
               cash: 3000,
             },
             {
               id: 8,
               img: "/images/point.png",
-              point: 5000,
+              point: 5500,
               cash: 5000,
             },
           ]);
