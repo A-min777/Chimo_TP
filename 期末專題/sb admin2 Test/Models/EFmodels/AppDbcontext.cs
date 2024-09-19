@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace sb_admin2_Test.Models.EFmodels
 {
-	public partial class AppDbcontext : DbContext
+	public partial class AppDbContext : DbContext
 	{
-		public AppDbcontext()
-			: base("name=AppDbcontext")
+		public AppDbContext()
+			: base("name=AppDbContext")
 		{
 		}
 

@@ -15,7 +15,7 @@ namespace sb_admin2_Test.Controllers
 		private readonly MemberService _memberService;
 		public MemberController()
 		{
-			_memberService = new MemberService(new AppDbcontext());
+			_memberService = new MemberService(new AppDbContext());
 		}
 		public MemberController(MemberService memberService)
 		{

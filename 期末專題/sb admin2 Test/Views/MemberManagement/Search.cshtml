@@ -226,8 +226,16 @@
                 let selectedSection = document.getElementById(sectionId);
                 document.getElementById('cardbody').classList.remove('d-none');
                 selectedSection.classList.remove('d-none');
-
             }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var warningToast = document.getElementById('warningToast');
+                if (warningToast) {
+                    var toast = new bootstrap.Toast(warningToast);
+                    toast.show();
+                }
+            });
+            
         </script>
     }
 </div>

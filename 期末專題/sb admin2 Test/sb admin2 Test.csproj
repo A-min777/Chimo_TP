@@ -140,7 +140,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Dtos\StatusUpdateDto.cs" />
-    <Compile Include="Models\EFmodels\AppDbcontext.cs" />
+    <Compile Include="Models\EFmodels\AppDbContext.cs" />
     <Compile Include="Models\EFmodels\Cart.cs" />
     <Compile Include="Models\EFmodels\CartItem.cs" />
     <Compile Include="Models\EFmodels\Cours.cs" />
