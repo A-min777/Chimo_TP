@@ -25,8 +25,8 @@ namespace sb_admin2_Test.Controllers
 
 
 		// GET: MemberManagement/Search
-		
-	
+
+
 
 		// GET: MemberManagement/Search
 		

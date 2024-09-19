@@ -61,7 +61,7 @@ namespace sb_admin2_Test.Services
 		{
 			// 直接查詢 OrderItem 資料表，找到該會員的所有課程 ID
 			var courseIds = _context.OrderItems
-				.Where(oi => _context.Orders.Any(o => o.Id == oi.OrderId && o.MemberId == memberId))
+				.Where(oi => oi.Status == 1 && _context.Orders.Any(o => o.Id == oi.OrderId && o.MemberId == memberId))
 				.Select(oi => oi.CourseId)
 				.Distinct()
 				.ToList();

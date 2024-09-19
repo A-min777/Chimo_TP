@@ -1,0 +1,63 @@
+﻿@model Chimo.WebAPI.Site.Models.ViewModels.LoginVm
+
+@{
+    ViewBag.Title = "Login";
+}
+<link href="~/Content/myLogin.css" rel="stylesheet" />
+
+<div id="app">
+
+    <div class="row">
+        <div class="loginPic col-sm-12 col-md-8">
+            <img src="../images/loginPic.jpg" alt="loginPic" class="img-fluid" />
+        </div>
+        <div class="loginForm col-md-4 p-5">
+            <div class="d-flex justify-content-between ">
+                <h2 class="mb-3">登入</h2>
+                <a href="/Login/Register"><small class="btn btn-sm btn-link fw-bolder pt-2"  style="text-decoration:none; color:#5b468b">快速註冊</small></a>
+            </div>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <input type="text"
+                   name="userEmail"
+                   id="userEmail"
+                   placeholder="電子信箱"
+                   class="form-control mb-3"
+                   style="min-width: 200px" />
+            @Html.ValidationMessageFor(model => model.Account, "", new { @class = "text-danger" })
+
+            <input type="password"
+                   name="userPassword"
+                   id="userPassword"
+                   placeholder="密碼"
+                   class="form-control mb-3"
+                   style="min-width: 200px; color: #5b468b" />
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+
+
+            <button style="height: 65px"
+                    class="loginBtn btn align-center col-12 mb-1 p-3">
+                登入
+            </button>
+            <a href="ForgotPassword" class="btn col-12 mb-3 p-3">忘記密碼</a>
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
+    <script>
+        const { createApp, ref } = Vue;
+        const config = {
+            setup() {
+                return {};
+            },
+        };
+        const app = createApp(config);
+        app.mount("#app");
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
