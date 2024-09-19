@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "會員搜尋";
+    var warningMessage = TempData["WarningMessage"] as string;
 }
 
 <div class="container-fluid">
@@ -30,16 +31,21 @@
         </div>
     </div>
 
-    <!-- 警告訊息 -->
-    <div id="notificationBox" class="toast d-none position-fixed top-0 start-50 translate-middle-x mt-3" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto">警告</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    <!--警告訊息 -->
+    @if (!string.IsNullOrEmpty(warningMessage))
+    {
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div id="warningToast" class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">警告</strong>
+                    <button type="button" class="btn close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    @warningMessage
+                </div>
+            </div>
         </div>
-        <div class="toast-body">
-            請輸入會員名稱。
-        </div>
-    </div>
+    }
 
     <!-- 詳細資料區塊 -->
 
@@ -166,7 +172,7 @@
             </div>
         </div>
     </div>
-    
+
     @section Scripts {
         <script>
             function checkSearchName() {
@@ -195,8 +201,16 @@
                 let selectedSection = document.getElementById(sectionId);
                 document.getElementById('cardbody').classList.remove('d-none');
                 selectedSection.classList.remove('d-none');
-
             }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var warningToast = document.getElementById('warningToast');
+                if (warningToast) {
+                    var toast = new bootstrap.Toast(warningToast);
+                    toast.show();
+                }
+            });
+            
         </script>
     }
 </div>

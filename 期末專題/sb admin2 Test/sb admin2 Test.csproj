@@ -140,14 +140,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Dtos\StatusUpdateDto.cs" />
-    <Compile Include="Models\EFmodels\AppDbcontext.cs" />
+    <Compile Include="Models\EFmodels\AppDbContext.cs" />
     <Compile Include="Models\EFmodels\Cart.cs" />
     <Compile Include="Models\EFmodels\CartItem.cs" />
     <Compile Include="Models\EFmodels\Cours.cs" />
+    <Compile Include="Models\EFmodels\CourseCatalog.cs" />
     <Compile Include="Models\EFmodels\CourseCategory.cs" />
     <Compile Include="Models\EFmodels\CourseChapter.cs" />
     <Compile Include="Models\EFmodels\CourseComment.cs" />
-    <Compile Include="Models\EFmodels\CoursesCatalog.cs" />
     <Compile Include="Models\EFmodels\Member.cs" />
     <Compile Include="Models\EFmodels\MemberCollection.cs" />
     <Compile Include="Models\EFmodels\Order.cs" />

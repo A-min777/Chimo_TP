@@ -17,7 +17,7 @@ namespace sb_admin2_Test.Controllers
 		private  CoursesService _coursesService;
 		public CoursesController()
 		{
-			_coursesService = new CoursesService(new AppDbcontext());
+			_coursesService = new CoursesService(new AppDbContext());
 		}
 		public CoursesController(CoursesService coursesService)
 		{
