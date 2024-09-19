@@ -136,6 +136,7 @@
                         success: function () {
                             alert('更新成功');
                             $('#confirmModal').modal('hide');
+                            location.reload(); // 重新載入頁面
                         },
                         error: function (xhr, status, error) {
                             alert('更新失敗: ' + error);

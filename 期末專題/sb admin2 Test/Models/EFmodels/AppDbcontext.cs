@@ -14,11 +14,11 @@ namespace sb_admin2_Test.Models.EFmodels
 
 		public virtual DbSet<CartItem> CartItems { get; set; }
 		public virtual DbSet<Cart> Carts { get; set; }
+		public virtual DbSet<CourseCatalog> CourseCatalogs { get; set; }
 		public virtual DbSet<CourseCategory> CourseCategories { get; set; }
 		public virtual DbSet<CourseChapter> CourseChapters { get; set; }
 		public virtual DbSet<CourseComment> CourseComments { get; set; }
 		public virtual DbSet<Cours> Courses { get; set; }
-		public virtual DbSet<CoursesCatalog> CoursesCatalogs { get; set; }
 		public virtual DbSet<MemberCollection> MemberCollections { get; set; }
 		public virtual DbSet<Member> Members { get; set; }
 		public virtual DbSet<OrderItem> OrderItems { get; set; }
@@ -32,6 +32,12 @@ namespace sb_admin2_Test.Models.EFmodels
 			modelBuilder.Entity<Cart>()
 				.HasMany(e => e.CartItems)
 				.WithRequired(e => e.Cart)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<CourseCatalog>()
+				.HasMany(e => e.CourseChapters)
+				.WithRequired(e => e.CourseCatalog)
+				.HasForeignKey(e => e.CatalogId)
 				.WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<CourseCategory>()
@@ -53,13 +59,13 @@ namespace sb_admin2_Test.Models.EFmodels
 				.WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<Cours>()
-				.HasMany(e => e.CourseComments)
+				.HasMany(e => e.CourseCatalogs)
 				.WithRequired(e => e.Cours)
 				.HasForeignKey(e => e.CourseId)
 				.WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<Cours>()
-				.HasMany(e => e.CoursesCatalogs)
+				.HasMany(e => e.CourseComments)
 				.WithRequired(e => e.Cours)
 				.HasForeignKey(e => e.CourseId)
 				.WillCascadeOnDelete(false);
@@ -74,12 +80,6 @@ namespace sb_admin2_Test.Models.EFmodels
 				.HasMany(e => e.OrderItems)
 				.WithRequired(e => e.Cours)
 				.HasForeignKey(e => e.CourseId)
-				.WillCascadeOnDelete(false);
-
-			modelBuilder.Entity<CoursesCatalog>()
-				.HasMany(e => e.CourseChapters)
-				.WithRequired(e => e.CoursesCatalog)
-				.HasForeignKey(e => e.CatalogId)
 				.WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<Member>()

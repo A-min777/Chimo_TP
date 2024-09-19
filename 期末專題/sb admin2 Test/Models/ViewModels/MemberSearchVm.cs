@@ -9,6 +9,7 @@
 		public class MemberSearchVm
 		{
 			public string MemberName { get; set; }
+			
 			public string CreatedDate { get; set; }
 
 			public IEnumerable<Cours> EnrolledCourses { get; set; }
