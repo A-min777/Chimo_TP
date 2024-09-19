@@ -6,10 +6,10 @@ namespace sb_admin2_Test.Models.EFmodels
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class CoursesCatalog
+    public partial class CourseCatalog
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public CoursesCatalog()
+        public CourseCatalog()
         {
             CourseChapters = new HashSet<CourseChapter>();
         }

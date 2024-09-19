@@ -24,16 +24,27 @@ namespace sb_admin2_Test.Controllers
 
 
 		// GET: MemberManagement/Search
-		
-	
+
+
 
 		// GET: MemberManagement/Search
 		[HttpGet]
 		public ActionResult Search(string name)
 		{
-			var vm = _memberManagementService.SearchMember(name);
-			
-			return View(vm);
+			var service = _memberManagementService;
+			var result = service.SearchMember(name);
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				TempData["WarningMessage"] = "請輸入會員名稱。";
+			}
+			else if (result.MemberName == null)
+			{
+				TempData["WarningMessage"] = "找不到會員，請檢查輸入是否正確。";
+			}
+
+			return View(result);
+
 		}
 	}
 }

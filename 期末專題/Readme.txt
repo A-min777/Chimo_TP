@@ -31,5 +31,5 @@
 	add Search.cshtml
 
 [working on...]
-目前如果搜尋與資料庫裡相異的會員名字不會跳出警告訊息 Orz 
+美化版面 index、navbar、header
 
