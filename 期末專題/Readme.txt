@@ -30,6 +30,9 @@
 	add MemberSearchVm.cs
 	add Search.cshtml
 
-[working on...]
-美化版面 index、navbar、header
+[v]
+美化版面 index、navbar
+
+[working on]
+美化 header
 

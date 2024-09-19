@@ -86,11 +86,17 @@
                                                    {
                                                     <span style="color:red">退貨</span>
                                                     }
-</li>   
+                                                 </li>
                                             }
                                         </td>
-                                        <td>@order.TotalAmount</td>
-                                        <td>@order.CreatedDate</td>
+                                        <td>
+                                            @if (order.TotalAmount != 0)
+                                            {
+                                                <img src="~/img/point.png" alt="Point Icon" style="width: 25px; height: 25px;" />
+                                            }
+                                            @order.TotalAmount
+                                        </td>
+                                        <td>@order.CreatedDate.ToString("yyyy-MM-dd HH:mm")</td>
                                         <td>
                                             @switch (refundedItemCount)
                                             {
@@ -185,7 +191,7 @@
                                                 <span>退款</span>
                                             }
                                         </td>
-                                        <td>@points.GetPointDate</td>
+                                        <td>@points.GetPointDate.ToString("yyyy-MM-dd HH:mm")</td>
                                     </tr>
                                 }
                             </tbody>
