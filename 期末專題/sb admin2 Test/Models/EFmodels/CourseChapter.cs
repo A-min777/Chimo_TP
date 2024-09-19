@@ -22,6 +22,8 @@ namespace sb_admin2_Test.Models.EFmodels
         [StringLength(100)]
         public string Name { get; set; }
 
+        public int DisplayOrder { get; set; }
+
         [Required]
         public string Description { get; set; }
 
@@ -34,7 +36,7 @@ namespace sb_admin2_Test.Models.EFmodels
 
         public DateTime UpdatedDate { get; set; }
 
-        public virtual CoursesCatalog CoursesCatalog { get; set; }
+        public virtual CourseCatalog CourseCatalog { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CourseComment> CourseComments { get; set; }

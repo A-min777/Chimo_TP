@@ -1,7 +1,9 @@
 ﻿@model sb_admin2_Test.Models.ViewModels.MemberSearchVm
 
 @{
-    ViewBag.Title = "會員搜尋";
+        ViewBag.Title = "會員搜尋";
+        var warningMessage = TempData["WarningMessage"] as string;
+    
 }
 
 <div class="container-fluid">
@@ -30,16 +32,22 @@
         </div>
     </div>
 
-    <!-- 警告訊息 -->
-    <div id="notificationBox" class="toast d-none position-fixed top-0 start-50 translate-middle-x mt-3" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto">警告</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    <!--警告訊息 -->
+    @if (!string.IsNullOrEmpty(warningMessage))
+    {
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div id="warningToast" class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">警告</strong>
+                    <button type="button" class="btn close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    @warningMessage
+                </div>
+            </div>
         </div>
-        <div class="toast-body">
-            請輸入會員名稱。
-        </div>
-    </div>
+    }
+
 
     <!-- 詳細資料區塊 -->
 
@@ -63,24 +71,40 @@
                             <tbody>
                                 @foreach (var order in Model.OrderHistory)
                                 {
+                                    // 計算已退貨的 OrderItem 數量
+                                    var refundedItemCount = order.OrderItems.Count(orderitem => orderitem.Status == 0);
+                                    // 如果部分退款是指有些課程退貨，其他沒退貨，就應該是部分退款
+                                    var hasPartialRefund = refundedItemCount > 0 && refundedItemCount < order.OrderItems.Count();
                                     <tr>
                                         <td>@order.Id</td>
                                         <td>
                                             @foreach (var item in order.OrderItems)
                                             {
-                                                <div>@item.Cours.Title</div>
+                                                <li>
+                                                @item.Cours.Title
+                                                 @if (item.Status == 0)
+                                                   {
+                                                    <span style="color:red">退貨</span>
+                                                    }
+</li>   
                                             }
                                         </td>
                                         <td>@order.TotalAmount</td>
                                         <td>@order.CreatedDate</td>
                                         <td>
-                                            @if (order.Status == 1)
+                                            @switch (refundedItemCount)
                                             {
-                                                <span>已結帳</span>
-                                            }
-                                            else if (order.Status == -1)
-                                            {
-                                                <span>退貨</span>
+                                                case int count when count > 0 && count < order.OrderItems.Count():
+                                                    <span>部分退款</span>;
+                                                    break;
+
+                                                case int count when count == order.OrderItems.Count():
+                                                    <span>全額退款</span>;
+                                                    break;
+
+                                                default:
+                                                    <span>結帳</span>;
+                                                    break;
                                             }
                                         </td>
                                     </tr>
@@ -103,10 +127,15 @@
                             <tbody>
                                 @foreach (var course in Model.EnrolledCourses)
                                 {
-                                    <tr>
-                                        <td>@course.Title</td>
-                                    </tr>
+
+                                        <tr>
+                                            <td>@course.Title</td>
+                                        </tr>
+                                    
                                 }
+
+
+
                             </tbody>
                         </table>
                     </div>
@@ -129,10 +158,10 @@
                             <tbody>
                                 @foreach (var points in Model.PointsHistory)
                                 {
-                                    <tr>
+                                      <tr>
                                         <td>@points.Cash</td>
                                         <td>
-                                            @if (points.GetPointType == 1 || points.GetPointType == -1) // 現金儲值或退款
+                                            @if (points.GetPointType == 1 || points.GetPointType == 0) // 現金儲值或退款
                                             {
                                                 <text>+@points.Amount</text> // 在前面加上加號
                                             }
@@ -166,22 +195,18 @@
             </div>
         </div>
     </div>
-    
+
     @section Scripts {
         <script>
-            function checkSearchName() {
-                var searchName = document.getElementById('searchName').value.trim();
-                var notificationBox = document.getElementById('notificationBox');
+            
 
-                if (searchName === null || searchName === '') {
-                    // 顯示通知框
-                    var toast = new bootstrap.Toast(notificationBox);
+            document.addEventListener('DOMContentLoaded', function () {
+                var warningToast = document.getElementById('warningToast');
+                if (warningToast) {
+                    var toast = new bootstrap.Toast(warningToast);
                     toast.show();
-                    return false;  // 阻止表單提交
                 }
-
-                return true;  // 允許表單提交
-            }
+            });
 
             function showDetails(sectionId) {
                 // 隱藏所有詳細列表

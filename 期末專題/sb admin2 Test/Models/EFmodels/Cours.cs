@@ -1,4 +1,4 @@
-    namespace sb_admin2_Test.Models.EFmodels
+namespace sb_admin2_Test.Models.EFmodels
 {
     using System;
     using System.Collections.Generic;
@@ -13,8 +13,8 @@
         public Cours()
         {
             CartItems = new HashSet<CartItem>();
+            CourseCatalogs = new HashSet<CourseCatalog>();
             CourseComments = new HashSet<CourseComment>();
-            CoursesCatalogs = new HashSet<CoursesCatalog>();
             MemberCollections = new HashSet<MemberCollection>();
             OrderItems = new HashSet<OrderItem>();
         }
@@ -46,15 +46,15 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CartItem> CartItems { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CourseCatalog> CourseCatalogs { get; set; }
+
         public virtual CourseCategory CourseCategory { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CourseComment> CourseComments { get; set; }
 
         public virtual Teacher Teacher { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CoursesCatalog> CoursesCatalogs { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MemberCollection> MemberCollections { get; set; }
