@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewBag.Title = "RegisterDetail";
+}
+
+
+<link href="~/Content/myLogin.css" rel="stylesheet" />
+<style>
+
+    .register img {
+        min-height: 15vh;
+        max-height: 15vw;
+    }
+</style>
+
+<div id="app">
+
+    <div class="row">
+        <div class="loginPic col-sm-12 col-md-8">
+            <img src="../images/loginPic.jpg" alt="loginPic" class="img-fluid" />
+        </div>
+        <div class="loginForm col-md-4 p-5">
+            <div class="mb-3">
+                <h2 class="">會員資料</h2>
+                <small class="blockquote-footer">可稍後再至個人頁面編輯</small>
+            </div>
+
+            <div class="register text-center">
+                <img src="../images/profilePic.PNG"
+                     alt="profile"
+                     class="img-fluid m-3" />
+            </div>
+
+            <input type="text"
+                   name="phone"
+                   id="phone"
+                   placeholder="連絡電話"
+                   class="form-control mb-3" />
+
+            <select class="form-select mb-3" aria-label="Default select example">
+                <option selected>選擇性別</option>
+                <option value="1">男</option>
+                <option value="2">女</option>
+                <option value="3">其他</option>
+            </select>
+
+            <textarea class="form-control mb-3"
+                      id="exampleFormControlTextarea1"
+                      rows="3"
+                      placeholder="請輸入簡介"></textarea>
+
+            <a href="Login">
+                <button style="height: 65px"
+                        class="loginBtn btn align-center col-12 mb-3 p-3">
+                    完成
+                </button>
+            </a>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="~/Scripts/vue.global.js"></script>
+    <script>
+        const { createApp, ref } = Vue;
+        const config = {
+            setup() {
+                return {};
+            },
+        };
+        const app = createApp(config);
+        app.mount("#app");
+    </script>
+}
+

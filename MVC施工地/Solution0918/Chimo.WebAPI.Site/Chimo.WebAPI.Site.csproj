@@ -165,6 +165,7 @@
     <Compile Include="Controllers\Apis\LoginApiController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -209,6 +210,22 @@
     <Content Include="Content\myLogin.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="images\banner01.jpg" />
+    <Content Include="images\banner02.jpg" />
+    <Content Include="images\banner03.jpg" />
+    <Content Include="images\bell.png" />
+    <Content Include="images\book.png" />
+    <Content Include="images\book_w.png" />
+    <Content Include="images\cart.png" />
+    <Content Include="images\color palette.png" />
+    <Content Include="images\Delete.png" />
+    <Content Include="images\loginPic.jpg" />
+    <Content Include="images\LOGO.png" />
+    <Content Include="images\logo2_w.png" />
+    <Content Include="images\point.png" />
+    <Content Include="images\profilePic.PNG" />
+    <Content Include="images\thumbnail.jpg" />
+    <Content Include="images\video.jpg" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
     <Content Include="Scripts\bootstrap.esm.min.js" />
@@ -242,6 +259,8 @@
     <Content Include="Scripts\myheader.js" />
     <Content Include="Scripts\popper.js" />
     <Content Include="Scripts\vue.global.js" />
+    <Content Include="video\testVideo1.mp4" />
+    <Content Include="video\testVideo2.mp4" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -258,9 +277,14 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Login\Login.cshtml" />
     <Content Include="Views\Login\Register.cshtml" />
+    <Content Include="Views\Login\RegisterDetail.cshtml" />
+    <Content Include="Views\Login\ForgotPassword.cshtml" />
+    <Content Include="Views\Login\ResetPassword.cshtml" />
+    <Content Include="Views\Products\ProductInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="images\App_LocalResources\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\bootstrap.min.js.map" />
