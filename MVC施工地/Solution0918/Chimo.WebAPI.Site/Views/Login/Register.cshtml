@@ -1,0 +1,20 @@
+﻿
+@{
+    ViewBag.Title = "Register";
+}
+
+<h2>Register</h2>
+
+@section scripts{
+    <script src="~/Scripts/vue.global.js"></script>
+    <script>
+        const { createApp, ref } = Vue;
+        const config = {
+            setup() {
+                return {};
+            },
+        };
+        const app = createApp(config);
+        app.mount("#app");
+    </script>
+}
