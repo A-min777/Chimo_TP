@@ -15,9 +15,9 @@
 <body>
     <div class="sticky-top">
         <div>
-            <header v-if="showAd" class="ad-banner text-center ">
+            <header class="ad-banner text-center ">
                 Welcome to Chimo!
-                <button v-on:click="closeAd" class="btn btn-outline-light btn-sm ms-2 ps-">X</button>
+                <button class="closeAd btn btn-outline-light btn-sm ms-2 ps-">X</button>
             </header>
             <header class="navbarA  pt-3 pb-2 border-bottom border-2">
                 <a href="/Home/Index"><img src="../images/LOGO.png" alt="Logo" height="60px" class="headerLogo ps-5"></a>
@@ -53,7 +53,7 @@
 
                     if (!isLoggedIn)
                     {
-                        <div>
+                        <div class="flex-nowrap">
                             <a class="headerLogin btn btn-md fw-bolder " href="/login/Login">登入</a>
                             |
                             <a class="headerLogin btn btn-md fw-bolder me-3" href="/login/Register">註冊</a>
@@ -83,6 +83,7 @@
                             </ul>
                         </div> }
                 }
+
             </header>
         </div>
     </div>
@@ -104,6 +105,17 @@
     @Scripts.Render("~/bundles/jquery")
     @*@Scripts.Render("~/bundles/bootstrap")*@
     @RenderSection("scripts", required: false)
+
+    <script>
+        $(document).ready(function () {
+
+            $('.closeAd').click(function () {
+                $('.ad-banner').slideUp(300, function () {
+                    $(this).addClass('d-none');
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>

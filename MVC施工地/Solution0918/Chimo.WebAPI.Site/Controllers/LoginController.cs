@@ -28,5 +28,20 @@ namespace Chimo.WebAPI.Site.Controllers
         {
             return View();
         }
+
+        public ActionResult RegisterDetail()
+        {
+            return View();
+        }
+
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        public ActionResult ResetPassword()
+        {
+            return View();
+        }
     }
 }

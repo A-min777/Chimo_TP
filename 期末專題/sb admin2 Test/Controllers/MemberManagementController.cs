@@ -1,4 +1,5 @@
 ﻿using sb_admin2_Test.Models.EFmodels;
+using sb_admin2_Test.Models.ViewModels;
 using sb_admin2_Test.Services;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace sb_admin2_Test.Controllers
 
 		public MemberManagementController()
 		{
-			_memberManagementService = new MemberManagementService(new AppDbcontext());
+			_memberManagementService = new MemberManagementService(new AppDbContext());
 		}
 		public MemberManagementController(MemberManagementService memberService)
 		{
@@ -28,6 +29,13 @@ namespace sb_admin2_Test.Controllers
 
 
 		// GET: MemberManagement/Search
+		
+
+		public ActionResult Search()
+		{			
+			return View();
+		}
+
 		[HttpGet]
 		public ActionResult Search(string name)
 		{

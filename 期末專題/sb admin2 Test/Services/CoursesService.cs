@@ -13,13 +13,13 @@ namespace sb_admin2_Test.Services
 {
 	public class CoursesService
 	{
-		private AppDbcontext _context;
+		private AppDbContext _context;
 		public CoursesService()
 		{
-			_context = new AppDbcontext();
+			_context = new AppDbContext();
 		}
 
-		public CoursesService(AppDbcontext context)
+		public CoursesService(AppDbContext context)
 		{
 			_context = context;
 		}

@@ -66,8 +66,13 @@
           </nav>
           <div class="row pb-5 justify-content-between">
             <div class="col-xs-12 col-md-6 col-lg-7 p-3">
-              <video  controls :src="courses.video"  muted type="video/mp4" class="container rounded-5 "></video>
-
+              <video
+                controls
+                :src="courses.video"
+                muted
+                type="video/mp4"
+                class="container rounded-5"
+              ></video>
             </div>
             <!-- 章節選擇 bg -->
             <div
@@ -146,7 +151,9 @@
               rows="5"
             ></textarea>
             <div class="text-end">
-              <button class="commendBtn btn btn-warning btn-lg mt-3 mb-3 fw-bolder">
+              <button
+                class="commendBtn btn btn-warning btn-lg mt-3 mb-3 fw-bolder"
+              >
                 發送
               </button>
             </div>
@@ -222,7 +229,7 @@
             },
           ]);
           const courses = ref({
-            video:"video/testVideo2.mp4",
+            video: "video/testVideo2.mp4",
             name: "課程名稱",
             totalContent: 10,
             buyer: 100,
