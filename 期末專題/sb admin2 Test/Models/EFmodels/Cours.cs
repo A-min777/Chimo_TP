@@ -38,14 +38,11 @@ namespace sb_admin2_Test.Models.EFmodels
         public string Thumbnail { get; set; }
 
         public int Status { get; set; }
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
 
         public DateTime CreatedDate { get; set; }
-       
-        
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+
         public DateTime UpdatedDate { get; set; }
-    
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CartItem> CartItems { get; set; }
 

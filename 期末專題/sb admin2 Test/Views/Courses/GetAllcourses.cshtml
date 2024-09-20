@@ -44,12 +44,7 @@
                                     <td>@Html.DisplayFor(modelItem => item.CourseCategory.Name)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Description)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Teacher.Name)</td>
-                                    <td style="text-align:right">
-                                        @if (item.Price != 0)
-                                        {
-                                            <img src="~/img/point.png" alt="Point Icon" style="width: 25px; height: 25px;" />
-                                        }@Html.DisplayFor(modelItem => item.Price)
-                                    </td>
+                                    <td style="text-align:right">@Html.DisplayFor(modelItem => item.Price)</td>
                                     <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
                                     <td>@Html.DisplayFor(modelItem => item.UpdatedDate)</td>
                                     <td>
