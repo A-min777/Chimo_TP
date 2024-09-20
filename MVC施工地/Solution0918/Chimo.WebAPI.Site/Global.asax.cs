@@ -1,3 +1,5 @@
+using AutoMapper;
+using Chimo.WebAPI.Site.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +13,7 @@ namespace Chimo.WebAPI.Site
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
+        public static IMapper _mapper;
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
@@ -18,6 +21,14 @@ namespace Chimo.WebAPI.Site
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            // ³]¸mMappings
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<Mappings>();
+            });
+
+            _mapper = config.CreateMapper();
         }
     }
 }
