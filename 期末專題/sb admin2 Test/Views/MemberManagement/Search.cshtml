@@ -176,7 +176,13 @@
                                                 <text>-@points.Amount</text>// 在前面加上減號
                                             }
                                         </td>
-                                        <td>@points.Point</td>
+                                        <td>
+                                            @if (points.Point != 0)
+                                            {
+                                                <img src="~/img/point.png" alt="Point Icon" style="width: 25px; height: 25px;" />
+                                            }
+                                            @points.Point
+                                        </td>
                                         <td>
                                             @if (points.GetPointType == 1)
                                             {
