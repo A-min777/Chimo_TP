@@ -2,6 +2,23 @@
 
 Team Project Chimo!
 
+名:
+[V] 首頁
+    修改_Layout.cshtml
+
+[V] 登入/註冊
+    新增 LoginController 
+      新增Login View、新增Register View、新增RegisterDetail View、新增ForgrtPassword View
+
+[V] 商品頁
+    新增 ProductsController
+      新增 Products View、新增 Courses View
+      
+[W-on] 會員頁
+    新增 MembersController
+    
+[ ] 交易頁
+
 許:
 
 [V] 在 App_Start/WebApiConfig.cs 加入一行程式，確保 webApi 傳出的 json 檔字首是小寫
