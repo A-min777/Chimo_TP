@@ -161,7 +161,7 @@
                             <div v-for="card in chunk"
                                  :key="card.id"
                                  class="mycard col-3 ps-2 pe-2">
-                                <a href="product.html">
+                                <a href="@Url.Action("ViewProduct", "Products")">
                                     <img :src="card.thumbnail"
                                          alt="course-thumbnail "
                                          class="pb-2 col-lg-3 img-fluid rounded" />
