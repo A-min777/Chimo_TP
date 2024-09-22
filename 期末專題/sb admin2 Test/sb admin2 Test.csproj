@@ -140,14 +140,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Dtos\StatusUpdateDto.cs" />
-    <Compile Include="Models\EFmodels\AppDbcontext.cs" />
+    <Compile Include="Models\EFmodels\AppDbContext.cs" />
     <Compile Include="Models\EFmodels\Cart.cs" />
     <Compile Include="Models\EFmodels\CartItem.cs" />
     <Compile Include="Models\EFmodels\Cours.cs" />
+    <Compile Include="Models\EFmodels\CourseCatalog.cs" />
     <Compile Include="Models\EFmodels\CourseCategory.cs" />
     <Compile Include="Models\EFmodels\CourseChapter.cs" />
     <Compile Include="Models\EFmodels\CourseComment.cs" />
-    <Compile Include="Models\EFmodels\CoursesCatalog.cs" />
     <Compile Include="Models\EFmodels\Member.cs" />
     <Compile Include="Models\EFmodels\MemberCollection.cs" />
     <Compile Include="Models\EFmodels\Order.cs" />
@@ -169,6 +169,13 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="img\LOGO.png" />
+    <Content Include="img\undraw_posting_photo.svg" />
+    <Content Include="img\undraw_profile.svg" />
+    <Content Include="img\undraw_profile_1.svg" />
+    <Content Include="img\undraw_profile_2.svg" />
+    <Content Include="img\undraw_profile_3.svg" />
+    <Content Include="img\undraw_rocket.svg" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -185,9 +192,8 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Courses\ViewCoureseDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -196,7 +202,6 @@
     <None Include="packages.config" />
     <Content Include="Views\Member\GetAllMembers.cshtml" />
     <Content Include="Views\Courses\GetAllcourses.cshtml" />
-    <Content Include="Views\Courses\ViewCoureseDetail.cshtml" />
     <Content Include="Views\MemberManagement\Search.cshtml" />
   </ItemGroup>
   <PropertyGroup>

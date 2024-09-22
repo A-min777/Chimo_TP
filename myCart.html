@@ -1,262 +1,192 @@
 <!DOCTYPE html>
 <html lang="zw-TW">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>myCart</title>
-    <link rel="icon" href="images/LOGO.png" type="image/png" />
-  </head>
-  <link rel="stylesheet" href="css/bootstrap.min.css" />
-  <link rel="stylesheet" href="css/myheader.css" />
-  <style>
-    .cartContent {
-      align-content: center;
-      font-weight: bold;
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>myCart</title>
+  <link rel="icon" href="images/LOGO.png" type="image/png" />
+</head>
+<link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/myheader.css" />
+<style>
+  @media (max-width:805px) {
+    .isPc {
+      display: none;
     }
 
-    .teacher {
-      color: #5a448c;
-      font-size: 22px;
+    .isMobile {
+      background-color: #fff;
+      width: 200px;
+      display: block;
+      bottom: 10px;
+      right: 20px;
     }
+  }
 
-    .thumbnail {
-      max-width: 600px;
-      max-height: 300px;
-    }
+  .isMobile {
+    position: fixed;
+  }
 
-    .title {
-      max-height: 160px;
-      font-size: 28px;
-      overflow: hidden;
-    }
+  .title {
+    max-height: 100px;
+    overflow: auto;
+  }
 
-    .title:hover {
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: #5b468b #fff;
-    }
+  .cart img {
+    transition: transform 0.1s ease;
+  }
 
-    .delete {
-      height: 50px;
-      width: 50px;
-      margin-top: 20px;
-      transition: transform 0.15s;
-    }
+  .cart img:hover {
+    transform: scale(1.05);
+  }
+</style>
 
-    .delete:hover {
-      transform: scale(1.1);
-      cursor: pointer;
-    }
-
-    .deleteContainer {
-      margin-left: 100px;
-    }
-
-    .goBuy {
-      display: flex;
-      height: 70px;
-      width: 300px;
-      background-color: #efa625;
-      color: #2b1b40;
-      border: none;
-      justify-content: center;
-      align-items: center;
-      margin-left: 55px;
-      transition: transform 0.15s;
-    }
-
-    .goBuy:hover {
-      transform: scale(1.1);
-      cursor: pointer;
-    }
-
-    .goBuy p {
-      font-size: 36px;
-      font-weight: bold;
-    }
-
-    hr {
-      color: #938c9e;
-      margin-top: 50px;
-    }
-
-    .order-summary {
-      width: 450px;
-      flex-shrink: 0;
-    }
-
-    .order-title {
-      height: 50px;
-      width: 150px;
-      overflow: hidden;
-    }
-
-    .order-title:hover {
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: #5b468b #fff;
-    }
-
-    .cart {
-      flex-grow: 1;
-    }
-
-    .d-flex {
-      align-items: flex-start;
-    }
-  </style>
-  <body>
-    <div id="app">
-      <div class="sticky-top">
-        <my-header></my-header>
-      </div>
-
-      <!-- 顯示購物車start -->
-      <div class="mb-4 pt-3">
-        <div class="container">
-          <h1 class="mt-4 fw-bolder mb-4">購物車</h1>
-          <div class="d-flex gap-4">
-            <!-- 購物車資訊start-->
-            <div class="cart me-3">
-              <div
-                v-for="card in cards"
-                :key="card.id"
-                class="d-flex align-items-start mb-4 p-4 border-bottom"
-              >
-                <img
-                  :src="card.img"
-                  alt="thumbnail"
-                  class="img-fluid rounded-4 thumbnail"
-                />
-                <div class="ms-4 cartContent flex-grow-1">
-                  <h1 class="mb-3 title">{{card.title}}</h1>
-                  <a href="#" class="teacher mt-3 mb-3"
-                    >教師 | {{card.teacher}}</a
-                  >
-                  <h1 class="mt-3">NT${{card.price}}</h1>
-                </div>
-                <div class="deleteContainer ms-auto">
-                  <img
-                    src="images/Delete.png"
-                    alt="delete"
-                    class="delete"
-                    v-on:click="handleDelete(card.id)"
-                  />
-                </div>
-              </div>
+<body>
+  <div id="app">
+    <div class="sticky-top">
+      <my-header></my-header>
+    </div>
+    <div class="container">
+      <h2 class="mt-4 fw-bolder mb-4">購物車</h1>
+      <div class="row">
+        <div class="cart col-sm-12 col-md-8">
+          <div
+           v-for="card in cards"
+           :key="card.id" 
+           class="d-lg-flex align-items-start mb-4 p-4 border-bottom"
+          >
+            <img :src="card.img" alt="thumbnail" 
+                 class="img-fluid rounded thumbnail col-md-12 col-lg-6 mb-3" />
+            <div class="col-md-12 col-lg-5 ms-lg-3 cartContent">
+              <h4 class="mb-3 me-4 title">{{card.title}}</h4>
+              <a href="#" class="teacher mt-3 mb-3">教師 | {{card.teacher}}</a>
+              <h2 class="mt-3">NT${{card.price}}</h2>
             </div>
-
-            <!-- 訂單明細start-->
-            <div class="order-summary p-3 border shadow">
-              <h3 class="fw-bolder ms-4 mt-4">訂單明細</h3>
-              <hr class="mt-3" />
-              <div class="d-flex fw-bolder mt-4" v-for="card in cards">
-                <h5 class="ms-4 order-title">{{card.title}}</h5>
-                <p class="ms-auto me-5">NT${{card.price}}</p>
-              </div>
-              <div class="d-flex fw-bolder">
-                <h3 class="ms-4 mt-5">總金額</h3>
-                <h3 class="ms-auto me-5 mt-5">NT${{totalPrice}}</h3>
-              </div>
-              <hr />
-              <div>
-                <button class="goBuy rounded-3">
-                  <p class="mb-0">前往結帳</p>
-                </button>
-              </div>
+            <div class="deleteContainer ">
+              <img 
+                src="images/Delete.png" 
+                alt="delete" 
+                class="delete" 
+                v-on:click="handleDelete(card.id)" />
             </div>
-            <!-- 訂單明細end -->
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-4">
+          <div class="container p-3 border shadow isPc ">
+            <h3 class="fw-bolder ms-4 mt-4">訂單明細</h3>
+            <hr class="mt-3" />
+            <div class="container d-flex fw-bolder mt-4" v-for="card in cards">
+              <h5 class="col-9">{{card.title}}</h5>
+              <p class="col-3 text-end">NT${{card.price}}</p>
+            </div>
+            <div class="container d-flex justify-content-between fw-bolder ">
+              <h3 class="mt-5">總金額</h3>
+              <h3 class="mt-5 text-end">NT${{totalPrice}}</h3>
+            </div>
+            <hr />
+            <div class="container text-end">
+              <button class="btn btn-lg btn-warning">
+              前往結帳
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      <!-- 顯示購物車end -->
+      <div class="container text-end rounded-4 border shadow fw-bolder isMobile">
+        <h3 class="mt-3">總金額</h3>
+        <h3 class="mt-3">NT${{totalPrice}}</h3>
+        <hr>
+        <div class="row m-3">
+          <button class="btn btn-lg btn-warning ">
+            前往結帳
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-      <footer
-        style="
+  <footer style="
           height: 150px;
           background-color: #5b468b;
           display: grid;
           place-items: center;
-        "
-      >
-        <img
-          src="images/logo2_w.png"
-          alt="logo"
-          style="width: 300px; padding-top: 10px"
-        />
-        <small class="text-light">&copy; chimo!</small>
-      </footer>
-    </div>
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/vue.global.js"></script>
-    <script src="js/myheader.js"></script>
-    <script>
-      const { createApp, ref } = Vue;
-      const config = {
-        setup() {
-          const cards = ref([
-            {
-              id: 1,
-              img: "images/thumbnail.jpg",
-              title:
-                "1.反映女孩子只需第一個東京一本，反映女孩子只需第一個東京一本，反映女孩子只需第一個東京一本，",
-              teacher: "Mr.C",
-              price: 1200,
-            },
-            {
-              id: 2,
-              img: "images/thumbnail.jpg",
-              title: "2.犯罪不說大型，本週中學，丈夫",
-              teacher: "Mr.C",
-              price: 2000,
-            },
-            {
-              id: 3,
-              img: "images/thumbnail.jpg",
-              title: "3.第一個東京一本，聯絡人",
-              teacher: "Mr.C",
-              price: 1500,
-            },
-            {
-              id: 4,
-              img: "images/thumbnail.jpg",
-              title: "4.看看計劃笑容每年有的",
-              teacher: "Mr.C",
-              price: 3000,
-            },
-            {
-              id: 5,
-              img: "images/thumbnail.jpg",
-              title: "5.程式開發者。",
-              teacher: "Mr.C",
-              price: 12000,
-            },
-            {
-              id: 6,
-              img: "images/thumbnail.jpg",
-              title: "6.計劃AI有的笑容每年",
-              teacher: "Mr.C",
-              price: 800,
-            },
-          ]);
+        ">
+      <img src="images/logo2_w.png" alt="logo" style="width: 300px; padding-top: 10px" />
+      <small class="text-light">&copy; chimo!</small>
+  </footer>
+  </div>
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/vue.global.js"></script>
+  <script src="js/myheader.js"></script>
+  <script>
+    const { createApp, ref } = Vue;
+    const config = {
+      setup() {
+        const cards = ref([
+          {
+            id: 1,
+            img: "images/thumbnail.jpg",
+            title:
+              "1.反映女孩子只需第一個東京一本，反映女孩子只需第一個東京一本，反映女孩子只需第一個東京一本，",
+            teacher: "Mr.C",
+            price: 1200,
+          },
+          {
+            id: 2,
+            img: "images/thumbnail.jpg",
+            title: "2.犯罪不說大型，本週中學，丈夫",
+            teacher: "Mr.C",
+            price: 2000,
+          },
+          {
+            id: 3,
+            img: "images/thumbnail.jpg",
+            title: "3.第一個東京一本，聯絡人",
+            teacher: "Mr.C",
+            price: 1500,
+          },
+          {
+            id: 4,
+            img: "images/thumbnail.jpg",
+            title: "4.看看計劃笑容每年有的",
+            teacher: "Mr.C",
+            price: 3000,
+          },
+          {
+            id: 5,
+            img: "images/thumbnail.jpg",
+            title: "5.程式開發者。",
+            teacher: "Mr.C",
+            price: 12000,
+          },
+          {
+            id: 6,
+            img: "images/thumbnail.jpg",
+            title: "6.計劃AI有的笑容每年",
+            teacher: "Mr.C",
+            price: 800,
+          },
+        ]);
 
-          const handleDelete = (id) => {
-            cards.value = cards.value.filter((c) => c.id !== id);
-            totalPrice.value = getTotalPrice(cards);
-          };
+        const handleDelete = (id) => {
+          cards.value = cards.value.filter((c) => c.id !== id);
+          totalPrice.value = getTotalPrice(cards);
+        };
 
-          const getTotalPrice = (cards) => {
-            return cards.value.reduce((total, card) => total + card.price, 0);
-          };
+        const getTotalPrice = (cards) => {
+          return cards.value.reduce((total, card) => total + card.price, 0);
+        };
 
-          const totalPrice = ref(getTotalPrice(cards));
+        const totalPrice = ref(getTotalPrice(cards));
 
-          return { cards, handleDelete, totalPrice };
-        },
-      };
-      const app = createApp(config);
-      app.component("my-header", myHeader);
-      app.mount("#app");
-    </script>
-  </body>
+        return { cards, handleDelete, totalPrice };
+      },
+    };
+    const app = createApp(config);
+    app.component("my-header", myHeader);
+    app.mount("#app");
+  </script>
+</body>
+
 </html>

@@ -29,7 +29,7 @@ namespace sb_admin2_Test.Models.EFmodels
         public string Email { get; set; }
 
         [Required]
-        [StringLength(255)]
+        [StringLength(50)]
         public string Password { get; set; }
 
         public int Point { get; set; }
@@ -42,17 +42,18 @@ namespace sb_admin2_Test.Models.EFmodels
         [StringLength(500)]
         public string Address { get; set; }
 
-		[DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
-		public DateTime? Birthday { get; set; }
+        public int? Gender { get; set; }
 
         [StringLength(20)]
         public string Phone { get; set; }
 
         public int Status { get; set; }
-		
-		public DateTime CreatedDate { get; set; }
-		
-		public DateTime UpdatedDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+
+        public DateTime CreatedDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+
+        public DateTime UpdatedDate { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Cart> Carts { get; set; }

@@ -11,13 +11,13 @@ namespace sb_admin2_Test.Services
 {
 	public class MemberService
 	{
-		private  AppDbcontext _context;
+		private  AppDbContext _context;
 		public MemberService()
 		{
-			_context = new AppDbcontext();
+			_context = new AppDbContext();
 		}
 
-		public MemberService(AppDbcontext context)
+		public MemberService(AppDbContext context)
 		{
 			_context = context;
 		}

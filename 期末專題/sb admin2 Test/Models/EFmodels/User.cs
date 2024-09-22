@@ -19,7 +19,7 @@ namespace sb_admin2_Test.Models.EFmodels
         public string Account { get; set; }
 
         [Required]
-        [StringLength(255)]
+        [StringLength(50)]
         public string Password { get; set; }
 
         [StringLength(500)]

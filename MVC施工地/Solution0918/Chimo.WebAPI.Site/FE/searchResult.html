@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zw-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SearchResult</title>
+  </head>
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/myheader.css" />
+  <style>
+    .searchDiv {
+      text-wrap: nowrap;
+      align-items: center;
+    }
+
+    .searchResult {
+      flex-wrap: wrap;
+    }
+    .cardContainer {
+      margin: 0 auto;
+    }
+    .mycard p {
+      font-weight: bolder;
+      font-size: large;
+    }
+    .title {
+      min-height: 60px;
+      max-height: 60px;
+      overflow: hidden;
+    }
+    .title:hover {
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #5b468b #fff;
+    }
+    .mycard img {
+      width: 100%;
+      object-fit: cover;
+    }
+    .mycard .tag {
+      background-color: #5b468b;
+      color: #fff;
+    }
+    .mycard {
+      transition: transform 0.3s ease;
+      will-change: transform;
+    }
+    .mycard:hover {
+      transform: scale(1.1);
+    }
+  </style>
+  <body>
+    <div id="app">
+      <div class="sticky-top">
+        <my-header></my-header>
+      </div>
+      <div class="container">
+        <div class="searchDiv d-flex">
+          <h1 class="mt-3 fw-bolder">搜尋</h1>
+        </div>
+        <hr />
+        <!-- 搜尋結果 bg -->
+        <h4 class="mb-3">
+          共有
+          <span class="specialCount">[]</span>
+          筆搜尋結果
+        </h4>
+        <div class="searchResult">
+          <div class="cardContainer d-flex flex-wrap">
+            <div
+              v-for="card in cards"
+              :key="card.id"
+              class="mycard col-md-3 col-sm-12 p-3 pb-5 ps-0"
+            >
+              <a href="product.html">
+                <img
+                  :src="card.img"
+                  alt="course-thumbnail "
+                  class="thumbnail pb-2 img-fluid rounded"
+                />
+              </a>
+              <div class="prodct-info">
+                <small class="tag p-1 rounded-1 fw-bolder">課程</small>
+                <p class="title pt-1">{{card.title}}</p>
+                <small>{{card.teacher}}</small>
+                <hr />
+              </div>
+              <p class="price mt-2">NT${{card.price}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 搜尋結果 ed -->
+
+      <footer
+        style="
+          height: 150px;
+          background-color: #5b468b;
+          display: grid;
+          place-items: center;
+        "
+      >
+        <img
+          src="images/logo2_w.png"
+          alt="logo"
+          style="width: 300px; padding-top: 10px"
+        />
+        <small class="text-light">&copy; chimo!</small>
+      </footer>
+    </div>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/vue.global.js"></script>
+    <script src="js/myheader.js"></script>
+    <script>
+      const { createApp, ref } = Vue;
+      const config = {
+        setup() {
+          const cards = ref([
+            {
+              id: 1,
+              img: "images/thumbnail.jpg",
+              title:
+                "1.反映女孩子只需第一個東京一本，反映女孩子只需第一個東京一本，反映女孩子只需第一個東京一本，",
+              teacher: "Mr.C",
+              price: 1000,
+            },
+            {
+              id: 2,
+              img: "images/thumbnail.jpg",
+              title: "2.犯罪不說大型，本週中學，丈夫",
+              teacher: "Mr.C",
+              price: 1000,
+            },
+            {
+              id: 3,
+              img: "images/thumbnail.jpg",
+              title: "3.第一個東京一本，聯絡人",
+              teacher: "Mr.C",
+              price: 1000,
+            },
+            {
+              id: 4,
+              img: "images/thumbnail.jpg",
+              title: "4.看看計劃笑容每年有的",
+              teacher: "Mr.C",
+              price: 1000,
+            },
+            {
+              id: 5,
+              img: "images/thumbnail.jpg",
+              title: "5.程式開發者。",
+              teacher: "Mr.C",
+              price: 1000,
+            },
+            {
+              id: 6,
+              img: "images/thumbnail.jpg",
+              title: "6.計劃AI有的笑容每年",
+              teacher: "Mr.C",
+              price: 1000,
+            },
+          ]);
+          return { cards };
+        },
+      };
+      const app = createApp(config);
+      app.component("my-header", myHeader);
+      app.mount("#app");
+    </script>
+  </body>
+</html>
