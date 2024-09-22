@@ -3,15 +3,56 @@
     ViewBag.Title = "ProductInfo";
 }
 
-<div id="app">
-    <div class="sticky-top"><my-header></my-header></div>
+<style>
+    a {
+        text-decoration: none;
+    }
 
+    .product {
+        background-color: #2b1b41;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        float: left;
+        padding-right: var(--bs-breadcrumb-item-padding-x);
+        color: #fff;
+        content: var(--bs-breadcrumb-divider, ">");
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .accordion {
+        background-color: #fffacc;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #5b468b;
+        color: #fff;
+        border-radius: 10px;
+    }
+
+    .cartIcon {
+        object-fit: contain;
+        max-height: 20px;
+    }
+
+
+    .avatarA {
+        border-radius: 50%;
+    }
+    
+</style>
+
+<div id="app">
     <!-- 頁首課程預覽 bg-->
     <div class="product mb-4 pt-3">
         <div class="container">
             <nav aria-label="breadcrumb " class="root pt-3">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">首頁</a></li>
+                    <li class="breadcrumb-item"><a href="/Home/Index">首頁</a></li>
                     <li class="breadcrumb-item"><a href="#">分類</a></li>
                     <li class="breadcrumb-item active text-light" aria-current="page">
                         課程名稱
@@ -87,7 +128,7 @@
                 <div class="teacher row mb-3 mt-2">
                     <img src="../images/profilePic.PNG"
                          alt="taPic"
-                         class="img.fluid col-md-5 col-lg-3 col-sm-3" />
+                         class="avatarA col-md-5 col-lg-3 col-sm-3 " />
                     <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
                          style="height: 50%; align-self: center">
                         <h6>{{courses.teacher}}</h6>
@@ -110,7 +151,7 @@
                             立即購買
                         </button>
                         <button class="rounded btn border mb-3">
-                            <img src="images/cart.png"
+                            <img src="../images/cart.png"
                                  alt="cart"
                                  class="cartIcon img-fluid" />
                         </button>
@@ -120,8 +161,11 @@
             <!-- 右側購買連結 end -->
         </div>
     </div>
+ </div>
     @section scripts{
+        <script src="~/Scripts/bootstrap.bundle.min.js"></script>
         <script src="~/Scripts/vue.global.js"></script>
+        <script src="~/Scripts/myheader.js"></script>
         <script>
             const { createApp, ref, onMounted } = Vue;
             const config = {
@@ -157,7 +201,7 @@
                         },
                     ]);
                     const courses = ref({
-                        video: "video/testVideo2.mp4",
+                        video: "../video/testVideo2.mp4",
                         name: "課程名稱",
                         totalContent: 10,
                         buyer: 100,
@@ -165,11 +209,11 @@
                         teacher: "Mr.C",
                         teackerInfo: "這裡是教師資訊頁裡的個人簡介",
                         intro: `有點遠她們台中避免客人搭配操作系統，
-                      是從嚴格很有雙手打開貼圖，歐洲圖書館母親遇到
-                      郵遞區號主動行情生日也要笑道女人，精選開放其實
-                      書庫夏天緊張本地認證，最好的一名此次被人光臨倒是陽光，
-                      工藝章節，歡迎我去本地下載常見規劃總體國內外構成檢索，
-                      不喜歡保健讓她適用於。`,
+                              是從嚴格很有雙手打開貼圖，歐洲圖書館母親遇到
+                              郵遞區號主動行情生日也要笑道女人，精選開放其實
+                              書庫夏天緊張本地認證，最好的一名此次被人光臨倒是陽光，
+                              工藝章節，歡迎我去本地下載常見規劃總體國內外構成檢索，
+                              不喜歡保健讓她適用於。`,
                     });
                     return { courseContents, courses, videoPlayer, checkVideoTime };
                 },
