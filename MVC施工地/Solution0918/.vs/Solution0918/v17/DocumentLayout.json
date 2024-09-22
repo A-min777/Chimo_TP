@@ -1,37 +1,37 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\",
+  "WorkspaceRootPath": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|c:\\users\\user\\desktop\\work_temp\\chimo-b47\\chimo_tp\\mvc\u65BD\u5DE5\u5730\\solution0918\\chimo.webapi.site\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|c:\\users\\user\\desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\chimo_tp\\mvc\u65BD\u5DE5\u5730\\solution0918\\chimo.webapi.site\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|solutionrelative:chimo.webapi.site\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|c:\\users\\user\\desktop\\work_temp\\chimo-b47\\chimo_tp\\mvc\u65BD\u5DE5\u5730\\solution0918\\chimo.webapi.site\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\chimo.webapi.site\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|solutionrelative:chimo.webapi.site\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|c:\\users\\user\\desktop\\work_temp\\chimo-b47\\chimo_tp\\mvc\u65BD\u5DE5\u5730\\solution0918\\chimo.webapi.site\\views\\products\\productinfo.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\chimo.webapi.site\\views\\products\\productinfo.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|solutionrelative:chimo.webapi.site\\views\\products\\productinfo.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|c:\\users\\user\\desktop\\work_temp\\chimo-b47\\chimo_tp\\mvc\u65BD\u5DE5\u5730\\solution0918\\chimo.webapi.site\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\chimo.webapi.site\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|solutionrelative:chimo.webapi.site\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|c:\\users\\user\\desktop\\work_temp\\chimo-b47\\chimo_tp\\mvc\u65BD\u5DE5\u5730\\solution0918\\chimo.webapi.site\\controllers\\apis\\loginapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\chimo.webapi.site\\controllers\\apis\\loginapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|solutionrelative:chimo.webapi.site\\controllers\\apis\\loginapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|c:\\users\\user\\desktop\\work_temp\\chimo-b47\\chimo_tp\\mvc\u65BD\u5DE5\u5730\\solution0918\\chimo.webapi.site\\views\\login\\forgotpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\chimo.webapi.site\\views\\login\\forgotpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|solutionrelative:chimo.webapi.site\\views\\login\\forgotpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|c:\\users\\user\\desktop\\work_temp\\chimo-b47\\chimo_tp\\mvc\u65BD\u5DE5\u5730\\solution0918\\chimo.webapi.site\\views\\login\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\chimo.webapi.site\\views\\login\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|solutionrelative:chimo.webapi.site\\views\\login\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|c:\\users\\user\\desktop\\work_temp\\chimo-b47\\chimo_tp\\mvc\u65BD\u5DE5\u5730\\solution0918\\chimo.webapi.site\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\chimo.webapi.site\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{10E57EF8-3D7E-4D3A-B650-DF09751AD699}|Chimo.WebAPI.Site\\Chimo.WebAPI.Site.csproj|solutionrelative:chimo.webapi.site\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -42,103 +42,101 @@
       "DocumentGroups": [
         {
           "DockedWidth": 119,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 9,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "ProductInfo.cshtml",
-              "DocumentMoniker": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Products\\ProductInfo.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Products\\ProductInfo.cshtml",
               "RelativeDocumentMoniker": "Chimo.WebAPI.Site\\Views\\Products\\ProductInfo.cshtml",
-              "ToolTip": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Products\\ProductInfo.cshtml",
+              "ToolTip": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Products\\ProductInfo.cshtml",
               "RelativeToolTip": "Chimo.WebAPI.Site\\Views\\Products\\ProductInfo.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAFcAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-09-19T09:19:50.381Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-19T09:19:50.381Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
               "Title": "ProductsController.cs",
-              "DocumentMoniker": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\ProductsController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\ProductsController.cs",
               "RelativeDocumentMoniker": "Chimo.WebAPI.Site\\Controllers\\ProductsController.cs",
-              "ToolTip": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\ProductsController.cs",
+              "ToolTip": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\ProductsController.cs",
               "RelativeToolTip": "Chimo.WebAPI.Site\\Controllers\\ProductsController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-19T09:18:54.429Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-19T09:18:54.429Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
               "Title": "LoginApiController.cs",
-              "DocumentMoniker": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\Apis\\LoginApiController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\Apis\\LoginApiController.cs",
               "RelativeDocumentMoniker": "Chimo.WebAPI.Site\\Controllers\\Apis\\LoginApiController.cs",
-              "ToolTip": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\Apis\\LoginApiController.cs",
+              "ToolTip": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\Apis\\LoginApiController.cs",
               "RelativeToolTip": "Chimo.WebAPI.Site\\Controllers\\Apis\\LoginApiController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-19T08:10:21.059Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-19T08:10:21.059Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
               "Title": "ResetPassword.cshtml",
-              "DocumentMoniker": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Login\\ResetPassword.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Login\\ResetPassword.cshtml",
               "RelativeDocumentMoniker": "Chimo.WebAPI.Site\\Views\\Login\\ResetPassword.cshtml",
-              "ToolTip": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Login\\ResetPassword.cshtml",
+              "ToolTip": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Login\\ResetPassword.cshtml",
               "RelativeToolTip": "Chimo.WebAPI.Site\\Views\\Login\\ResetPassword.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-09-19T08:04:26.859Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-19T08:04:26.859Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
               "Title": "ForgotPassword.cshtml",
-              "DocumentMoniker": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Login\\ForgotPassword.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Login\\ForgotPassword.cshtml",
               "RelativeDocumentMoniker": "Chimo.WebAPI.Site\\Views\\Login\\ForgotPassword.cshtml",
-              "ToolTip": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Login\\ForgotPassword.cshtml",
+              "ToolTip": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Login\\ForgotPassword.cshtml",
               "RelativeToolTip": "Chimo.WebAPI.Site\\Views\\Login\\ForgotPassword.cshtml",
               "ViewState": "AgIAAB0AAAAAAAAAAAAAwD0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-09-19T07:59:34.064Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-19T07:59:34.064Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Home\\Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Home\\Index.cshtml",
               "RelativeDocumentMoniker": "Chimo.WebAPI.Site\\Views\\Home\\Index.cshtml",
-              "ToolTip": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Home\\Index.cshtml",
               "RelativeToolTip": "Chimo.WebAPI.Site\\Views\\Home\\Index.cshtml",
               "ViewState": "AgIAADMAAAAAAAAAAAAAAFoAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-09-19T08:12:54.18Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-19T08:12:54.18Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "_Layout.cshtml",
-              "DocumentMoniker": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Shared\\_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "Chimo.WebAPI.Site\\Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Shared\\_Layout.cshtml",
               "RelativeToolTip": "Chimo.WebAPI.Site\\Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAACEAAAAAAAAAAAAAADAAAAAWAAAAAAAAAA==",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2024-09-19T06:31:35.99Z",
               "EditorCaption": ""
@@ -147,14 +145,13 @@
               "$type": "Document",
               "DocumentIndex": 7,
               "Title": "LoginController.cs",
-              "DocumentMoniker": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\LoginController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\LoginController.cs",
               "RelativeDocumentMoniker": "Chimo.WebAPI.Site\\Controllers\\LoginController.cs",
-              "ToolTip": "C:\\Users\\user\\Desktop\\work_temp\\Chimo-B47\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\LoginController.cs",
+              "ToolTip": "C:\\Users\\User\\Desktop\\\u8A2D\u8A08\u5C08\u6848\\\u5168\u7AEF\u671F\u672B\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Controllers\\LoginController.cs",
               "RelativeToolTip": "Chimo.WebAPI.Site\\Controllers\\LoginController.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAACEAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-19T06:09:24.603Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-19T06:09:24.603Z"
             }
           ]
         }
