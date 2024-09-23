@@ -29,7 +29,7 @@ namespace Chimo.WebAPI.Site.Models.EFModels
         public string Email { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(70)]
         public string Password { get; set; }
 
         public int Point { get; set; }

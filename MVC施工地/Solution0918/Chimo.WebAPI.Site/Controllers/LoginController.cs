@@ -33,6 +33,12 @@ namespace Chimo.WebAPI.Site.Controllers
         {
             return View();
         }
+        [HttpGet]
+        public ActionResult RegisterDetail(int userId)
+        {
+            TempData["UserId"] = userId; // 設置 TempData
+            return View(); // 返回視圖
+        }
 
         public ActionResult ForgotPassword()
         {

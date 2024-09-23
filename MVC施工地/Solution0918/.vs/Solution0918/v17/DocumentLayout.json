@@ -12,6 +12,32 @@
           "SelectedChildIndex": -1,
           "Children": [
             {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\zxc29\\source\\repos\\Chimo2\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Chimo.WebAPI.Site\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\zxc29\\source\\repos\\Chimo2\\Chimo_TP\\MVC\u65BD\u5DE5\u5730\\Solution0918\\Chimo.WebAPI.Site\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Chimo.WebAPI.Site\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AQIAADkAAAAAAAAAAAAxwE0AAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-09-23T02:08:55.236Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
