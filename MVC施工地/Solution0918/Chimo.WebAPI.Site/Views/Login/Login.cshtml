@@ -1,63 +1,161 @@
-﻿@model Chimo.WebAPI.Site.Models.ViewModels.LoginVm
-
+﻿
 @{
     ViewBag.Title = "Login";
 }
 <link href="~/Content/myLogin.css" rel="stylesheet" />
 
 <div id="app">
-
     <div class="row">
         <div class="loginPic col-sm-12 col-md-8">
             <img src="../images/loginPic.jpg" alt="loginPic" class="img-fluid" />
         </div>
         <div class="loginForm col-md-4 p-5">
-            <div class="d-flex justify-content-between ">
+            <div class="d-flex justify-content-between">
                 <h2 class="mb-3">登入</h2>
-                <a href="/Login/Register"><small class="btn btn-sm btn-link fw-bolder pt-2"  style="text-decoration:none; color:#5b468b">快速註冊</small></a>
+                <a href="/Login/Register">
+                    <small class="btn btn-sm btn-link fw-bolder pt-2" style="text-decoration:none; color:#5b468b">快速註冊</small>
+                </a>
             </div>
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
             <input type="text"
-                   name="userEmail"
-                   id="userEmail"
+                   v-model="email"
                    placeholder="電子信箱"
                    class="form-control mb-3"
                    style="min-width: 200px" />
-            @Html.ValidationMessageFor(model => model.Account, "", new { @class = "text-danger" })
-
             <input type="password"
-                   name="userPassword"
-                   id="userPassword"
+                   v-model="password"
                    placeholder="密碼"
                    class="form-control mb-3"
                    style="min-width: 200px; color: #5b468b" />
-            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
-
 
             <button style="height: 65px"
+                    v-on:click="login"
                     class="loginBtn btn align-center col-12 mb-1 p-3">
                 登入
             </button>
             <a href="ForgotPassword" class="btn col-12 mb-3 p-3">忘記密碼</a>
 
+            <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
         </div>
     </div>
 </div>
 
-
-@section Scripts {
+@section scripts {
     <script src="~/Scripts/vue.global.js"></script>
-    <script src="~/Scripts/myheader.js"></script>
+    <script src="~/Scripts/myheaderx`x.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+
     <script>
         const { createApp, ref } = Vue;
-        const config = {
+
+        const app = createApp({
             setup() {
-                return {};
+                const email = ref('');
+                const password = ref('');
+                const errorMessage = ref('');
+
+                // 儲存 JWT 到 Cookie
+                const saveTokenToCookie = (token) => {
+                    document.cookie = `jwtToken=${token}; path=/; secure; samesite=strict`;
+                };
+
+                // 從 Cookie 中取得 JWT
+                const getTokenFromCookie = () => {
+                    const name = "jwtToken=";
+                    const decodedCookie = decodeURIComponent(document.cookie);
+                    const cookies = decodedCookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        let cookie = cookies[i].trim();
+                        if (cookie.indexOf(name) === 0) {
+                            return cookie.substring(name.length, cookie.length);
+                        }
+                    }
+                    return null;
+                };
+
+                // 測試 JWT 認證 API 是否正常
+                const testJwtAuth = () => {
+                    const token = getTokenFromCookie();  // 從 Cookie 取得 token
+
+                    if (!token) {
+                        console.log("Token 不存在");
+                        return;
+                    }
+
+                    fetch('/api/test', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                return response.text();
+                            } else {
+                                console.log("JWT 認證失敗，狀態碼:", response.status);
+                            }
+                        })
+                        .then(message => {
+                            if (message) {
+                                console.log("JWT 認證成功，訊息:", message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("呼叫 API 失敗:", error);
+                        });
+                };
+
+                // 登入邏輯
+                const login = async () => {
+                    try {
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                Account: email.value,
+                                Password: password.value
+                            })
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log(data);
+                            const token = data.token;
+
+                            if (token) {
+                                saveTokenToCookie(token);  // 儲存 token 到 cookie
+                                testJwtAuth();  // 測試 JWT Token 是否可用
+                                // 可選：導向到其他頁面，例如主頁
+                                window.location.href = "/Home/Index"; // 導向主頁
+                            } else {
+                                errorMessage.value = "未收到有效的 Token";
+                            }
+                        } else if (response.status === 401) {
+                            errorMessage.value = "帳號或密碼錯誤";
+                        } else {
+                            const errorText = await response.text();
+                            errorMessage.value = `發生未知錯誤: ${errorText}`;
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        errorMessage.value = "無法連接伺服器";
+                    }
+                };
+
+                return {
+                    email,
+                    password,
+                    login,
+                    errorMessage
+                };
             },
-        };
-        const app = createApp(config);
+        });
+
         app.mount("#app");
     </script>
+
     @Scripts.Render("~/bundles/jqueryval")
 }
