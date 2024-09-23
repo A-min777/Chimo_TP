@@ -1,4 +1,4 @@
-﻿
+﻿    
 @{
     ViewBag.Title = "RegisterDetail";
 }
@@ -39,10 +39,11 @@
                    name="phone"
                    id="phone"
                    placeholder="連絡電話"
-                   class="form-control mb-3" />
+                   class="form-control mb-3"
+                   v-model="phone" />
 
-            <select class="form-select mb-3" aria-label="Default select example">
-                <option selected>選擇性別</option>
+            <select class="form-select mb-3" v-model="gender" aria-label="Default select example">
+                <option value="0">選擇性別</option>
                 <option value="1">男</option>
                 <option value="2">女</option>
                 <option value="3">其他</option>
@@ -50,28 +51,75 @@
 
             <textarea class="form-control mb-3"
                       id="exampleFormControlTextarea1"
+                      v-model="introduction"
                       rows="3"
                       placeholder="請輸入簡介"></textarea>
 
-            <a href="Login">
-                <button style="height: 65px"
-                        class="loginBtn btn align-center col-12 mb-3 p-3">
-                    完成
-                </button>
-            </a>
+            <button style="height: 65px"
+                    class="loginBtn btn align-center col-12 mb-3 p-3" onclick="submit()">
+                完成
+            </button>
+
         </div>
     </div>
 </div>
 @section scripts{
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
     <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
     <script>
         const { createApp, ref } = Vue;
-        const config = {
+
+        const app = createApp({
             setup() {
-                return {};
+                const phone = ref('');
+                const gender = ref('');
+                const introduction = ref('');
+
+                // 獲取 URL 查詢參數中的 userId
+                const params = new URLSearchParams(window.location.search);
+                const userId = params.get('userId');
+
+                // 提交表單
+                window.submit = async () => {
+                    if (!phone.value && !gender.value && !introduction.value) {
+                        // 如果所有輸入為空，重定向至首頁
+                        window.location.href = '/Home/Index';
+                    } else {
+                        // 這裡可以呼叫 API 進行更新
+                        try {
+                            const response = await fetch(`/api/updateMember/${userId}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    phone: phone.value,
+                                    gender: gender.value,
+                                    introduction: introduction.value
+                                })
+                            });
+
+                            if (response.ok) {
+                                // 更新成功後可以重定向至其他頁面
+                                window.location.href = '/Home/Index';
+                            } else {
+                                console.error("更新失敗:", await response.text());
+                            }
+                        } catch (error) {
+                            console.error("無法連接伺服器:", error);
+                        }
+                    }
+                };
+
+                return {
+                    phone,
+                    gender,
+                    introduction
+                };
             },
-        };
-        const app = createApp(config);
+        });
+
         app.mount("#app");
     </script>
 }
