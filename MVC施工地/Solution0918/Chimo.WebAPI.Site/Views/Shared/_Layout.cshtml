@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title - 我的 ASP.NET 應用程式</title>
     <link rel="stylesheet" href="~/Content/myheader.css" />
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
     <link rel="icon" href="~/images/LOGO.png" type="image/png" />
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
@@ -47,9 +47,21 @@
                         </a>
                     </div>
                 </div>
+                @using Chimo.WebAPI.Site.Models
+
                 @{
-                    bool isLoggedIn = false;
+                    bool isLoggedIn = AuthHelper.IsLoggedIn(Request);  // 檢查是否已登入
                     ViewData["IsLoggedIn"] = isLoggedIn;
+                    // 從 Cookie 中獲取 JWT
+                    var token = AuthHelper.GetTokenFromCookie();
+                    Chimo.WebAPI.Site.Models.EFModels.Member member = null;
+
+                    // 如果 token 存在，則解碼並獲取會員資料   
+                    if (isLoggedIn)
+                    {
+                        member = JwtUtility.DecodeToken(token);
+                    }
+
 
                     if (!isLoggedIn)
                     {
@@ -60,13 +72,14 @@
                         </div>
                     }
                     else
+
                     {<div class="dropdown">
                             <button class="dropdown-toggle border-0 btn"
                                     type="button"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false"
                                     aria-label="Toggle navigation">
-                                <img src="../images/profilePic.png" alt="avatar" class="img-fluid avatar">
+                                <img src="~/images/@member.ProfileImage" alt="avatar" class="img-fluid avatar">
                             </button>
                             <ul class="dropdown-menu mt-2 me-4">
                                 <a href="member.html">
@@ -79,7 +92,7 @@
                                 <li class="dropdown-item p-3 text-center">我的收藏</li></a>
                                 <a href="myOrders.html">
                                 <li class="dropdown-item p-3 text-center">購買紀錄</li></a>
-                                <li class="dropdown-item p-3 text-center" v-on:click="isLoggedIn=false">登出</li>
+                                <li class="dropdown-item p-3 text-center" onclick="logout()">登出</li>
                             </ul>
                         </div> }
                 }
@@ -115,6 +128,14 @@
                 });
             });
         });
+    </script>
+
+    <script>
+        function logout() {
+            // 登出邏輯，可以透過伺服器進行登出，並清除Cookie
+            document.cookie = "jwtToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            window.location.href = "/Login/Login";
+        }
     </script>
 
 </body>

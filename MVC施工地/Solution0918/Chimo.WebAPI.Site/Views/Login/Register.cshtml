@@ -1,11 +1,9 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Register";
 }
 
 <link href="~/Content/myLogin.css" rel="stylesheet" />
 <style>
-
     .register img {
         min-height: 15vh;
         max-height: 15vw;
@@ -13,7 +11,7 @@
 </style>
 
 <div id="app">
-    <div class="sticky-top"><my-header></my-header></div>
+    <div class="sticky-top"></div>
     <div class="row">
         <div class="loginPic col-sm-12 col-md-8">
             <img src="../images/loginPic.jpg" alt="loginPic" class="img-fluid" />
@@ -24,46 +22,105 @@
 
             <input type="text"
                    name="userName"
-                   id="userEmail"
+                   v-model="userName"
+                   id="userName"
                    placeholder="使用者名稱"
                    class="form-control mb-3" />
-            <input type="text"
+            <input type="email"
                    name="userEmail"
+                   v-model="userEmail"
                    id="userEmail"
                    placeholder="電子信箱"
                    class="form-control mb-3" />
             <input type="password"
                    name="userPassword"
+                   v-model="userPassword"
                    id="userPassword"
                    placeholder="密碼"
                    class="form-control mb-3"
                    style="color: #5b468b" />
             <input type="password"
                    name="confirmPassword"
+                   v-model="confirmPassword"
                    id="confirmPassword"
                    placeholder="確認密碼"
                    class="form-control mb-3 col-12"
                    style="color: #5b468b" />
 
-            <a href="RegisterDetail">
-                <button style="height: 65px"
-                        class="loginBtn btn align-center col-12 mb-3 p-3">
-                    註冊
-                </button>
-            </a>
+            <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+
+            <button style="height: 65px"
+                    class="loginBtn btn align-center col-12 mb-3 p-3"
+                    v-on:click="register">
+                註冊
+            </button>
         </div>
     </div>
 </div>
+
 @section scripts{
     <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
     <script>
         const { createApp, ref } = Vue;
-        const config = {
+
+        const app = createApp({
             setup() {
-                return {};
+                const userName = ref('');
+                const userEmail = ref('');
+                const userPassword = ref('');
+                const confirmPassword = ref('');
+                const errorMessage = ref('');
+
+                // 註冊邏輯
+                const register = async () => {
+                    if (userPassword.value !== confirmPassword.value) {
+                        errorMessage.value = "密碼與確認密碼不一致";
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/api/register', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                Name: userName.value,
+                                Email: userEmail.value,
+                                Password: userPassword.value
+                            })
+                        });
+
+                        if (response.ok) {
+                            const responseData = await response.json(); // 取得完整的響應物件
+                            const userId = responseData.userId; // 獲取 userId
+
+                            // 使用 Redirect 導向 RegisterDetail 動作
+                            window.location.href = `/Login/RegisterDetail?userId=${userId}`;
+                        } else {
+                            const errorText = await response.text();
+                            errorMessage.value = `註冊失敗: ${errorText}`;
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        errorMessage.value = "無法連接伺服器";
+                    }
+                };
+
+
+                return {
+                    userName,
+                    userEmail,
+                    userPassword,
+                    confirmPassword,
+                    register,
+                    errorMessage
+                };
             },
-        };
-        const app = createApp(config);
+        });
+
         app.mount("#app");
     </script>
 }
