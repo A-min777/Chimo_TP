@@ -68,15 +68,18 @@
     <!-- 頁首課程預覽 bg-->
     <div class="product mb-4 pt-3">
         <div class="container">
-            <nav aria-label="breadcrumb " class="root pt-3">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/Home/Index">首頁</a></li>
-                    <li class="breadcrumb-item"><a href="#">分類</a></li>
-                    <li class="breadcrumb-item active text-light" aria-current="page">
-                        課程名稱
-                    </li>
-                </ol>
-            </nav>
+            <div class="d-flex justify-content-between align-items-center">
+                <nav aria-label="breadcrumb " class="root pt-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/Home/Index">首頁</a></li>
+                        <li class="breadcrumb-item"><a href="#">分類</a></li>
+                        <li class="breadcrumb-item active text-light" aria-current="page">
+                            課程名稱
+                        </li>
+                    </ol>
+                </nav>
+                <img :src="Bookmark.currentImage()" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
+            </div>
             <div class="row pb-5 justify-content-between">
                 <div class="col-xs-12 col-md-6 col-lg-7 p-3">
                     <video controls
@@ -86,7 +89,7 @@
                            class="container rounded-5"></video>
                 </div>
                 <!-- 章節選擇 bg -->
-                <div class="content col-xs-12 col-md-6 col-lg-4 border border-2 rounded-3">
+                <div class="content col-xs-12 col-md-6 col-lg-4 border rounded-3">
                     <div v-for="content in courseContents"
                          :key="content.id"
                          class="accordion rounded-3 mt-3 mb-3"
@@ -188,6 +191,31 @@
         const { createApp, ref } = Vue;
         const config = {
             setup() {
+                const Bookmark = ref({
+                    isBooked: false,
+                    defaultImg: "../images/book_w.png",
+                    bookedImg: "../images/booked_w.png",
+                    currentImage() {
+                        return this.isBooked ? this.bookedImg : this.defaultImg;
+                    },
+                });
+
+                function toggleBookmark() {
+                    Bookmark.value.isBooked = !Bookmark.value.isBooked;
+                }
+
+
+                //這裡呼叫查看收藏的api
+                /*const getBookedStatus = async () => {
+                    try {
+                        // 假設這是你的 API 端點
+                        const response = await fetch('/api/checkBookmark');
+                        const data = await response.json();
+                        Bookmark.value.isBooked = data.isBookmarked; // 根據 API 回應設定
+                    } catch (error) {
+                        console.error('獲取收藏狀態時出錯:', error);
+                    }
+                };*/
                 const courseContents = ref([
                     {
                         id: 1,
@@ -233,7 +261,7 @@
                 });
 
 
-                return { courseContents, courses, recommendProducts };
+                return { courseContents, courses, recommendProducts, Bookmark, toggleBookmark };
             },
         };
 

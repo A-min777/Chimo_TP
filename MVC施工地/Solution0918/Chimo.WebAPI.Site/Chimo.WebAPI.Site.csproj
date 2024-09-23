@@ -228,6 +228,7 @@
     <Content Include="images\banner03.jpg" />
     <Content Include="images\bell.png" />
     <Content Include="images\book.png" />
+    <Content Include="images\booked_w.png" />
     <Content Include="images\book_w.png" />
     <Content Include="images\cart.png" />
     <Content Include="images\color palette.png" />
@@ -237,6 +238,10 @@
     <Content Include="images\logo2_w.png" />
     <Content Include="images\point.png" />
     <Content Include="images\profilePic.PNG" />
+    <Content Include="images\profilePic2.PNG" />
+    <Content Include="images\profilePic3.PNG" />
+    <Content Include="images\profilePic4.PNG" />
+    <Content Include="images\profilePic5.PNG" />
     <Content Include="images\thumbnail.jpg" />
     <Content Include="images\video.jpg" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -297,6 +302,9 @@
     <Content Include="Views\Products\ProductInfo.cshtml" />
     <Content Include="Views\Products\Course.cshtml" />
     <Content Include="Views\Members\EditInfo.cshtml" />
+    <Content Include="Views\Members\MyCourses.cshtml" />
+    <Content Include="Views\Members\MyCollections.cshtml" />
+    <Content Include="Views\Members\MyOrders.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

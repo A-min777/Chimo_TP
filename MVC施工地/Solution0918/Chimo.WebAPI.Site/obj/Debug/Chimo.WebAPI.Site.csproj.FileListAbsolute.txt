@@ -303,3 +303,5 @@ C:\Users\User\Desktop\設計專案\全端期末\Chimo_TP\MVC施工地\Solution09
 C:\Users\User\Desktop\設計專案\全端期末\Chimo_TP\MVC施工地\Solution0918\Chimo.WebAPI.Site\obj\Debug\Chimo.We.B38FB9A3.Up2Date
 C:\Users\User\Desktop\設計專案\全端期末\Chimo_TP\MVC施工地\Solution0918\Chimo.WebAPI.Site\obj\Debug\Chimo.WebAPI.Site.dll
 C:\Users\User\Desktop\設計專案\全端期末\Chimo_TP\MVC施工地\Solution0918\Chimo.WebAPI.Site\obj\Debug\Chimo.WebAPI.Site.pdb
+C:\Users\user\Desktop\work_temp\Chimo-B47\Chimo_TP\MVC施工地\Solution0918\Chimo.WebAPI.Site\bin\AutoMapper.dll
+C:\Users\user\Desktop\work_temp\Chimo-B47\Chimo_TP\MVC施工地\Solution0918\Chimo.WebAPI.Site\bin\AutoMapper.xml
