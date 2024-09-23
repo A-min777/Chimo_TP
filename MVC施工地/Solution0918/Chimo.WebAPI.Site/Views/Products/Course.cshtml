@@ -1,0 +1,243 @@
+﻿
+@{
+    ViewBag.Title = "Course";
+}
+
+<style>
+    a {
+        text-decoration: none;
+    }
+
+    .product {
+        background-color: #2b1b41;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        float: left;
+        padding-right: var(--bs-breadcrumb-item-padding-x);
+        color: #fff;
+        content: var(--bs-breadcrumb-divider, ">");
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .accordion {
+        background-color: #2b1b41;
+        color: #fff;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #5b468b;
+        color: #fff;
+        border-radius: 10px;
+    }
+
+    .accordion-button {
+        background-color: #5b468b;
+        color: #fff;
+        border-radius: 10px;
+    }
+
+    .content {
+        max-height: 500px;
+        overflow: hidden;
+    }
+
+        .content:hover {
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #5b468b #2b1b41;
+        }
+
+
+    .cartIcon {
+        object-fit: contain;
+        max-height: 20px;
+    }
+
+
+    .avatarA {
+        border-radius: 50%;
+    }
+</style>
+<div id="app">
+
+    <!-- 頁首課程預覽 bg-->
+    <div class="product mb-4 pt-3">
+        <div class="container">
+            <nav aria-label="breadcrumb " class="root pt-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/Home/Index">首頁</a></li>
+                    <li class="breadcrumb-item"><a href="#">分類</a></li>
+                    <li class="breadcrumb-item active text-light" aria-current="page">
+                        課程名稱
+                    </li>
+                </ol>
+            </nav>
+            <div class="row pb-5 justify-content-between">
+                <div class="col-xs-12 col-md-6 col-lg-7 p-3">
+                    <video controls
+                           :src="courses.video"
+                           muted
+                           type="video/mp4"
+                           class="container rounded-5"></video>
+                </div>
+                <!-- 章節選擇 bg -->
+                <div class="content col-xs-12 col-md-6 col-lg-4 border border-2 rounded-3">
+                    <div v-for="content in courseContents"
+                         :key="content.id"
+                         class="accordion rounded-3 mt-3 mb-3"
+                         :id="'accordionExsemple'+'content.id'">
+                        <div class="according-item">
+                            <div class="accordion-header">
+                                <button class="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        :data-bs-target="'#flush-collapse-' + content.id"
+                                        aria-expanded="false"
+                                        :aria-controls="'flush-collapse-' + content.id">
+                                    {{content.catalogName}}
+                                </button>
+                                <div :id="'flush-collapse-' + content.id"
+                                     class="accordion-collapse collapse"
+                                     data-bs-parent="#accordionFlushExample">
+                                    <div v-for="item in content.content"
+                                         class="accordion-body fw-bolder">
+                                        {{item.name}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 章節選擇 ed -->
+            </div>
+        </div>
+    </div>
+    <!-- 頁首課程預覽 end -->
+
+    <div class="container">
+        <div class="row justify-content-between">
+            <!-- 左側資訊 bg-->
+            <section class="col-md-7 col-lg-8 pe-5">
+                <hr />
+                <h2 class="fw-bolder">課程介紹</h2>
+                <p>{{courses.intro}}</p>
+                <hr />
+                <h2 class="fw-bolder">教師資訊</h2>
+                <div class="teacher row mb-3 mt-2">
+                    <img :src="courses.teackerAvatar"
+                         alt="taPic"
+                         class="avatarA img.fluid col-md-5 col-lg-3 col-sm-3" />
+                    <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
+                         style="height: 50%; align-self: center">
+                        <h6>{{courses.teacher}}</h6>
+                        <hr />
+                        <p>{{courses.teackerInfo}}</p>
+                    </div>
+                </div>
+                <hr />
+                <h2 class="fw-bolder">課程留言</h2>
+                <textarea name="commend"
+                          id="commend"
+                          class="form-control"
+                          rows="5"></textarea>
+                <div class="text-end">
+                    <button class="commendBtn btn btn-warning btn-lg mt-3 mb-3 fw-bolder">
+                        發送
+                    </button>
+                </div>
+            </section>
+            <!-- 左側資訊 end-->
+            <!-- 右側購買連結 bg -->
+            <div class="col-md-5 col-lg-4">
+                <div class="ps-3 pe-3 border rounded shadow">
+                    <p class="mt-3">{{recommendProducts.teacher}}的其他課程</p>
+                    <a href="ProductInfo">
+                        <img :src="recommendProducts.thumbnail"
+                             alt="thumbnail"
+                             class="img-fluid mb-4 rounded" />
+                    </a>
+                    <h2>{{recommendProducts.name}}</h2>
+                    <h2>NT${{recommendProducts.price}}</h2>
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
+                            立即購買
+                        </button>
+                        <button class="rounded btn border mb-3">
+                            <img src="../images/cart.png"
+                                 alt="cart"
+                                 class="cartIcon img-fluid" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- 右側購買連結 end -->
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
+    <script>
+        const { createApp, ref } = Vue;
+        const config = {
+            setup() {
+                const courseContents = ref([
+                    {
+                        id: 1,
+                        catalogName: "目錄一：目錄標題。",
+                        content: [
+                            { id: 1, name: "第一章節:標題" },
+                            { id: 2, name: "第二章節:標題" },
+                        ],
+                    },
+                    {
+                        id: 2,
+                        catalogName: "目錄二：目錄標題。",
+                        content: [
+                            { id: 1, name: "第一章節:標題" },
+                            { id: 2, name: "第二章節:標題" },
+                            { id: 3, name: "第三章節:標題" },
+                        ],
+                    },
+                ]);
+                const courses = ref({
+                    id:1,
+                    video: "../video/testVideo2.mp4",
+                    name: "課程名稱",
+                    totalContent: 10,
+                    buyer: 100,
+                    price: "1000",
+                    teacher: "Mr.C",
+                    teackerAvatar: "../images/profilePic.PNG",
+                    teackerInfo: "這裡是教師資訊頁裡的個人簡介",
+                    intro: `有點遠她們台中避免客人搭配操作系統，
+                      是從嚴格很有雙手打開貼圖，歐洲圖書館母親遇到
+                      郵遞區號主動行情生日也要笑道女人，精選開放其實
+                      書庫夏天緊張本地認證，最好的一名此次被人光臨倒是陽光，
+                      工藝章節，歡迎我去本地下載常見規劃總體國內外構成檢索，
+                      不喜歡保健讓她適用於。`,
+                });
+                const recommendProducts = ref({
+                    id:1,
+                    thumbnail: "../images/thumbnail.jpg",
+                    name: "課程名稱",
+                    price: "1000",
+                    teacher: "Mr.C",                    
+                });
+
+
+                return { courseContents, courses, recommendProducts };
+            },
+        };
+
+        const app = createApp(config);
+        app.mount("#app");
+    </script>
+}

@@ -7,11 +7,11 @@ a{
   color: #000;
 }
 .ad-banner {
-  align-content: center;
-  height: 60px;
-  letter-spacing: 0.2em;
-  background-color: #2b1b41;
-  color: white;
+    align-content: center;
+    height: 60px;
+    letter-spacing: 0.2em;
+    background: linear-gradient(to bottom, #2b1b41 50%, #5b468b );
+    color: white;
 }
 .navbarA {
   background-color: #fff;
@@ -58,6 +58,11 @@ a{
 
 .headerLogo:hover {
   animation: scaleUpDown 0.6s ease;
+}
+
+
+.avatarA {
+    border-radius: 50%;
 }
 
 .avatar:hover {
