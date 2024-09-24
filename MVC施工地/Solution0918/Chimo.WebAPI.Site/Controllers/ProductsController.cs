@@ -17,7 +17,7 @@ namespace Chimo.WebAPI.Site.Controllers
             // 檢查用戶是否已購買該商品
             // todo bool hasPurchased = _purchaseService.HasUserPurchasedProduct(userId, productId);
 
-            bool hasPurchased = false;
+            bool hasPurchased = true;
 
             if (hasPurchased)
             {

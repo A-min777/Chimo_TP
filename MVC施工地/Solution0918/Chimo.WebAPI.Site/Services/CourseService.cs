@@ -70,7 +70,7 @@ namespace Chimo.WebAPI.Site.Services
 
             CourseDto Course = _repo.GetCourseDetailById(id);
 
-            Course.Thumbnail = prefix + Course.Thumbnail; // 重組圖片檔名為絕對路徑
+            Course.FormatThumbnail(prefix); // 重組圖片檔名為絕對路徑
 
             List<CourseDto> OtherCourses = _repo.GetOtherCoursesById(id)
                                        .FormatThumbnail(prefix);
