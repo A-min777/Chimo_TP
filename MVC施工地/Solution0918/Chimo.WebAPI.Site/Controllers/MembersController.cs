@@ -13,5 +13,20 @@ namespace Chimo.WebAPI.Site.Controllers
         {
             return View();
         }
+
+        public ActionResult MyCourses()
+        {
+            return View();
+        }
+
+        public ActionResult MyCollections()
+        {
+            return View();
+        }
+
+        public ActionResult MyOrders()
+        {
+            return View();
+        }
     }
 }

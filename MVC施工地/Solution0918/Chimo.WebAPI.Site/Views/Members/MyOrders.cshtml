@@ -1,0 +1,207 @@
+﻿
+@{
+    ViewBag.Title = "MyOrders";
+}
+
+<style>
+    body {
+        background-color: #eee;
+    }
+
+    .list-group {
+        position: sticky;
+        top: 162px;
+    }
+
+    .list-group-item img {
+        max-height: 10vw;
+    }
+
+    .list-group-item {
+        min-height: 60px;
+        font-size: 1.2rem;
+        font-weight: bolder;
+    }
+
+        .list-group-item.active {
+            background-color: #5b468b;
+        }
+
+    .chargeTag {
+        color: #fff;
+    }
+
+    .content {
+        background-color: #fff;
+    }
+
+    .status {
+        color: #5b468b;
+    }
+
+    .thumbnail {
+        transition: transform 0.3s ease;
+        will-change: transform;
+    }
+
+        .thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+    .avatarA {
+        border-radius: 50%;
+    }
+</style>
+
+<div id="app">
+    <div class="sticky-top">
+        <my-header></my-header>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-4 mt-3 mb-3">
+                <div class="text-center list-group">
+                    <div class="list-group-item">
+                        <img :src="member.avatar"
+                             alt="profile"
+                             class="avatarA img-fluid m-3" />
+                        <h4 class="fw-bolder">{{member.name}}</h4>
+                        <p>
+                            會員點數：<span class="specialCount">{{member.point}}</span>
+                            pt
+                            <button class="chargeTag btn btn-warning p-1 ms-2">
+                                儲值
+                            </button>
+                        </p>
+                    </div>
+
+                    <a href="/Members/EditInfo"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        會員資料
+                    </a>
+                    <a href="/Members/MyCourses"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        我的課程
+                    </a>
+                    <a href="/Members/MyCollections"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        我的收藏
+                    </a>
+                    <a href="#"
+                       class="list-group-item list-group-item-action active align-content-center border-0 rounded"
+                       aria-current="true">
+                        購買紀錄
+                    </a>
+                </div>
+            </div>
+            <div class="content col-8 mt-3 mb-3">
+                <section class="m-4">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="fw-bolder">購買紀錄</h4>
+                    </div>
+                    <hr />
+                    <div v-for="order in orders" :key="order.id">
+                        <div class="d-flex justify-content-between">
+                            <h6>{{order.buyDate}}</h6>
+                            <h6 class="status fw-bolder">[ {{order.status}} ]</h6>
+                        </div>
+                        <div v-for="items in order.orderItems"
+                             :key="items.id"
+                             class="row align-items-center">
+                            <div class="col-md-5 col-sm-12 mt-1">
+                                <a href="course.html">
+                                    <img :src="items.thumbnail"
+                                         alt="thumbnail"
+                                         class="thumbnail img-fluid rounded mt-2" />
+                                </a>
+                            </div>
+                            <div class="col-md-6 col-sm-12 mt-2">
+                                <h5 class="fw-bolder">{{items.courseName}}</h5>
+                                <small>教師 | {{items.teacher}}</small>
+                                <h6 class="mt-2 fw-bolder">NT${{items.Price}}</h6>
+                            </div>
+                        </div>
+
+                        <h5 class="text-end mt-3 fw-bolder">
+                            總金額 NT${{order.totalPrice}}
+                        </h5>
+                        <hr />
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@section scripts{
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
+    <script>
+            const { createApp, ref } = Vue;
+        const config = {
+            setup() {
+                const member = ref({
+                    id: 1,
+                    name: "會員A",
+                    avatar: "../images/profilePic5.PNG",
+                    point: 100,
+                    updateTime: "2024/09/11",
+                    gender: 3,
+                    phone: "01-23456789",
+                    email: "abc@gmail.com",
+                    intro: "修改個人簡介",
+                });
+                const orders = ref([
+                    {
+                        id: 1,
+                        buyDate: "2024/09/11",
+                        status: "已付款",
+                        totalPrice: 2000,
+                        orderItems: [
+                            {
+                                id: 1,
+                                thumbnail: "../images/thumbnail.jpg",
+                                courseName: "課程名稱",
+                                teacher: "Mr.C",
+                                Price: 1000,
+                            },
+                            {
+                                id: 2,
+                                thumbnail: "../images/thumbnail.jpg",
+                                courseName: "課程名稱",
+                                teacher: "Mr.C",
+                                Price: 1000,
+                            },
+                        ],
+                    },
+                    {
+                        id: 2,
+                        buyDate: "2024/09/11",
+                        status: "已付款",
+                        totalPrice: 1000,
+                        orderItems: [
+                            {
+                                id: 1,
+                                thumbnail: "../images/thumbnail.jpg",
+                                courseName: "課程名稱",
+                                teacher: "Mr.C",
+                                Price: 1000,
+                            },
+                        ],
+                    },
+                ]);
+                return { member, orders };
+            },
+        };
+            const app = createApp(config);
+            app.mount("#app");
+    </script>
+}
+
+
