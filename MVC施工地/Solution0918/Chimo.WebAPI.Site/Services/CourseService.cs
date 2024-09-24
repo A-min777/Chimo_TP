@@ -7,6 +7,7 @@ using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Web;
 
 namespace Chimo.WebAPI.Site.Services
@@ -37,5 +38,31 @@ namespace Chimo.WebAPI.Site.Services
 
 			return recommendedCourses;
 		}
-	}
+
+        internal ProductInfoVm GetCourseInfoById(int id)
+        {
+			string prefix = "~/images/";
+
+            CourseContentDto CourseContent = _repo.GetCourseContentById(id);
+
+			CourseDto Course = _repo.GetCourseDetailById(id);
+
+            Course.Thumbnail = prefix + Course.Thumbnail; // 重組圖片檔名為絕對路徑
+
+			int BuyerCount = _repo.GetBuyerCountById(id);
+
+			int ChapterCount = _repo.GetChapterCountById(id);
+
+			string FirstVideo = _repo.GetFirstVideoById(id);
+
+            return new ProductInfoVm
+            {
+                CourseContent = CourseContent,
+                CourseDetail = Course,
+                BuyerCount = BuyerCount,
+				ChapterCount = ChapterCount,
+				FirstVideo = FirstVideo
+            };
+        }
+    }
 }

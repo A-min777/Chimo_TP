@@ -30,12 +30,13 @@ namespace Chimo.WebAPI.Site.Controllers
 				return RedirectToAction("ProductInfo");
 			}
 		}
-		public ActionResult ProductInfo()
-        {
+		public ActionResult ProductInfo(int id)
+		{
+            ViewBag.ProductId = id;
             return View();
-        }
+		}
 
-        public ActionResult Course()
+		public ActionResult Course()
         {
             return View();
         }

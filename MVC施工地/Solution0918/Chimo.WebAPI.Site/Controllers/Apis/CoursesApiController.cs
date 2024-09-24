@@ -44,5 +44,17 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
 
 			return Ok();
 		}
-	}
+
+		[HttpGet]
+		[Route("api/products/productinfo/{id}")]
+        public IHttpActionResult GetCourseInfo(int id)
+        {
+            var productInfo = _service.GetCourseInfoById(id);
+            if (productInfo == null)
+            {
+                return NotFound();
+            }
+			return Ok(productInfo);
+        }
+    }
 }
