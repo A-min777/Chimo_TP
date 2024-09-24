@@ -122,6 +122,29 @@ namespace Chimo.WebAPI.Site.Repositories
         }
 
         /// <summary>
+        /// 取得某個課程的老師開的其他課程
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public List<CourseDto> GetOtherCoursesById(int id)
+        {
+            var OtherCoursesQuery = _db.Courses
+                .AsNoTracking()
+                .Include(c => c.Teacher)
+                .Where(c => c.TeacherId == _db.Courses
+                    .Where(c2 => c2.Id == id)
+                    .Select(c2 => c2.TeacherId)
+                    .FirstOrDefault() && c.Id != id && c.Status == 1)
+                .ToList();
+
+            var OtherCourses = WebApiApplication._mapper
+                .Map<List<CourseDto>>(OtherCoursesQuery);
+
+            return OtherCourses;
+        }
+
+        /// <summary>
         /// 取得推薦課程
         /// </summary>
         /// <returns></returns>

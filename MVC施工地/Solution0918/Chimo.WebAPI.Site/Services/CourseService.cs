@@ -3,6 +3,7 @@ using Chimo.WebAPI.Site.Interfaces;
 using Chimo.WebAPI.Site.Models.Dtos;
 using Chimo.WebAPI.Site.Models.ViewModels;
 using Chimo.WebAPI.Site.Repositories;
+using Chimo.WebAPI.Site.Tools;
 using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
@@ -25,12 +26,8 @@ namespace Chimo.WebAPI.Site.Services
 		{
 			string prefix = "../images/"; // 存放課程圖片檔案的相對位置資料夾
 
-			var courses = _repo.GetRecommendedCourses().Select(c =>
-			{
-				c.Thumbnail =  prefix + c.Thumbnail; // 將圖片檔名組成相對路徑
-				return c;
-			})
-			.ToList();
+			var courses = _repo.GetRecommendedCourses() // 將List裡的圖片檔名組成相對路徑
+                    .FormatThumbnail(prefix);
 
 			// CourseDTO 轉 RecommendedCourseViewModel
 			var recommendedCourses = WebApiApplication._mapper
@@ -47,7 +44,7 @@ namespace Chimo.WebAPI.Site.Services
 
 			CourseDto Course = _repo.GetCourseDetailById(id);
 
-            Course.Thumbnail = prefix + Course.Thumbnail; // 重組圖片檔名為絕對路徑
+            Course.FormatThumbnail(prefix); // 重組圖片檔名為絕對路徑
 
 			int BuyerCount = _repo.GetBuyerCountById(id);
 
@@ -62,6 +59,27 @@ namespace Chimo.WebAPI.Site.Services
                 BuyerCount = BuyerCount,
 				ChapterCount = ChapterCount,
 				FirstVideo = FirstVideo
+            };
+        }
+
+        internal CourseInfoVm GetMyCourseInfoById(int id)
+        {
+            string prefix = "~/images/";
+
+            CourseContentDto CourseContent = _repo.GetCourseContentById(id);
+
+            CourseDto Course = _repo.GetCourseDetailById(id);
+
+            Course.Thumbnail = prefix + Course.Thumbnail; // 重組圖片檔名為絕對路徑
+
+            List<CourseDto> OtherCourses = _repo.GetOtherCoursesById(id)
+                                       .FormatThumbnail(prefix);
+
+            return new CourseInfoVm
+            {
+                CourseContent = CourseContent,
+                CourseDetail = Course,
+                OtherCourses= OtherCourses
             };
         }
     }

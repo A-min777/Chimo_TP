@@ -246,6 +246,7 @@
     <Compile Include="Models\EFModels\PointHistory.cs" />
     <Compile Include="Models\EFModels\Teacher.cs" />
     <Compile Include="Models\EFModels\User.cs" />
+    <Compile Include="Models\ViewModels\CourseInfoVm.cs" />
     <Compile Include="Models\ViewModels\LoginVm.cs" />
     <Compile Include="Models\ViewModels\ProductInfoVm.cs" />
     <Compile Include="Models\ViewModels\RecommendedCourseVm.cs" />
@@ -254,6 +255,7 @@
     <Compile Include="Repositories\MemberRepository.cs" />
     <Compile Include="Services\CourseService.cs" />
     <Compile Include="Services\MemberService.cs" />
+    <Compile Include="Tools\CourseDto_Ext.cs" />
     <Compile Include="Tools\Mappings.cs" />
     <Compile Include="Utilities\HashUtility.cs" />
     <Compile Include="Utilities\JwtUtility.cs" />
