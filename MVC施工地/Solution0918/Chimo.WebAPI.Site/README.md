@@ -52,4 +52,26 @@ ReadMe For Chimo.WebApi.Site
 				(網址為 https://localhost:44346/Products/ProductInfo/id)
 				 
 				 尚未完成功能: 顯示課程的第一支影片(目前資料庫存的還不是影片檔名)
-							  顯示老師icon (目前是直接寫死路徑)
+							  顯示老師icon (目前是直接寫死路徑
+	
+	
+	------------------------------2024/9/24----------------------------------
+
+
+	[V] 修改Home/Index.html 及ProuctsController的ViewProduct, 點擊課程可以導向 
+		ProductInfo or Course
+	
+	[V] 在CourseApiController 新增 GetMyCourseInfo action,
+		在ViewModels/ 新增 CourseInfoVm
+
+	[V] 在Tools/ 新增 CourseDto_Ext, 在裡面新增兩個CourseDto的擴充方法，
+		將叫出來的圖片檔名組成檔案路徑
+
+	[V] 在 CourseService 新增 GetMyCourseInfoById method
+		在 ICourseRepository 新增 GetOtherCourseById method
+		在 CourseRepository 實做 GetOtherCourseById method
+
+	[V] 修改 Products/Courses.cshtml 及 Products/ProductInfo.cshtml
+		目前前端除了影片外呈現的都是資料庫叫出來的資料，處理Teacher頭像
+		及課程預覽圖若是null, 設成各自指定的default圖片路徑
+		
