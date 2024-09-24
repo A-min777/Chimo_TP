@@ -17,6 +17,16 @@ namespace Chimo.WebAPI.Site.Tools
 
             CreateMap<RecommendedCourseVm, CourseDto>().ReverseMap();
 
+			CreateMap<Teacher, TeacherDto>();
+
+            CreateMap<CourseCategory, CourseCategoryDto>();
+
+            CreateMap<Cours, CourseContentDto>();
+
+            CreateMap<CourseCatalog, CourseCatalogDto>();
+
+            CreateMap<CourseChapter, CourseChapterDto>();
+
             CreateMap<Teacher, TeacherDto>();
 
             CreateMap<LoginDto, Member>()
@@ -31,6 +41,7 @@ namespace Chimo.WebAPI.Site.Tools
                         .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
                         .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore())
                         .ReverseMap();
+
         }
     }
 }
