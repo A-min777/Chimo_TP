@@ -30,5 +30,7 @@ namespace Chimo.WebAPI.Site.Models.Dtos
 		public DateTime UpdatedDate { get; set; }
 
 		public TeacherDto Teacher { get; set; }
+
+		public CourseCategoryDto CourseCategory { get; set; }
 	}
 }
