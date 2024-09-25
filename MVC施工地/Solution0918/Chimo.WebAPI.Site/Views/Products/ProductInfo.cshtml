@@ -25,7 +25,7 @@
     }
 
     .accordion {
-        background-color: #5b468b;
+        background-color: #fffacc;
     }
 
     .accordion-button:not(.collapsed) {
@@ -132,13 +132,14 @@
 
                 <hr />
                 <h2 class="fw-bolder">教師資訊</h2>
-                <div class="teacher row mb-3 mt-2">
-                    <img src="~/images/profilePic.PNG"
+                <div class="teacher row mb-3 mt-2"
+                     v-if="courseDetail && courseDetail.teacher">
+                    <img :src="formatThumbnailUrl(courseDetail.teacher.ProfileImage)"
                          alt="taPic"
                          class="avatarA col-md-5 col-lg-3 col-sm-3 " />
                     <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
                          style="height: 50%; align-self: center"
-                         v-if="courseDetail && courseDetail.teacher">
+                         >
                         <h6>{{courseDetail.teacher.name}}</h6>
                         <hr />
                         <p>{{courseDetail.teacher.intro}}</p>
@@ -149,7 +150,7 @@
             <!-- 右側購買連結 bg -->
             <div class="col-md-5 col-lg-4">
                 <div class="ps-3 pe-3 border rounded shadow">
-                    <img :src="courseDetail.thumbnail"
+                    <img :src="formatThumbnailUrl(courseDetail.thumbnail, `course`)"
                          alt="thumbnail"
                          class="img-fluid mt-3 mb-4 rounded" />
                     <h2>{{courseDetail.title}}</h2>
@@ -217,13 +218,20 @@
                         }
 
                         fetchCourseInfo(id);
-                        console.log("path:", courseDetail.value.thumbnail);
                         
                     });
                     
 
-                    const formatThumbnailUrl = (thumbnailPath) => {
-                        
+                    const formatThumbnailUrl = (thumbnailPath, target = "people") => {
+
+
+                        if (thumbnailPath == null || thumbnailPath.length == 0) { // 如果thumbnail是null 或沒有內容
+
+                            // 判斷target是人(teacher 或 member) 或是課程，給予不同的default圖片路徑
+                            target === "people" ? thumbnailPath = "~/images/profilePic.PNG"
+                                : thumbnailPath = "~/images/thumbnail.jpg"; // 設成default thumbnail
+                        }
+
                         if (thumbnailPath.startsWith("~/")) {
                             // 將 "~/" 替換為實際的程式根目錄
                             return thumbnailPath.replace("~", window.location.origin);
@@ -250,7 +258,6 @@
                             courseFirstVideo.value = courseInfo.firstVideo;
                             courseBuyerCount.value = courseInfo.buyerCount;
                             courseChapterCount.value = courseInfo.chapterCount;
-                            courseDetail.value.thumbnail = formatThumbnailUrl(courseDetail.value.thumbnail); 
                         }
                         catch (error) {
                             console.error('Error fetching ProductInfo:', error);
@@ -266,7 +273,8 @@
 
                     return {
                         courseContents, courseDetail, videoPlayer, checkVideoTime,
-                        courseFirstVideo, courseBuyerCount, courseChapterCount, Bookmark, toggleBookmark
+                        courseFirstVideo, courseBuyerCount, courseChapterCount,
+                        formatThumbnailUrl, Bookmark, toggleBookmark
                     };
                 },
             };

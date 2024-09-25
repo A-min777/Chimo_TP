@@ -192,7 +192,7 @@
                             <div v-for="card in chunk"
                                  :key="card.id"
                                  class="mycard col-lg-3 col-md-6 col-12 ps-2 pe-2">
-                                <a href="@Url.Action("ViewProduct", "Products")">
+                                <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
                                     <img :src="card.thumbnail"
                                          alt="course-thumbnail "
                                          class="pb-2 col-lg-3 img-fluid rounded" />
@@ -248,8 +248,7 @@
                     const chunkSize = ref(4);
 
                     const fetchPurchasedCourses = async () => {
-                        try
-                        {
+                        try {
                             const response = await fetch('/api/courses/purchased', {
                                 method: 'GET',
                                 headers: {
@@ -259,8 +258,7 @@
 
                             purchasedCourses.value = await response.json();
                         }
-                        catch (error)
-                        {
+                        catch (error) {
                             console.error('Error fetching purchased courses:', error);
                         }
                     };
