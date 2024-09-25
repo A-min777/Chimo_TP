@@ -28,5 +28,15 @@ namespace Chimo.WebAPI.Site.Controllers
         {
             return View();
         }
+
+        public ActionResult TopUp()
+        {
+            return View();
+        }
+
+        public ActionResult MyCart()
+        {
+            return View();
+        }
     }
 }

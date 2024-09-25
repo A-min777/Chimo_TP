@@ -36,8 +36,9 @@ namespace Chimo.WebAPI.Site.Controllers
             return View();
 		}
 
-		public ActionResult Course()
+		public ActionResult Course(int id)
         {
+            ViewBag.ProductId = id;
             return View();
         }
     }

@@ -1,0 +1,23 @@
+﻿.confirmBuying {
+    position: sticky;
+    top: 252px;
+}
+
+.isMobile {
+    display: none;
+}
+
+@media (max-width: 780px) {
+    .isPc {
+        display: none;
+    }
+
+    .isMobile {
+        background-color: #fff;
+        width: 300px;
+        display: block;
+        position: fixed;
+        bottom: 10px;
+        right: 20px;
+    }
+}
