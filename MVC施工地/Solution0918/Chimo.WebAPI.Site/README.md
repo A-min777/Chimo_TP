@@ -74,4 +74,17 @@ ReadMe For Chimo.WebApi.Site
 	[V] 修改 Products/Courses.cshtml 及 Products/ProductInfo.cshtml
 		目前前端除了影片外呈現的都是資料庫叫出來的資料，處理Teacher頭像
 		及課程預覽圖若是null, 設成各自指定的default圖片路徑
+
+			
+	------------------------------2024/9/25----------------------------------
+
+	[V] 發現無法正確在前端呈現出老師icon,原因為忘記先將老師icon檔名組成路徑再呈現，
+		修改 Tools/CourseDto_Ext 的擴充方法，補上將老師icon檔名組成路徑，並補上判斷，
+		當檔名為Null或沒有內容時不做處理，讓前端能正確判斷，在沒有圖檔的情況下抓取指定default圖片
+
+	[V] 修改前端FormatThumbnailUrl函式，將處理沒有圖檔的步驟抽離成 handleThumbnailNull
+
+	[V] 修改 Views/Home/Index.cshtml, 讓首頁呈現的課程也能支援沒有圖片時抓取指定default圖片
+
+	
 		

@@ -60,7 +60,7 @@
                         </li>
                     </ol>
                 </nav>
-                <img :src="Bookmark.currentImage()" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
+                <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
             </div>
             <div class="row pb-5 justify-content-between" v-if="courseDetail && courseDetail.teacher">
                 <div class="col-xs-12 col-md-6 col-lg-7 p-3" >
@@ -134,7 +134,7 @@
                 <h2 class="fw-bolder">教師資訊</h2>
                 <div class="teacher row mb-3 mt-2"
                      v-if="courseDetail && courseDetail.teacher">
-                    <img :src="formatThumbnailUrl(courseDetail.teacher.ProfileImage)"
+                    <img :src="formatThumbnailUrl(courseDetail.teacher.profileImage)"
                          alt="taPic"
                          class="avatarA col-md-5 col-lg-3 col-sm-3 " />
                     <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
@@ -182,8 +182,8 @@
 
                     const Bookmark = ref({
                         isBooked: false,
-                        defaultImg: "../images/book_w.png",
-                        bookedImg: "../images/booked_w.png",
+                        defaultImg: "~/images/book_w.png",
+                        bookedImg: "~/images/booked_w.png",
                         currentImage() {
                             return this.isBooked ? this.bookedImg : this.defaultImg;
                         },
@@ -224,13 +224,7 @@
 
                     const formatThumbnailUrl = (thumbnailPath, target = "people") => {
 
-
-                        if (thumbnailPath == null || thumbnailPath.length == 0) { // 如果thumbnail是null 或沒有內容
-
-                            // 判斷target是人(teacher 或 member) 或是課程，給予不同的default圖片路徑
-                            target === "people" ? thumbnailPath = "~/images/profilePic.PNG"
-                                : thumbnailPath = "~/images/thumbnail.jpg"; // 設成default thumbnail
-                        }
+                        thumbnailPath = handleThumbnailNull(thumbnailPath, target);
 
                         if (thumbnailPath.startsWith("~/")) {
                             // 將 "~/" 替換為實際的程式根目錄
@@ -238,6 +232,17 @@
                         }
                         return thumbnailPath;
                     };
+
+                    const handleThumbnailNull = (path, target) => {
+                        if (path == null || path.length == 0) { // 如果thumbnail是null 或沒有內容
+
+                            // 判斷target是人(teacher 或 member) 或是課程，給予不同的default圖片路徑
+                            target === "people" ? path = "~/images/profilePic.PNG"
+                                : path = "~/images/thumbnail.jpg"; // 設成default thumbnail
+                        }
+
+                        return path;
+                    }
 
                     const courseContents = ref([]);
                     const  id = @Html.Raw(ViewBag.ProductId);
