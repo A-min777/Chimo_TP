@@ -139,7 +139,7 @@
                                      :key="card.id"
                                      class="mycard col-3 ps-2 pe-2">
                                     <a href="course.html">
-                                        <img :src="card.img"
+                                        <img :src="formatThumbnailUrl(card.thumbnail, 'course')"
                                              alt="course-thumbnail "
                                              class="pb-2 col-lg-3 img-fluid rounded" />
                                     </a>
@@ -193,7 +193,7 @@
                                  :key="card.id"
                                  class="mycard col-lg-3 col-md-6 col-12 ps-2 pe-2">
                                 <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
-                                    <img :src="card.thumbnail"
+                                    <img :src="formatThumbnailUrl(card.thumbnail, 'course')"
                                          alt="course-thumbnail "
                                          class="pb-2 col-lg-3 img-fluid rounded" />
                                 </a>
@@ -272,6 +272,28 @@
                         }
                     };
 
+                    const formatThumbnailUrl = (thumbnailPath, target = "people") => {
+
+                        thumbnailPath = handleThumbnailNull(thumbnailPath, target);
+
+                        if (thumbnailPath.startsWith("~/")) {
+                            // 將 "~/" 替換為實際的程式根目錄
+                            return thumbnailPath.replace("~", window.location.origin);
+                        }
+                        return thumbnailPath;
+                    };
+
+                    const handleThumbnailNull = (path, target) => {
+                        if (path == null || path.length == 0) { // 如果thumbnail是null 或沒有內容
+
+                            // 判斷target是人(teacher 或 member) 或是課程，給予不同的default圖片路徑
+                            target === "people" ? path = "~/images/profilePic.PNG"
+                                : path = "~/images/thumbnail.jpg"; // 設成default thumbnail
+                        }
+
+                        return path;
+                    }
+
                     const updateChunkSize = () => {
                         if (window.innerWidth < 700) {
                             chunkSize.value = 1; 
@@ -324,6 +346,7 @@
                         recommendedChunks,
                         currentIndex,
                         carouselInner,
+                        formatThumbnailUrl
                     };
                 },
             };
