@@ -16,27 +16,35 @@
                     <small class="btn btn-sm btn-link fw-bolder pt-2" style="text-decoration:none; color:#5b468b">快速註冊</small>
                 </a>
             </div>
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div v-if="errorMessage" class="alert alert-danger fw-bolder" role="alert">{{ errorMessage }}</div>
 
-            <input type="text"
+        <form v-on:submit.prevent="submitForm" novalidate>
+            <input type="email"
                    v-model="email"
                    placeholder="電子信箱"
                    class="form-control mb-3"
-                   style="min-width: 200px" />
+                   style="min-width: 200px"
+                   required />
+
+
             <input type="password"
                    v-model="password"
                    placeholder="密碼"
                    class="form-control mb-3"
-                   style="min-width: 200px; color: #5b468b" />
+                   style="min-width: 200px; color: #5b468b"
+                   required />
 
-            <button style="height: 65px"
-                    v-on:click="login"
-                    class="loginBtn btn align-center col-12 mb-1 p-3">
-                登入
-            </button>
+            
+
+            <input type="submit" name="login" value="登入" style="height: 65px"
+                   v-on:click="login"
+                   class="loginBtn btn align-center col-12 mb-1 p-3" />
+
+        </form>
+            
             <a href="ForgotPassword" class="btn col-12 mb-3 p-3">忘記密碼</a>
 
-            <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+            
         </div>
     </div>
 </div>
@@ -52,8 +60,26 @@
         const app = createApp({
             setup() {
                 const email = ref('');
-                const password = ref('');
+                const password = ref('');                
                 const errorMessage = ref('');
+                const submitForm = () => {
+                    const emailInput = document.querySelector('input[type="email"]');
+                    const passwordInput = document.querySelector('input[type="password"]');
+
+                    emailInput.setCustomValidity(email.value ? '' : '請輸入信箱');
+                    passwordInput.setCustomValidity(password.value ? '' : '請輸入密碼');
+
+                    if (!email.value ) {
+                        emailInput.reportValidity();                        
+                        return; 
+                    }
+                    else if (!password.value) {                        
+                        passwordInput.reportValidity();
+                        return; 
+                    }
+
+                    login(); // 如果驗證通過，執行登入
+                };
 
                 // 儲存 JWT 到 Cookie
                 const saveTokenToCookie = (token) => {
@@ -149,7 +175,8 @@
                     email,
                     password,
                     login,
-                    errorMessage
+                    errorMessage,
+                    submitForm,
                 };
             },
         });

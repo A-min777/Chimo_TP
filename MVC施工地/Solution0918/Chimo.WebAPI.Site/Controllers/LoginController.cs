@@ -33,6 +33,7 @@ namespace Chimo.WebAPI.Site.Controllers
         {
             return View();
         }
+
         [HttpGet]
         public ActionResult RegisterDetail(int userId)
         {

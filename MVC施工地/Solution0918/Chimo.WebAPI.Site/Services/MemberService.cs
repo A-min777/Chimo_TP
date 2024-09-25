@@ -40,7 +40,7 @@ namespace Chimo.WebAPI.Site.Services
             var member = _memberRepository.Get(dto.Account);
 
             // 如果用戶不存在或密碼不匹配，則返回 false
-            if (member.Email == null )
+            if (member == null )
             {
                 return false; // 錯誤的用戶名或密碼
             }

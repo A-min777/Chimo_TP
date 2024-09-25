@@ -278,8 +278,10 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
-    <Content Include="Content\myheader.css" />
+    <Content Include="Content\media.css" />
+    <Content Include="Content\myheader1.1.css" />
     <Content Include="Content\myLogin.css" />
+    <Content Include="Content\realHeader.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="images\banner01.jpg" />
@@ -289,6 +291,7 @@
     <Content Include="images\book.png" />
     <Content Include="images\booked_w.png" />
     <Content Include="images\book_w.png" />
+    <Content Include="images\camera.png" />
     <Content Include="images\cart.png" />
     <Content Include="images\color palette.png" />
     <Content Include="images\Delete.png" />
@@ -302,6 +305,11 @@
     <Content Include="images\profilePic4.PNG" />
     <Content Include="images\profilePic5.PNG" />
     <Content Include="images\thumbnail.jpg" />
+    <Content Include="images\thumbnail_ADO.Net.png" />
+    <Content Include="images\thumbnail_C入門.png" />
+    <Content Include="images\thumbnail_Dapper.png" />
+    <Content Include="images\thumbnail_Python程式設計入門.png" />
+    <Content Include="images\thumbnail_平面設計基礎.png" />
     <Content Include="images\video.jpg" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -369,6 +377,8 @@
     <Content Include="Views\Members\MyCourses.cshtml" />
     <Content Include="Views\Members\MyCollections.cshtml" />
     <Content Include="Views\Members\MyOrders.cshtml" />
+    <Content Include="Views\Members\TopUp.cshtml" />
+    <Content Include="Views\Members\MyCart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
