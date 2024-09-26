@@ -30,5 +30,14 @@ namespace Chimo.WebAPI.Site
 
             _mapper = config.CreateMapper();
         }
+        protected void Application_Error()
+        {
+            Exception exception = Server.GetLastError();
+            Response.Clear();
+            Response.StatusCode = 404; // ªð¦^ 404 ¿ù»~
+            Response.TrySkipIisCustomErrors = true;
+            Server.ClearError();
+        }
+
     }
 }

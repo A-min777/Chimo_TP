@@ -100,37 +100,7 @@
                     return null;
                 };
 
-                // 測試 JWT 認證 API 是否正常
-                const testJwtAuth = () => {
-                    const token = getTokenFromCookie();  // 從 Cookie 取得 token
-
-                    if (!token) {
-                        console.log("Token 不存在");
-                        return;
-                    }
-
-                    fetch('/api/test', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                return response.text();
-                            } else {
-                                console.log("JWT 認證失敗，狀態碼:", response.status);
-                            }
-                        })
-                        .then(message => {
-                            if (message) {
-                                console.log("JWT 認證成功，訊息:", message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error("呼叫 API 失敗:", error);
-                        });
-                };
+              
 
                 // 登入邏輯
                 const login = async () => {
@@ -148,22 +118,17 @@
 
                         if (response.ok) {
                             const data = await response.json();
-                            console.log(data);
                             const token = data.token;
 
                             if (token) {
                                 saveTokenToCookie(token);  // 儲存 token 到 cookie
-                                testJwtAuth();  // 測試 JWT Token 是否可用
-                                // 可選：導向到其他頁面，例如主頁
                                 window.location.href = "/Home/Index"; // 導向主頁
                             } else {
                                 errorMessage.value = "未收到有效的 Token";
                             }
-                        } else if (response.status === 401) {
-                            errorMessage.value = "帳號或密碼錯誤";
                         } else {
-                            const errorText = await response.text();
-                            errorMessage.value = `發生未知錯誤: ${errorText}`;
+                            const errorData = await response.json(); // 獲取錯誤物件
+                            errorMessage.value = errorData.message; // 只取出 message 部分
                         }
                     } catch (error) {
                         console.error(error);
