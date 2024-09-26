@@ -59,15 +59,28 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
 
 
         [HttpGet]
-        [Route("api/products/course/{id}")]
-        public IHttpActionResult GetMyCourseInfo(int id)
+        [Route("api/products/course/{courseId}/chapter/{chapterId?}")]
+        public IHttpActionResult GetMyCourseInfo(int courseId, int? chapterId = null)
         {
-            var courseInfo = _service.GetMyCourseInfoById(id);
+            var courseInfo = _service.GetMyCourseInfoById(courseId);
+
             if (courseInfo == null)
             {
                 return NotFound();
             }
-            return Ok(courseInfo);
+
+            if (chapterId.HasValue)
+            {
+                var chapter = _service.GetChapterById(courseId, chapterId.Value);
+
+                if (chapter == null)
+                {
+                    return NotFound();
+                }
+                return Ok(new { courseInfo, chapter });
+            }
+            
+			return Ok(courseInfo);
         }
     }
 }

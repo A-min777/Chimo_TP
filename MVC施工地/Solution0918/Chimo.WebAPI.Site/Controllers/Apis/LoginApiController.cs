@@ -23,24 +23,22 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
             _memberService = new MemberService();
 
         }
-        
 
         [HttpPost]
         [Route("api/login")]
         public IHttpActionResult Login([FromBody] LoginDto dto)
         {
-            // 認證用戶
-            if (!_memberService.Verify(dto))
+            var (isSuccess, message, member) = _memberService.VerifyMember(dto);
+
+            if (!isSuccess)
             {
-                return Unauthorized(); // 錯誤的用戶名或密碼
+                return BadRequest(message); // 簡單的錯誤訊息
             }
 
-            var member = _memberService.GetMemberByAccount(dto.Account);
+            // 驗證成功，生成 token
+            var token = JwtUtility.GenerateToken(member);
 
-
-            // 生成 JWT token
-            var token = JwtUtility.GenerateToken(member); // 假設帳號就是用戶名
-            return Ok(new { Token = token });
+            return Ok(new { token });
         }
     }
 }

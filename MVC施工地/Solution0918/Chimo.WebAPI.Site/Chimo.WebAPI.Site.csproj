@@ -210,6 +210,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\Apis\CoursesApiController.cs" />
     <Compile Include="Controllers\Apis\LoginApiController.cs" />
+    <Compile Include="Controllers\Apis\MembersApiController.cs" />
     <Compile Include="Controllers\Apis\RegisterApiController.cs" />
     <Compile Include="Controllers\CoursesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -228,7 +229,10 @@
     <Compile Include="JwtAuthorizationAttribute.cs" />
     <Compile Include="Models\AuthHelper.cs" />
     <Compile Include="Models\Dtos\CourseDto.cs" />
+    <Compile Include="Models\Dtos\CollectionsDto.cs" />
     <Compile Include="Models\Dtos\LoginDto.cs" />
+    <Compile Include="Models\Dtos\OrderDto.cs" />
+    <Compile Include="Models\Dtos\ProfileDto.cs" />
     <Compile Include="Models\Dtos\RegisterDto.cs" />
     <Compile Include="Models\Dtos\TeacherDto.cs" />
     <Compile Include="Models\EFModels\AppDbContext.cs" />
@@ -256,6 +260,7 @@
     <Compile Include="Services\CourseService.cs" />
     <Compile Include="Services\MemberService.cs" />
     <Compile Include="Tools\CourseDto_Ext.cs" />
+    <Compile Include="Services\RegisterService.cs" />
     <Compile Include="Tools\Mappings.cs" />
     <Compile Include="Utilities\HashUtility.cs" />
     <Compile Include="Utilities\JwtUtility.cs" />
@@ -379,6 +384,8 @@
     <Content Include="Views\Members\MyOrders.cshtml" />
     <Content Include="Views\Members\TopUp.cshtml" />
     <Content Include="Views\Members\MyCart.cshtml" />
+    <Content Include="Views\Members\Checkout.cshtml" />
+    <Content Include="Views\Home\SearchResult.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

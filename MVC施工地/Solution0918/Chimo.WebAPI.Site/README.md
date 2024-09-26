@@ -86,5 +86,24 @@ ReadMe For Chimo.WebApi.Site
 
 	[V] 修改 Views/Home/Index.cshtml, 讓首頁呈現的課程也能支援沒有圖片時抓取指定default圖片
 
+
+	------------------------------2024/9/25----------------------------------
 	
+	[V] 在 Tools/CoourseDto_Ext 新增兩個擴充方法，用來重組影片檔名為路徑
+
+	[V] 修改 ProductsController 的ViewProduct action, 若導向的頁面是
+		Course, 抓取該課程的第一個Chapter Id並回傳，修改Course action, 可以接收Chapter Id
+	
+	[V] 修改 CoursesApiController 的 GetMyCourseInfo 路由，讓網址改成可以接收 Chapter Id
+
+	[V] 在App_Start/RouteConfig 裡新增一個路由定義，讓ProductsController 的 Course action的路由
+		可以包含 /chapter/{chapterid}
+
+	[V] 在CourseSerivce新增 GetChapterById 跟 GetFirstChapterId
+		在ICourseRepository 新增以上兩個函式定義
+		在CourseRepository 實做以上兩個函式
+
+	[V] 修改 Products/ProductInfo.cshtml 可以正常顯示影片
+		修改 Products/Course.chtml 修改fetch為新路由，可以正常顯示影片，
+		並可以依照點選的章節改變網址顯示不同章節影片
 		

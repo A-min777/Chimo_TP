@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace Chimo.WebAPI.Site.Controllers
 {
+    [JwtAuthorization]
     public class MembersController : Controller
     {
         // GET: Members
@@ -35,6 +36,11 @@ namespace Chimo.WebAPI.Site.Controllers
         }
 
         public ActionResult MyCart()
+        {
+            return View();
+        }
+
+        public ActionResult Checkout()
         {
             return View();
         }

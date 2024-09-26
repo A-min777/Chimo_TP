@@ -137,18 +137,18 @@
                     <hr />
                     <div class="d-flex flex-wrap">
                         <div class="cardContainer d-flex flex-wrap">
-                            <div v-for="card in cards"
+                            <div v-for="card in collections"
                                  :key="card.id"
                                  class="mycard col-lg-4 col-md-6 col-sm-12 p-3 pb-5 ps-0">
                                 <a href="@Url.Action("ViewProduct", "Products")">
-                                    <img :src="card.img"
-                                         alt="course-thumbnail "
+                                    <img :src="`../images/${card.img}`"
+                                         alt="collections-thumbnail "
                                          class="thumbnail pb-2 img-fluid rounded" />
                                 </a>
                                 <div class="prodct-info">
                                     <small class="tag p-1 rounded-1 fw-bolder">課程</small>
                                     <p class="title pt-1">{{card.title}}</p>
-                                    <small>{{card.teacher}}</small>
+                                    <small>{{card.teacherName}}</small>
                                 </div>
                                 <p class="price border-top border-bottom pt-2 pb-2">
                                     NT${{card.price}}
@@ -167,75 +167,68 @@
     <script src="~/Scripts/vue.global.js"></script>
     <script src="~/Scripts/myheader.js"></script>
     <script>
-        const { createApp, ref } = Vue;
-        const config = {
-            setup() {
-                const member = ref({
-                    id: 1,
-                    name: "會員A",
-                    avatar: "../images/profilePic5.PNG",
-                    point: 100,
-                    updateTime: "2024/09/11",
-                    gender: 3,
-                    phone: "01-23456789",
-                    email: "abc@gmail.com",
-                    intro: "修改個人簡介",
-                });
-                const cards = ref([
-                    {
-                        id: 1,
-                        img: "../images/thumbnail.jpg",
-                        title:
-                            "1.反映女孩子只需第一個東京一本，反映女孩子只需第一個東京一本，反映女孩子只需第一個東京一本，",
-                        teacher: "Mr.C",
-                        price: 1000,
-                        buyDate: "2024/09/11",
-                    },
-                    {
-                        id: 2,
-                        img: "../images/thumbnail.jpg",
-                        title: "2.犯罪不說大型，本週中學，丈夫",
-                        teacher: "Mr.C",
-                        price: 1000,
-                        buyDate: "2024/09/11",
-                    },
-                    {
-                        id: 3,
-                        img: "../images/thumbnail.jpg",
-                        title: "3.第一個東京一本，聯絡人",
-                        teacher: "Mr.C",
-                        price: 1000,
-                        buyDate: "2024/09/11",
-                    },
-                    {
-                        id: 4,
-                        img: "../images/thumbnail.jpg",
-                        title: "4.看看計劃笑容每年有的",
-                        teacher: "Mr.C",
-                        price: 1000,
-                        buyDate: "2024/09/11",
-                    },
-                    {
-                        id: 5,
-                        img: "../images/thumbnail.jpg",
-                        title: "5.程式開發者。",
-                        teacher: "Mr.C",
-                        price: 1000,
-                        buyDate: "2024/09/11",
-                    },
-                    {
-                        id: 6,
-                        img: "../images/thumbnail.jpg",
-                        title: "6.計劃AI有的笑容每年",
-                        teacher: "Mr.C",
-                        price: 1000,
-                        buyDate: "2024/09/11",
-                    },
-                ]);
-                return { member, cards };
-            },
-        };
-        const app = createApp(config);
-        app.mount("#app");
+ @using Chimo.WebAPI.Site.Models
+ const { createApp, ref, onMounted } = Vue;
+
+ createApp({
+     setup() {
+         const member = ref({
+             id: 0,
+             name: "",
+             avatar: "",
+             point: 0,
+         });
+
+         const collections = ref([]); // 存放會員課程資料
+         const fetchMemberCollections = async () => {
+             try {
+                 const token = '@AuthHelper.GetTokenFromCookie()';
+                 const response = await fetch(`/api/collections/${member.value.id}`, {
+                     method: 'GET',
+                     headers: {
+                         'Authorization': `Bearer ${token}`
+                     }
+                 });
+
+                 if (!response.ok) {
+                     throw new Error('獲取收藏紀錄資料失敗');
+                 }
+
+                 const data = await response.json();
+                 collections.value = data.map(collection => ({
+                     id: collection.id,
+                     title: collection.title,
+                     img: collection.thumbnail,
+                     teacherName: collection.teacherName,
+                     price: collection.price,
+                 }));
+             } catch (error) {
+                 console.error("獲取收藏紀錄資料失敗:", error);
+             }
+         };
+
+         onMounted(async () => {
+             const token = '@AuthHelper.GetTokenFromCookie()';
+             const decodedMember = decodeToken(token);
+             member.value.id = decodedMember.Id;
+             member.value.name = decodedMember.unique_name;
+             member.value.point = decodedMember.Point;
+             member.value.avatar = decodedMember.ProfileImage;
+
+             await fetchMemberCollections(); 
+         });
+
+         function decodeToken(token) {
+             const base64Url = token.split('.')[1];
+             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+             const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                 '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+
+             return JSON.parse(jsonPayload);
+         }
+
+         return { member, collections };
+     }
+ }).mount("#app");
     </script>
 }
