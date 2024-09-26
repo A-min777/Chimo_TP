@@ -132,11 +132,13 @@ namespace Chimo.WebAPI.Site.Services
         internal string GetUserIdFromToken()
         {
             var token = AuthHelper.GetTokenFromCookie();
+            if(token == null) return null;
+
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
 
             var userIdClaim = jwtToken.Claims
-                .FirstOrDefault(claim => claim.Type == "sub")
+                .FirstOrDefault(claim => claim.Type == "Id")
                 .Value;
 
             if (jwtToken == null || userIdClaim == null)
@@ -153,9 +155,9 @@ namespace Chimo.WebAPI.Site.Services
             var member = _memberRepository.FindById(userId);
             if (member == null) return false;
 
-            //todo 呼叫repo尋找購買紀錄
+			bool hasPurchased = _memberRepository.HasPurchased(userId, id);
 
-            return true;
+			return hasPurchased;
         }
     }
 }
