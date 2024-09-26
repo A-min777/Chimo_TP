@@ -37,5 +37,20 @@ namespace Chimo.WebAPI.Site.Tools
         {
             return dtos.Select(c => c.FormatThumbnail(prefix)).ToList();
         }
+
+        public static string FormatVideoRoute(this string video, string prefix)
+        {
+            if (video != null && video.Length > 0) video = prefix + video;
+            
+            return video;
+        }
+
+        public static CourseChapterDto FormatVideoRoute(this CourseChapterDto chapter, string prefix)
+        {
+            if(chapter!=null && chapter.VideoURL.Length>0)
+                chapter.VideoURL = chapter.VideoURL.FormatVideoRoute(prefix);
+
+            return chapter;
+        }
     }
 }

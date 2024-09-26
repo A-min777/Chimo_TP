@@ -10,9 +10,11 @@ namespace Chimo.WebAPI.Site.Interfaces
 	internal interface ICourseRepository
 	{
         int GetBuyerCountById(int id);
+        CourseChapterDto GetChapterById(int courseId, int chapterId);
         int GetChapterCountById(int id);
         CourseContentDto GetCourseContentById(int id);
         CourseDto GetCourseDetailById(int id);
+        int GetFirstChapterId(int courseId);
         string GetFirstVideoById(int id);
         List<CourseDto> GetOtherCoursesById(int id);
         List<CourseDto> GetRecommendedCourses();
