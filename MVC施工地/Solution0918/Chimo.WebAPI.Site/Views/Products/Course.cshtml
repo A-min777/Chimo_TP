@@ -156,11 +156,11 @@
             </section>
             <!-- 左側資訊 end-->
             <!-- 右側購買連結 bg -->
-            <div class="col-md-5 col-lg-4">
+            <div class="col-md-5 col-lg-4 mb-5">
                 <div class="ps-3 pe-3 border rounded shadow" v-if="courseDetail && courseDetail.teacher">
                     <p class="mt-3">{{courseDetail.teacher.name}}的其他課程</p>
                     <div v-for="course in recommendProducts" class="mb-2">
-                        <a href="ProductInfo">
+                        <a :href="`@Url.Action("ViewProduct", "Products")/${course.id}`">
                             <img :src="formatThumbnailUrl(course.thumbnail, `course`)"
                                  alt="thumbnail"
                                  class="img-fluid mb-4 rounded" />

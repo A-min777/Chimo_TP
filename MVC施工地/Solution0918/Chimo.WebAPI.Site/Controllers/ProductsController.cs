@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Chimo.WebAPI.Site.Models;
+using Chimo.WebAPI.Site.Services;
+using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -11,13 +14,20 @@ namespace Chimo.WebAPI.Site.Controllers
         // GET: Products
         public ActionResult ViewProduct(int id)
         {
-            // 假設用戶 ID 是通過某種方式獲取的 (例如從 Session 或 JWT Token)
-            // todo int userId = 
+            var service= new MemberService();
 
+            // 取得用戶 ID
+            int userId = 0;
+            var userIdStr = int.TryParse(service.GetUserIdFromToken(),out userId);
+            
+            if(userId == 0)
+            {
+                return RedirectToAction("ProductInfo", new { id });
+            }
+            
             // 檢查用戶是否已購買該商品
-            // todo bool hasPurchased = _purchaseService.HasUserPurchasedProduct(userId, productId);
+            bool hasPurchased = service.HasPurchasedProduct(userId, id);
 
-            bool hasPurchased = true;
 
             if (hasPurchased)
             {

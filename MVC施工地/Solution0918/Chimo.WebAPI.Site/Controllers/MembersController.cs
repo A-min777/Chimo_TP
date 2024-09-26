@@ -38,5 +38,10 @@ namespace Chimo.WebAPI.Site.Controllers
         {
             return View();
         }
+
+        public ActionResult Checkout()
+        {
+            return View();
+        }
     }
 }

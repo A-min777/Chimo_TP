@@ -195,11 +195,11 @@
                                 <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
                                     <img :src="card.thumbnail"
                                          alt="course-thumbnail "
-                                         class="pb-2 col-lg-3 img-fluid rounded" />
+                                         class="pb-2 mb-2 col-lg-3 img-fluid rounded" />
                                 </a>
                                 <div class="prodct-info border-bottom">
-                                    <small class="tag p-1 rounded-1 fw-bolder">課程</small>
-                                    <p class="title pt-1">{{card.title}}</p>
+                                    <small class="tag p-1  rounded-1 fw-bolder">課程</small>
+                                    <h5 class="title pt-2 fw-bolder">{{card.title}}</h5>
                                     <small>{{card.teacher.name}}</small>
                                 </div>
                                 <p class="price mt-2">NT${{card.price}}</p>

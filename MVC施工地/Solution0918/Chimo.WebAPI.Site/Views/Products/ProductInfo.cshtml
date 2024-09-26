@@ -148,7 +148,7 @@
             </section>
             <!-- 左側資訊 end-->
             <!-- 右側購買連結 bg -->
-            <div class="col-md-5 col-lg-4">
+            <div class="col-md-5 col-lg-4 mb-5">
                 <div class="ps-3 pe-3 border rounded shadow">
                     <img :src="formatThumbnailUrl(courseDetail.thumbnail, `course`)"
                          alt="thumbnail"
@@ -182,8 +182,8 @@
 
                     const Bookmark = ref({
                         isBooked: false,
-                        defaultImg: "../images/book_w.png",
-                        bookedImg: "../images/booked_w.png",
+                        defaultImg: "~/images/book_w.png",
+                        bookedImg: "~/images/booked_w.png",
                         currentImage() {
                             return this.isBooked ? this.bookedImg : this.defaultImg;
                         },
