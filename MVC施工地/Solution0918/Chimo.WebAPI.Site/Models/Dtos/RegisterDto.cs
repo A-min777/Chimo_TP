@@ -19,6 +19,6 @@ namespace Chimo.WebAPI.Site.Models.Dtos
 
         public string Phone { get; set; }
 
-        public int? Gender { get; set; }
+        public int Gender { get; set; }
     }
 }

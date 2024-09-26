@@ -13,6 +13,7 @@ namespace Chimo.WebAPI.Site
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+
             routes.MapRoute(
                name: "CourseChapter",
                url: "products/course/{id}/chapter/{chapterId}",
