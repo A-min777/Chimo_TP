@@ -12,21 +12,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using AutoMapper;
+using Chimo.WebAPI.Site.Interfaces;
 
 namespace Chimo.WebAPI.Site.Services
 {
     public class MemberService
     {
         private MemberRepository _memberRepository;
-
+        private readonly IMapper _mapper; 
 
         public MemberService()
         {
             _memberRepository = new MemberRepository();
         }
-        public MemberService(MemberRepository memberRepository)
+        public MemberService(MemberRepository memberRepository ,IMapper mapper)
         {
             _memberRepository = memberRepository;
+            _mapper = mapper; 
         }
 
         /// <summary>
@@ -34,76 +36,96 @@ namespace Chimo.WebAPI.Site.Services
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        public bool Verify(LoginDto dto)
+        public (bool IsSuccess, string Message, Member Member) VerifyMember(LoginDto dto)
         {
-            // 從資料庫中獲取用戶資料
             var member = _memberRepository.Get(dto.Account);
 
-            // 如果用戶不存在或密碼不匹配，則返回 false
-            if (member.Email == null )
+            if (member == null)
             {
-                return false; // 錯誤的用戶名或密碼
-            }
-            else if(!HashUtility.VerifyPasswordHash(dto.Password, member.Password))
-            {
-                return false; // 錯誤的用戶名或密碼
+                return (false, "查無此帳號", null); // 查無此帳號
             }
 
-            //// 檢查 Status，如果是 0 則不能登入
-            //if (member.Status == 0)
-            //{
-            //    return false; // 用戶狀態為禁用
-            //}
+            if (!HashUtility.VerifyPasswordHash(dto.Password, member.Password))
+            {
+                return (false, "密碼錯誤", null); // 密碼錯誤
+            }
 
-            return true; // 驗證成功
+            if (member.Status == 0)
+            {
+                return (false, "帳號已被停用", null); // 帳號被停用
+            }
+
+            return (true, "驗證成功", member); // 返回會員對象
         }
         public Member GetMemberByAccount(string account)
         {
             // 根據帳號查詢會員資料，返回 Member 物件
             return _memberRepository.Get(account);
         }
-        public Member CreateMember(RegisterDto dto)
+
+        public ProfileDto GetMemberProfileById(int Id)
         {
-            var existingMember = _memberRepository.GetMemberByEmail(dto.Email);
-            if (existingMember != null)
-            {
-                throw new Exception("Email重複."); // 或者返回 null
-            }
 
-            string hashPassword = HashUtility.ToSHA256(dto.Password);
-
-            var newMember = new Member
-            {
-
-                Name = dto.Name,
-                Email = dto.Email,
-                Password = hashPassword,
-                Gender = 0,
-                ProfileImage = dto.ProfileImage,
-                Intro = dto.Intro,
-                Phone = dto.Phone,
-                CreatedDate = DateTime.Now,
-                UpdatedDate = DateTime.Now,
-
-            };
-
-            _memberRepository.AddMember(newMember);
-
-            return newMember;
+            return _memberRepository.GetMemberProfile(Id);
         }
 
-        public bool UpdateMember(int userId, RegisterDto dto)
+        public ProfileDto UpdateMemberProfile(ProfileDto updatedProfile)
         {
-            var member = _memberRepository.FindById(userId);
-            if (member == null) return false;
+            var existingMember = _memberRepository.FindById(updatedProfile.Id);
+            if (existingMember == null) return null; // 確保如果找不到會員，返回 null
 
-            member.Phone = dto.Phone ?? null ; // 預設值
-            member.Gender = dto.Gender ?? 0; // 如果為 null，則設為 0
-            member.Intro= dto.Intro ??  null; // 預設值
+            // 更新會員資料
+            existingMember.Name = updatedProfile.Name;
+            existingMember.Intro = updatedProfile.Intro;
+            existingMember.Gender = updatedProfile.Gender;
+            existingMember.Phone = updatedProfile.Phone;
+            existingMember.UpdatedDate = DateTime.Now; // 設定為當前時間
 
-            _memberRepository.Update(member);
-            return true;
+            _memberRepository.Update(existingMember); // 使用 Repository 來更新資料
 
+            return new ProfileDto
+            {
+                Id = existingMember.Id,
+                Name = existingMember.Name,
+                Intro = existingMember.Intro,
+                Gender = existingMember.Gender,
+                Phone = existingMember.Phone,
+                UpdatedDate = existingMember.UpdatedDate,
+            };
+        }
+
+
+        public List<CourseDto> GetMemberCoursesById(int Id)
+        {
+
+            // 調用 CourseRepository 的方法來獲取會員課程
+            var courses = _memberRepository.GetMemberCourse(Id);
+
+            // 如果找不到課程，返回 null
+            if (courses == null) return null;
+
+            return courses;
+        }
+
+
+        public List<CollectionsDto> GetMemberCollectionsById(int Id)
+        {
+
+            var collections = _memberRepository.GetMemberCollections(Id);
+
+            if (collections == null) return null;
+
+            return collections;
+        }
+
+        public List<OrderDto> GetMemberOrderById(int Id)
+        {
+
+            var order = _memberRepository.GetMemberOrder(Id);
+
+            if (order == null) return null;
+
+            return order;
         }
     }
 }

@@ -54,9 +54,6 @@
 </style>
 
 <div id="app">
-    <div class="sticky-top">
-        <my-header></my-header>
-    </div>
     <div class="container">
         <div class="row">
             <div class="col-4 mt-3 mb-3">
@@ -105,29 +102,34 @@
                     <hr />
                     <div v-for="order in orders" :key="order.id">
                         <div class="d-flex justify-content-between">
-                            <h6>{{order.buyDate}}</h6>
-                            <h6 class="status fw-bolder">[ {{order.status}} ]</h6>
+                            <h6>{{ new Date(order.createdDate).toLocaleDateString() }}</h6>
+                            <h6 class="status fw-bolder">
+                                <h6 class="status fw-bolder">
+                                    <span v-if="order.status === 1" style="color:lawngreen">[ 已結帳 ]</span>
+                                    <span v-else-if="order.status === 0" style="color:darkred">[ 部分退款 ]</span>
+                                    <span v-else-if="order.status === -1" style="color:red">[ 全額退款 ]</span>
+                                </h6>
+                            </h6>
                         </div>
-                        <div v-for="items in order.orderItems"
-                             :key="items.id"
-                             class="row align-items-center">
+
+                        <div v-for="item in order.orderItems" :key="item.id" class="row align-items-center">
                             <div class="col-md-5 col-sm-12 mt-1">
                                 <a href="course.html">
-                                    <img :src="items.thumbnail"
-                                         alt="thumbnail"
-                                         class="thumbnail img-fluid rounded mt-2" />
+                                    <img :src="`../images/${item.thumbnail}`" alt="order-thumbnail" class="thumbnail img-fluid rounded mt-2" />
                                 </a>
                             </div>
                             <div class="col-md-6 col-sm-12 mt-2">
-                                <h5 class="fw-bolder">{{items.courseName}}</h5>
-                                <small>教師 | {{items.teacher}}</small>
-                                <h6 class="mt-2 fw-bolder">NT${{items.Price}}</h6>
+                                <h5 class="fw-bolder">
+                                    {{ item.courseName }}
+                                    <span v-if="item.status === 0" class="text-danger">(已退貨)</span>
+                                </h5>
+                                <small>教師 | {{ item.teacherName }}</small>
+                                <h6 class="mt-2 fw-bolder">NT${{ item.price }}</h6>
                             </div>
                         </div>
 
-                        <h5 class="text-end mt-3 fw-bolder">
-                            總金額 NT${{order.totalPrice}}
-                        </h5>
+                        <h5 class="text-end mt-3 fw-bolder">總金額 NT${{ order.totalAmount }}</h5>
+
                         <hr />
                     </div>
                 </section>
@@ -143,64 +145,63 @@
     <script src="~/Scripts/vue.global.js"></script>
     <script src="~/Scripts/myheader.js"></script>
     <script>
-            const { createApp, ref } = Vue;
-        const config = {
-            setup() {
-                const member = ref({
-                    id: 1,
-                    name: "會員A",
-                    avatar: "../images/profilePic5.PNG",
-                    point: 100,
-                    updateTime: "2024/09/11",
-                    gender: 3,
-                    phone: "01-23456789",
-                    email: "abc@gmail.com",
-                    intro: "修改個人簡介",
-                });
-                const orders = ref([
-                    {
-                        id: 1,
-                        buyDate: "2024/09/11",
-                        status: "已付款",
-                        totalPrice: 2000,
-                        orderItems: [
-                            {
-                                id: 1,
-                                thumbnail: "../images/thumbnail.jpg",
-                                courseName: "課程名稱",
-                                teacher: "Mr.C",
-                                Price: 1000,
-                            },
-                            {
-                                id: 2,
-                                thumbnail: "../images/thumbnail.jpg",
-                                courseName: "課程名稱",
-                                teacher: "Mr.C",
-                                Price: 1000,
-                            },
-                        ],
-                    },
-                    {
-                        id: 2,
-                        buyDate: "2024/09/11",
-                        status: "已付款",
-                        totalPrice: 1000,
-                        orderItems: [
-                            {
-                                id: 1,
-                                thumbnail: "../images/thumbnail.jpg",
-                                courseName: "課程名稱",
-                                teacher: "Mr.C",
-                                Price: 1000,
-                            },
-                        ],
-                    },
-                ]);
-                return { member, orders };
-            },
-        };
-            const app = createApp(config);
-            app.mount("#app");
+@using Chimo.WebAPI.Site.Models
+const { createApp, ref, onMounted } = Vue;
+
+createApp({
+    setup() {
+        const member = ref({
+            id: 0,
+            name: "",
+            avatar: "",
+            point: 0,
+        });
+
+
+                const orders = ref([]);
+                const fetchMemberOrder = async () => {
+                    try {
+                        const token = '@AuthHelper.GetTokenFromCookie()';
+                        const response = await fetch(`/api/order/${member.value.id}`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('獲取訂單資料失敗');
+                        }
+                        const data = await response.json();
+                        orders.value = data;  // 直接將數據設置到 orders 中
+                    } catch (error) {
+                        console.error("獲取訂單資料失敗:", error);
+                    }
+                };
+
+        onMounted(async () => {
+            const token = '@AuthHelper.GetTokenFromCookie()';
+            const decodedMember = decodeToken(token);
+            member.value.id = decodedMember.Id;
+            member.value.name = decodedMember.unique_name;
+            member.value.point = decodedMember.Point;
+            member.value.avatar = decodedMember.ProfileImage;
+
+            await fetchMemberOrder(); //
+        });
+
+        function decodeToken(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+
+            return JSON.parse(jsonPayload);
+        }
+
+        return { member, orders };
+    }
+}).mount("#app");
     </script>
 }
 

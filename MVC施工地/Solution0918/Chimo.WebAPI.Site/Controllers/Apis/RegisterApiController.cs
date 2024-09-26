@@ -12,10 +12,10 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
 {
     public class RegisterApiController : ApiController
     {
-        private readonly MemberService _memberService;
+        private readonly RegisterService _registerService;
         public RegisterApiController()
         {
-            _memberService = new MemberService();
+            _registerService = new RegisterService();
 
         }
         [HttpPost]
@@ -25,7 +25,7 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
             try
             {
                 // 調用服務層的 CreateMember 方法
-                var newMember = _memberService.CreateMember(dto);
+                var newMember = _registerService.CreateMember(dto);
 
                 // 設置 TempData，以便在下一個請求中使用
 
@@ -57,7 +57,7 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
                 return BadRequest("無效的請求");
             }
 
-            var result = _memberService.UpdateMember(userId, dto);
+            var result = _registerService.UpdateMember(userId, dto);
 
             if (result)
             {

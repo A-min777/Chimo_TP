@@ -29,18 +29,7 @@ namespace Chimo.WebAPI.Site.Tools
 
             CreateMap<Teacher, TeacherDto>();
 
-            CreateMap<LoginDto, Member>()
-                        .ForMember(dest => dest.Id, opt => opt.Ignore())
-                        .ForMember(dest => dest.Name, opt => opt.Ignore())
-                        .ForMember(dest => dest.Point, opt => opt.Ignore())
-                        .ForMember(dest => dest.ProfileImage, opt => opt.Ignore())
-                        .ForMember(dest => dest.Intro, opt => opt.Ignore())
-                        .ForMember(dest => dest.Address, opt => opt.Ignore())
-                        .ForMember(dest => dest.Gender, opt => opt.Ignore())
-                        .ForMember(dest => dest.Phone, opt => opt.Ignore())
-                        .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
-                        .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore())
-                        .ReverseMap();
+            
 
         }
     }
