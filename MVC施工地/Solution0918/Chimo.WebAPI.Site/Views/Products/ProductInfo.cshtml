@@ -56,7 +56,7 @@
                         <li class="breadcrumb-item"><a href="/Home/Index">首頁</a></li>
                         <li class="breadcrumb-item"><a href="#">分類</a></li>
                         <li class="breadcrumb-item active text-light" aria-current="page">
-                            課程名稱
+                            {{courseContents.title}}
                         </li>
                     </ol>
                 </nav>
@@ -75,7 +75,7 @@
                     </div>
                 </div>
                 <div class="col-xs-12 col-md-6 col-lg-4">
-                    <video ref="videoPlayer" controls :src="courseFirstVideo" muted type="video/mp4" class="container rounded-5"></video>
+                    <video ref="videoPlayer" controls :src="formatVideoRoute(courseFirstVideo)" muted type="video/mp4" class="container rounded-5"></video>
                 </div>
             </div>
         </div>
@@ -244,6 +244,15 @@
                         return path;
                     }
 
+                    const formatVideoRoute = (videoRoute) => {
+
+                        if (videoRoute.startsWith("~/")) {
+                            // 將 "~/" 替換為實際的程式根目錄
+                            return videoRoute.replace("~", window.location.origin);
+                        }
+                        return videoRoute;
+                    };
+
                     const courseContents = ref([]);
                     const  id = @Html.Raw(ViewBag.ProductId);
                     const fetchCourseInfo = async (id) => {
@@ -279,7 +288,7 @@
                     return {
                         courseContents, courseDetail, videoPlayer, checkVideoTime,
                         courseFirstVideo, courseBuyerCount, courseChapterCount,
-                        formatThumbnailUrl, Bookmark, toggleBookmark
+                        formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute
                     };
                 },
             };

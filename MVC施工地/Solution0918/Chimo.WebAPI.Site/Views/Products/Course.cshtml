@@ -74,7 +74,7 @@
                         <li class="breadcrumb-item"><a href="/Home/Index">首頁</a></li>
                         <li class="breadcrumb-item"><a href="#">分類</a></li>
                         <li class="breadcrumb-item active text-light" aria-current="page">
-                            課程名稱
+                            {{courseContents.title}}
                         </li>
                     </ol>
                 </nav>
@@ -83,7 +83,7 @@
             <div class="row pb-5 justify-content-between">
                 <div class="col-xs-12 col-md-6 col-lg-7 p-3">
                     <video controls
-                           :src="courseDetail.videoURL"
+                           :src="formattedVideoRoute"
                            muted
                            type="video/mp4"
                            class="container rounded-5"></video>
@@ -107,10 +107,14 @@
                                 <div :id="'flush-collapse-' + content.id"
                                      class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlushExample">
+                                    
                                     <div v-for="item in content.courseChapters"
-                                         class="accordion-body fw-bolder">
-                                        {{item.name}}
+                                         :key="item.id"
+                                         class="accordion-body fw-bolder"
+                                         >
+                                        <a :href="`/products/course/${courseId}/chapter/${item.id}`">{{item.name}}</a>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -191,7 +195,7 @@
     <script src="~/Scripts/vue.global.js"></script>
     <script src="~/Scripts/myheader.js"></script>
     <script>
-        const { createApp, ref, onMounted } = Vue;
+        const { createApp, ref, onMounted, computed } = Vue;
         const config = {
             setup() {
                 const Bookmark = ref({
@@ -230,9 +234,18 @@
                     Bookmark.value.isBooked = !Bookmark.value.isBooked;
                 }
 
+                const formatVideoRoute = (videoRoute) => {
+                    if (videoRoute.startsWith("~/")) {
+                        // 將 "~/" 替換為實際的程式根目錄
+                        return videoRoute.replace("~", window.location.origin);
+                    }
+                    return videoRoute;
+                };
+
                 onMounted(() => {
                     
-                    fetchCourseInfo(id);
+                    fetchCourseInfo(courseId.value, chapterId);
+                    
                 });
 
                 //這裡呼叫查看收藏的api
@@ -246,67 +259,30 @@
                         console.error('獲取收藏狀態時出錯:', error);
                     }
                 };*/
-                //const courseContents = ref([
-                //    {
-                //        id: 1,
-                //        catalogName: "目錄一：目錄標題。",
-                //        content: [
-                //            { id: 1, name: "第一章節:標題" },
-                //            { id: 2, name: "第二章節:標題" },
-                //        ],
-                //    },
-                //    {
-                //        id: 2,
-                //        catalogName: "目錄二：目錄標題。",
-                //        content: [
-                //            { id: 1, name: "第一章節:標題" },
-                //            { id: 2, name: "第二章節:標題" },
-                //            { id: 3, name: "第三章節:標題" },
-                //        ],
-                //    },
-                //]);
-                //const courses = ref({
-                //    id:1,
-                //    video: "../video/testVideo2.mp4",
-                //    name: "課程名稱",
-                //    totalContent: 10,
-                //    buyer: 100,
-                //    price: "1000",
-                //    teacher: "Mr.C",
-                //    teackerAvatar: "../images/profilePic.PNG",
-                //    teackerInfo: "這裡是教師資訊頁裡的個人簡介",
-                //    intro: `有點遠她們台中避免客人搭配操作系統，
-                //      是從嚴格很有雙手打開貼圖，歐洲圖書館母親遇到
-                //      郵遞區號主動行情生日也要笑道女人，精選開放其實
-                //      書庫夏天緊張本地認證，最好的一名此次被人光臨倒是陽光，
-                //      工藝章節，歡迎我去本地下載常見規劃總體國內外構成檢索，
-                //      不喜歡保健讓她適用於。`,
-                //});
-                //const recommendProducts = ref({
-                //    id:1,
-                //    thumbnail: "../images/thumbnail.jpg",
-                //    name: "課程名稱",
-                //    price: "1000",
-                //    teacher: "Mr.C",
-                //});
 
-                const  id = @Html.Raw(ViewBag.ProductId);
-                const fetchCourseInfo = async (id) => {
+                
+                const courseId = ref(@Html.Raw(ViewBag.ProductId));
+                const chapterId = @Html.Raw(ViewBag.ChapterId);
+                const fetchCourseInfo = async (courseId, chapterId) => {
                     try {
 
-                        const response = await fetch(`/api/products/course/${id}`, {
+                        const response = await fetch(`/api/products/course/${courseId}/chapter/${chapterId}`, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json'
                             }
                         });
 
-                        const courseInfo = await response.json();
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
 
-                        courseContents.value = courseInfo.courseContent;
-                        courseDetail.value = courseInfo.courseDetail; 
-                        recommendProducts.value = courseInfo.otherCourses;
-                        //formatArrayThumbnail(recommendProducts.value); 
+                        const result = await response.json();
+
+                        courseContents.value = result.courseInfo.courseContent;
+                        courseDetail.value = result.courseInfo.courseDetail;
+                        recommendProducts.value = result.courseInfo.otherCourses;
+                        recentChapter.value = result.chapter;
                     }
                     catch (error) {
                         console.error('Error fetching CourseInfo:', error);
@@ -316,11 +292,14 @@
                 const courseContents = ref([]);
                 const courseDetail = ref([]);
                 const recommendProducts = ref([]);
-
+                const recentChapter = ref({});
+                const formattedVideoRoute = ref(computed(() => {
+                    return recentChapter.value.videoURL ? formatVideoRoute(recentChapter.value.videoURL) : '';
+                }));
 
                 return {
-                    courseContents, courseDetail, recommendProducts,
-                    Bookmark, toggleBookmark, formatThumbnailUrl
+                    courseContents, courseDetail, recommendProducts, formattedVideoRoute,
+                    Bookmark, toggleBookmark, formatThumbnailUrl, recentChapter, courseId
                 };
             },
         };
