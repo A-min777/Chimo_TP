@@ -36,21 +36,36 @@ namespace Chimo.WebAPI.Site.Services
 			return recommendedCourses;
 		}
 
+        /// <summary>
+        /// 透過課程ID與章節ID抓取完整的Chapter 內容
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <param name="chapterId"></param>
+        /// <returns></returns>
+        internal CourseChapterDto GetChapterById(int courseId, int chapterId)
+        {
+            string VideoPrefix = "~/video/";
+
+            return _repo.GetChapterById(courseId, chapterId).FormatVideoRoute(VideoPrefix);
+        }
+
         internal ProductInfoVm GetCourseInfoById(int id)
         {
-			string prefix = "~/images/";
+			string ImagePrefix = "~/images/";
+
+            string VideoPrefix = "~/video/";
 
             CourseContentDto CourseContent = _repo.GetCourseContentById(id);
 
 			CourseDto Course = _repo.GetCourseDetailById(id);
 
-            Course.FormatThumbnail(prefix); // 重組圖片檔名為絕對路徑
+            Course.FormatThumbnail(ImagePrefix); // 重組圖片檔名為絕對路徑
 
 			int BuyerCount = _repo.GetBuyerCountById(id);
 
 			int ChapterCount = _repo.GetChapterCountById(id);
 
-			string FirstVideo = _repo.GetFirstVideoById(id);
+			string FirstVideo = _repo.GetFirstVideoById(id).FormatVideoRoute(VideoPrefix);
 
             return new ProductInfoVm
             {
@@ -60,6 +75,16 @@ namespace Chimo.WebAPI.Site.Services
 				ChapterCount = ChapterCount,
 				FirstVideo = FirstVideo
             };
+        }
+
+        /// <summary>
+        /// 透過課程Id找到該課程的第一個章節id
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <returns></returns>
+        internal int GetFirstChapterId(int courseId)
+        {
+           return _repo.GetFirstChapterId(courseId);
         }
 
         internal CourseInfoVm GetMyCourseInfoById(int id)

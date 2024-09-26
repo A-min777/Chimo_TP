@@ -24,7 +24,6 @@ namespace Chimo.WebAPI.Site.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public int GetBuyerCountById(int CourseId)
         {
             int purchaseCount = _db.OrderItems
@@ -32,6 +31,27 @@ namespace Chimo.WebAPI.Site.Repositories
             .Count();
 
             return purchaseCount;
+        }
+
+        /// <summary>
+        ///  根據課程及章節Id抓取章節資訊
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <param name="chapterId"></param>
+        /// <returns></returns>
+        public CourseChapterDto GetChapterById(int courseId, int chapterId)
+        {
+            var chapterQuery = _db.CourseChapters
+                .AsNoTracking() 
+                .Include(cp => cp.CourseCatalog) 
+                .Include(cp => cp.CourseCatalog.Cours) 
+                .Where(cp => cp.CourseCatalog.CourseId == courseId && cp.Id == chapterId)
+                .FirstOrDefault();
+
+            var chapter = WebApiApplication._mapper
+               .Map<CourseChapterDto>(chapterQuery); // Chapter 轉 ChapterDto
+            
+            return chapter;
         }
 
         /// <summary>
@@ -98,6 +118,24 @@ namespace Chimo.WebAPI.Site.Repositories
             return courseDetail;
         }
 
+        public int GetFirstChapterId(int CourseId)
+        {
+            int firstChapterId = (from c in _db.Courses
+                                 where c.Id == CourseId
+                                 select (from cc in _db.CourseCatalogs
+                                         where cc.CourseId == c.Id
+                                         orderby cc.DisplayOrder
+                                         select (from ch in _db.CourseChapters
+                                                 where ch.CatalogId == cc.Id
+                                                 orderby ch.DisplayOrder
+                                                 select ch.Id)
+                                         .FirstOrDefault())
+                                 .FirstOrDefault())
+                     .FirstOrDefault();
+
+            return firstChapterId;
+        }
+
         /// <summary>
         /// 取得課程的第一支影片
         /// </summary>
@@ -126,7 +164,6 @@ namespace Chimo.WebAPI.Site.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public List<CourseDto> GetOtherCoursesById(int id)
         {
             var OtherCoursesQuery = _db.Courses

@@ -1,5 +1,5 @@
 ﻿using Chimo.WebAPI.Site.Models;
-using Chimo.WebAPI.Site.Services;
+﻿using Chimo.WebAPI.Site.Services;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,7 +11,12 @@ namespace Chimo.WebAPI.Site.Controllers
 {
     public class ProductsController : Controller
     {
-        // GET: Products
+        private readonly CourseService _service;
+
+        public ProductsController()
+        {
+            _service = new CourseService();
+        }
         public ActionResult ViewProduct(int id)
         {
             var service= new MemberService();
@@ -32,7 +37,10 @@ namespace Chimo.WebAPI.Site.Controllers
             if (hasPurchased)
             {
                 // 如果用戶已經購買過，重定向到商品詳細頁面
-                return RedirectToAction("Course", new { id });
+                // 取得該課程的第一個chapter
+                int chapterId = _service.GetFirstChapterId(id);
+
+                return RedirectToAction("Course", new { id, chapterId });
             }
             else
             {
@@ -46,9 +54,11 @@ namespace Chimo.WebAPI.Site.Controllers
             return View();
 		}
 
-		public ActionResult Course(int id)
+		public ActionResult Course(int id, int chapterId)
         {
             ViewBag.ProductId = id;
+            ViewBag.ChapterId = chapterId;
+            
             return View();
         }
     }
