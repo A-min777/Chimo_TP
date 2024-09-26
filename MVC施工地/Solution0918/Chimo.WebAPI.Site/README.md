@@ -52,4 +52,58 @@ ReadMe For Chimo.WebApi.Site
 				(網址為 https://localhost:44346/Products/ProductInfo/id)
 				 
 				 尚未完成功能: 顯示課程的第一支影片(目前資料庫存的還不是影片檔名)
-							  顯示老師icon (目前是直接寫死路徑)
+							  顯示老師icon (已完成)
+	
+	
+	------------------------------2024/9/24----------------------------------
+
+
+	[V] 修改Home/Index.html 及ProuctsController的ViewProduct, 點擊課程可以導向 
+		ProductInfo or Course
+	
+	[V] 在CourseApiController 新增 GetMyCourseInfo action,
+		在ViewModels/ 新增 CourseInfoVm
+
+	[V] 在Tools/ 新增 CourseDto_Ext, 在裡面新增兩個CourseDto的擴充方法，
+		將叫出來的圖片檔名組成檔案路徑
+
+	[V] 在 CourseService 新增 GetMyCourseInfoById method
+		在 ICourseRepository 新增 GetOtherCourseById method
+		在 CourseRepository 實做 GetOtherCourseById method
+
+	[V] 修改 Products/Courses.cshtml 及 Products/ProductInfo.cshtml
+		目前前端除了影片外呈現的都是資料庫叫出來的資料，處理Teacher頭像
+		及課程預覽圖若是null, 設成各自指定的default圖片路徑
+
+			
+	------------------------------2024/9/25----------------------------------
+
+	[V] 發現無法正確在前端呈現出老師icon,原因為忘記先將老師icon檔名組成路徑再呈現，
+		修改 Tools/CourseDto_Ext 的擴充方法，補上將老師icon檔名組成路徑，並補上判斷，
+		當檔名為Null或沒有內容時不做處理，讓前端能正確判斷，在沒有圖檔的情況下抓取指定default圖片
+
+	[V] 修改前端FormatThumbnailUrl函式，將處理沒有圖檔的步驟抽離成 handleThumbnailNull
+
+	[V] 修改 Views/Home/Index.cshtml, 讓首頁呈現的課程也能支援沒有圖片時抓取指定default圖片
+
+
+	------------------------------2024/9/25----------------------------------
+	
+	[V] 在 Tools/CoourseDto_Ext 新增兩個擴充方法，用來重組影片檔名為路徑
+
+	[V] 修改 ProductsController 的ViewProduct action, 若導向的頁面是
+		Course, 抓取該課程的第一個Chapter Id並回傳，修改Course action, 可以接收Chapter Id
+	
+	[V] 修改 CoursesApiController 的 GetMyCourseInfo 路由，讓網址改成可以接收 Chapter Id
+
+	[V] 在App_Start/RouteConfig 裡新增一個路由定義，讓ProductsController 的 Course action的路由
+		可以包含 /chapter/{chapterid}
+
+	[V] 在CourseSerivce新增 GetChapterById 跟 GetFirstChapterId
+		在ICourseRepository 新增以上兩個函式定義
+		在CourseRepository 實做以上兩個函式
+
+	[V] 修改 Products/ProductInfo.cshtml 可以正常顯示影片
+		修改 Products/Course.chtml 修改fetch為新路由，可以正常顯示影片，
+		並可以依照點選的章節改變網址顯示不同章節影片
+		
