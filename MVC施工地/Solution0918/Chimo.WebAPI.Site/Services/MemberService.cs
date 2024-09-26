@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using AutoMapper;
+using Chimo.WebAPI.Site.Models;
 
 namespace Chimo.WebAPI.Site.Services
 {
@@ -104,6 +105,35 @@ namespace Chimo.WebAPI.Site.Services
             _memberRepository.Update(member);
             return true;
 
+        }
+
+        internal string GetUserIdFromToken()
+        {
+            var token = AuthHelper.GetTokenFromCookie();
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+
+            var userIdClaim = jwtToken.Claims
+                .FirstOrDefault(claim => claim.Type == "sub")
+                .Value;
+
+            if (jwtToken == null || userIdClaim == null)
+            {
+                // 無效的 Token 或找不到 userId 
+                return null;
+            }
+
+            return userIdClaim;
+        }
+
+        internal bool HasPurchasedProduct(int userId, int id)
+        {
+            var member = _memberRepository.FindById(userId);
+            if (member == null) return false;
+
+            //todo 呼叫repo尋找購買紀錄
+
+            return true;
         }
     }
 }
