@@ -199,7 +199,21 @@ namespace Chimo.WebAPI.Site.Repositories
 
 			return purchasedCourse != null;
 		}
-	}
+
+        /// <summary>
+        /// 判斷會員是否存在
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        internal bool IsExistMember(int memberId)
+        {
+            var member = _db.Members
+                .AsNoTracking()
+                .FirstOrDefault(m => m.Id == memberId);
+
+            return member != null;
+        }
+    }
 }
 
 

@@ -122,59 +122,75 @@
         </div>
         <!-- 幻燈片end -->
         <!-- 我的課程 bg -->
-        @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
-        {
 
-            <div class="myPd">
-                <div id="carouselExampleControlsMyPd"
-                     class="card-container carousel slide mb-4">
-                    <h2 class="pb-3 pt-3 fw-bolder">我的課程</h2>
-                    <div class="carousel-inner" ref="carouselInner">
-                        <div v-for="(chunk,index) in purchasedCourses"
-                             :key="index"
-                             class="carousel-item"
-                             :class="{active:index===currentIndex}">
-                            <div class="d-flex">
-                                <div v-for="card in chunk"
-                                     :key="card.id"
-                                     class="mycard col-3 ps-2 pe-2">
-                                    <a href="course.html">
-                                        <img :src="formatThumbnailUrl(card.thumbnail, 'course')"
-                                             alt="course-thumbnail "
-                                             class="pb-2 col-lg-3 img-fluid rounded" />
-                                    </a>
-                                    <div class="prodct-info border-bottom">
-                                        <small class="tag p-1 rounded-1 fw-bolder">課程</small>
-                                        <p class="title pt-1">{{card.title}}</p>
-                                        <small>{{card.teacher}}</small>
+        @using Chimo.WebAPI.Site.Models
+        @{
+
+            bool isLoggedIn = AuthHelper.IsLoggedIn(Request);  // 檢查是否已登入
+            ViewData["IsLoggedIn"] = isLoggedIn;
+            // 從 Cookie 中獲取 JWT
+            var token = AuthHelper.GetTokenFromCookie();
+            Chimo.WebAPI.Site.Models.EFModels.Member member = null;
+
+            // 如果 token 存在，則解碼並獲取會員資料
+            if (isLoggedIn)
+            {
+                member = JwtUtility.DecodeToken(token);
+            }
+
+            if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+            {
+
+                <div class="myPd">
+                    <div id="carouselExampleControlsMyPd"
+                         class="card-container carousel slide mb-4">
+                        <h2 class="pb-3 pt-3 fw-bolder">我的課程</h2>
+                        <div class="carousel-inner" ref="carouselInner">
+                            <div v-for="(chunk,index) in purchasedChunks"
+                                 :key="index"
+                                 class="carousel-item"
+                                 :class="{active:index===currentIndex}">
+                                <div class="d-flex">
+                                    <div v-for="card in chunk"
+                                         :key="card.id"
+                                         class="mycard col-3 ps-2 pe-2">
+                                        <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
+                                            <img :src="formatThumbnailUrl(card.thumbnail, 'course')"
+                                                 alt="course-thumbnail "
+                                                 class="pb-2 col-lg-3 img-fluid rounded" />
+                                        </a>
+                                        <div class="prodct-info border-bottom">
+                                            <small class="tag p-1 rounded-1 fw-bolder">課程</small>
+                                            <p class="title pt-1">{{card.title}}</p>
+                                            <small>{{card.teacher.name}}</small>
+                                        </div>
+                                        <p class="price mt-2">NT${{card.price}}</p>
                                     </div>
-                                    <p class="price mt-2">NT${{card.price}}</p>
                                 </div>
                             </div>
-                        </div>
 
-                        <button class="carousel-control-prev"
-                                type="button"
-                                data-bs-target="#carouselExampleControlsMyPd"
-                                data-bs-slide="prev"
-                               >
-                            <span class="carousel-control-prev-icon"
-                                  aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next "
-                                type="button"
-                                data-bs-target="#carouselExampleControlsMyPd"
-                                data-bs-slide="next"
-                                >
-                            <span class="carousel-control-next-icon"
-                                  aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+                            <button class="carousel-control-prev"
+                                    type="button"
+                                    data-bs-target="#carouselExampleControlsMyPd"
+                                    data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"
+                                      aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next "
+                                    type="button"
+                                    data-bs-target="#carouselExampleControlsMyPd"
+                                    data-bs-slide="next">
+                                <span class="carousel-control-next-icon"
+                                      aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         }
+        
 
 
         <!-- 我的課程 end -->
@@ -210,8 +226,7 @@
                     <button class="carousel-control-prev"
                             type="button"
                             data-bs-target="#carouselExampleControls"
-                            data-bs-slide="prev"
-                           >
+                            data-bs-slide="prev">
                         <span class="carousel-control-prev-icon"
                               aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
@@ -219,10 +234,8 @@
                     <button class="carousel-control-next"
                             type="button"
                             data-bs-target="#carouselExampleControls"
-                            data-bs-slide="next"
-                            >
-                        <span class="carousel-control-next-icon"
-                              ></span>
+                            data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
                         <span class="visually-hidden">Next</span>
                     </button>
                 </div>
@@ -246,10 +259,11 @@
                     const purchasedCourses = ref([]);
                     const recommendedCourses = ref([]);
                     const chunkSize = ref(4);
+                    const memberId =  @Html.Raw(Json.Encode(member?.Id));
 
-                    const fetchPurchasedCourses = async () => {
+                    const fetchPurchasedCourses = async (memberId) => {
                         try {
-                            const response = await fetch('/api/courses/purchased', {
+                            const response = await fetch(`/api/courses/purchased/${memberId}`, {
                                 method: 'GET',
                                 headers: {
                                     'Content-Type': 'application/json'
@@ -259,7 +273,7 @@
                             purchasedCourses.value = await response.json();
                         }
                         catch (error) {
-                            console.error('Error fetching purchased courses:', error);
+                            console.error('無法正確fetch會員課程:', error);
                         }
                     };
 
@@ -268,7 +282,7 @@
                             const response = await fetch('/api/courses/recommended');
                             recommendedCourses.value = await response.json();
                         } catch (error) {
-                            console.error('Error fetching recommended courses:', error);
+                            console.error('無法正確fetch熱門推薦課程:', error);
                         }
                     };
 
@@ -296,11 +310,11 @@
 
                     const updateChunkSize = () => {
                         if (window.innerWidth < 700) {
-                            chunkSize.value = 1; 
+                            chunkSize.value = 1;
                         } else if (window.innerWidth < 900) {
-                            chunkSize.value = 2; 
+                            chunkSize.value = 2;
                         } else {
-                            chunkSize.value = 4; 
+                            chunkSize.value = 4;
                         }
 
                         const carousel = carouselInner.value;
@@ -312,7 +326,7 @@
                         }
                     };
 
-                    const purchasedChunks = computed(() => {                        
+                    const purchasedChunks = computed(() => {
                         const result = [];
 
                         for (let i = 0; i < purchasedCourses.value.length; i += chunkSize.value) {
@@ -331,9 +345,12 @@
                     });
 
                     onMounted(() => {
-                        fetchPurchasedCourses();
+                        if (memberId) {
+                            fetchPurchasedCourses(memberId);
+                        }
+                        
                         fetchRecommendedCourses();
-                        updateChunkSize(); 
+                        updateChunkSize();
                         window.addEventListener('resize', updateChunkSize);
                     });
 
