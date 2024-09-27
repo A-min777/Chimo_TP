@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "EditInfo";
 }
 
@@ -59,9 +58,11 @@
         position: relative;
         display: inline-block;
     }
+
         .profile:hover .camera {
             opacity: 0.9; /* 鼠標懸停時顯示 */
         }
+
     .camera {
         position: absolute;
         top: 50%;
@@ -72,6 +73,12 @@
     }
 
 
+
+    .readonly-field {
+        background-color: #e9ecef; /* 灰色背景 */
+        color: #6c757d; /* 淡灰色文字 */
+        cursor: not-allowed; /* 滑鼠指標變成禁止符號 */
+    }
 </style>
 <body>
     <div id="app">

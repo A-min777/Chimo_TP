@@ -85,7 +85,7 @@
 </style>
 <body>
 <div id="app">
-   
+
     <div class="container">
         <div class="row">
             <div class="col-4 mt-3 mb-3">
@@ -136,11 +136,11 @@
                     <hr />
                     <div class="d-flex flex-wrap">
                         <div class="cardContainer d-flex flex-wrap">
-                            <div v-for="card in cards"
+                            <div v-for="card in courses"
                                  :key="card.id"
                                  class="mycard col-lg-4 col-md-6 col-sm-12 p-3 pb-5 ps-0">
                                 <a href="@Url.Action("ViewProduct", "Products")">
-                                    <img :src="card.img"
+                                    <img :src="`../images/${card.img}`"
                                          alt="course-thumbnail "
                                          class="thumbnail pb-2 img-fluid rounded" />
                                 </a>

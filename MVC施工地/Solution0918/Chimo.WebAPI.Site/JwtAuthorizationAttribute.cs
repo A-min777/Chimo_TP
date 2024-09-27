@@ -1,54 +1,43 @@
 ﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Web;
+using System.Web.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Configuration; // 引入這個命名空間
 
-public class JwtAuthorizationAttribute : AuthorizeAttribute
+public class JwtAuthorizationAttribute : ActionFilterAttribute
 {
-    public override async Task OnAuthorizationAsync(HttpActionContext actionContext, CancellationToken cancellationToken)
+    public override void OnActionExecuting(ActionExecutingContext filterContext)
     {
-        var token = actionContext.Request.Headers.Authorization?.Parameter;
+        var request = filterContext.HttpContext.Request;
+        var jwtCookie = request.Cookies["jwtToken"];
 
-        if (string.IsNullOrEmpty(token))
+        if (jwtCookie == null || string.IsNullOrEmpty(jwtCookie.Value))
         {
-            actionContext.Response = actionContext.Request.CreateResponse(HttpStatusCode.Unauthorized);
+            filterContext.Result = new RedirectResult("~/login/Login");
             return;
         }
+        var token = jwtCookie.Value;
 
         try
         {
-            var key = Encoding.ASCII.GetBytes(System.Configuration.ConfigurationManager.AppSettings["JwtKey"]);
             var tokenHandler = new JwtSecurityTokenHandler();
-
+            var key = System.Text.Encoding.ASCII.GetBytes(ConfigurationManager.AppSettings["JwtKey"]); // 從Web.config讀取密鑰
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = false,
-                ValidateAudience = false,
-                ClockSkew = TimeSpan.Zero // 不允許時間差
+                ValidateAudience = false
             }, out SecurityToken validatedToken);
-
-            // 取得用戶資訊
-            var jwtToken = (JwtSecurityToken)validatedToken;
-            var usernameClaim = jwtToken.Claims.First(claim => claim.Type == ClaimTypes.Name);
-            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { usernameClaim }));
-
         }
         catch
         {
-            actionContext.Response = actionContext.Request.CreateResponse(HttpStatusCode.Unauthorized);
+            filterContext.Result = new HttpUnauthorizedResult();
         }
 
-        await base.OnAuthorizationAsync(actionContext, cancellationToken);
+        base.OnActionExecuting(filterContext);
     }
 }

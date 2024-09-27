@@ -90,7 +90,6 @@
                         errorMessage.value = "密碼與確認密碼不一致";
                         return;
                     }
-
                     try {
                         const response = await fetch('/api/register', {
                             method: 'POST',
