@@ -116,3 +116,12 @@ ReadMe For Chimo.WebApi.Site
 		若token是null就直接回傳，如此可支援不登入檢視ProductInfo
 			
 		
+	------------------------------2024/9/25----------------------------------
+
+	[V] 實做 CourseApiController 的 GetPurchasedCourses, 完成顯示首頁會員已購買課程的web api
+
+	[V] 在 CourseService 新增 GetPurchasedCourseById 函式，用來抓取會員已購買課程資訊
+		在 MemberRespository 新增 MemberRepository 函式， 用來根據Id判斷是否存在會員
+		在 ICourseRepository 新增 GetPurchasedCourseById 函式定義，並在 CourseRepository 實做，
+
+	[V] 修改 Home/Index.cshtml 呼叫 GetPurchasedCourses api, 可以在登入會員首頁顯示已購買課程
