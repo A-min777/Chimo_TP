@@ -197,7 +197,18 @@
     <script>
         const { createApp, ref, onMounted, computed } = Vue;
         const config = {
-            setup() {
+            props: {
+                courseId: {
+                    type: Number,
+                    required: true,
+                },
+                memberId: {
+                    type: Number,
+                    required: true,
+                },
+            },
+
+            setup(props) {
                 const Bookmark = ref({
                     isBooked: false,
                     defaultImg: "~/images/book_w.png",
@@ -206,6 +217,51 @@
                         return this.isBooked ? this.bookedImg : this.defaultImg;
                     },
                 });
+
+                const isCollection = ref(false);
+
+                const checkIsCollection = async () => { // 判斷會員是否有收藏課程
+                    try {
+                        const response = await fetch(`/api/collections/${props.memberId}`);
+                        const data = await response.json();
+                        
+                        isCollection.value = data.some((collection) => collection.id === props.courseId);
+                        // courseTitle.value = data.find((course) => course.id === props.courseId)?.courseName || '';
+                    } catch (error) {
+                        console.error("fetch 收藏課程失敗", error);
+                    }
+                };
+
+                const toggleCollection = async () => {
+                    try {
+                        if (isCollection.value) {
+                            // 移除收藏
+                            await fetch(`/api/updateCollections/${props.courseId}/${props.memberId}`, {
+                                method: 'DELETE',
+                            });
+                            isCollection.value = false;
+                        } else {
+                            // 新增收藏
+                            const response = await fetch(`/api/updateCollections`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    memberId: props.memberId,
+                                    courseId: props.courseId,
+                                }),
+                            });
+                            if (response.ok) {
+                                isCollection.value = true;
+                            } else {
+                                console.error("新增收藏失敗");
+                            }
+                        }
+                    } catch (error) {
+                        console.error("切換收藏狀態失敗", error);
+                    }
+                };
 
                 const formatThumbnailUrl = (thumbnailPath, target = "people") => {
 

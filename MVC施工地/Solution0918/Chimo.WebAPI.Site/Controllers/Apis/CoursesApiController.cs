@@ -52,7 +52,7 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
                 return InternalServerError(ex);
             }
 
-}
+        }
 
 		[HttpGet]
 		[Route("api/products/productinfo/{id}")]
