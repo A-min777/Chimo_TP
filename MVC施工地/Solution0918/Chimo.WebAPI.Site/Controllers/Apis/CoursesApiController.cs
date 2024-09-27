@@ -37,13 +37,22 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
 		}
 
 		[HttpGet]
-		[Route("api/courses/purchased")]
-		public IHttpActionResult GetPurchasedCourses()
+		[Route("api/courses/purchased/{memberId}")]
+		public IHttpActionResult GetPurchasedCourses(int memberId)
 		{
-			
+            try
+            {
+                var purchasedCourses = _service.GetPurchasedCourseById(memberId);
+                
+                return Ok(purchasedCourses);
+            }
 
-			return Ok();
-		}
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+
+        }
 
 		[HttpGet]
 		[Route("api/products/productinfo/{id}")]
@@ -54,6 +63,7 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
             {
                 return NotFound();
             }
+
 			return Ok(productInfo);
         }
 
