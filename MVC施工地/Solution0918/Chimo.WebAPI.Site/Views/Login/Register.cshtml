@@ -9,7 +9,7 @@
         max-height: 15vw;
     }
 </style>
-
+<body>
 <div id="app">
     <div class="sticky-top"></div>
     <div class="row">
@@ -65,7 +65,7 @@
     <script>
         const { createApp, ref } = Vue;
 
-        const app = createApp({
+        const config = {
             setup() {
                 const userName = ref('');
                 const userEmail = ref('');
@@ -75,6 +75,17 @@
 
                 // 註冊邏輯
                 const register = async () => {
+                    const emailRegex = /^[^\s]+[^\s]+\.[^\s]+$/; // Email 正則表達式
+
+                    if (!userEmail.value || !emailRegex.test(userEmail.value)) {
+                        errorMessage.value = "請輸入有效的 Email 格式";
+                        return;
+                    }
+                    if (!userPassword.value || userPassword.value.trim() === '') {
+                        errorMessage.value = "密碼不可為空";
+                        return;
+                    }
+
                     if (userPassword.value !== confirmPassword.value) {
                         errorMessage.value = "密碼與確認密碼不一致";
                         return;
@@ -119,8 +130,9 @@
                     errorMessage
                 };
             },
-        });
-
-        app.mount("#app");
+        };
+        const app = createApp(config);
+        app.mount("#app")
     </script>
 }
+</body>
