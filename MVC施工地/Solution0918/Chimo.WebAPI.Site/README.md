@@ -106,4 +106,13 @@ ReadMe For Chimo.WebApi.Site
 	[V] 修改 Products/ProductInfo.cshtml 可以正常顯示影片
 		修改 Products/Course.chtml 修改fetch為新路由，可以正常顯示影片，
 		並可以依照點選的章節改變網址顯示不同章節影片
+
+	[V] 修改 MembersApiController 的 GetMemberCourses 路由,避免路由衝突解決合併後首頁叫不到api問題
+
+	[V] 實作MemberService 的HasPurchasedProduct 呼叫Repository部分
+		在MemberRepository 裡新增函式 HasPurchased呼叫資料庫判斷是否有購買課程
+
+	[V] 修改 MemberService裡的 GetUserIdFromToken，若使用者有登入能夠正確抓取UserId
+		若token是null就直接回傳，如此可支援不登入檢視ProductInfo
+			
 		

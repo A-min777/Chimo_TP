@@ -82,7 +82,7 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
 
 
         [HttpGet]
-        [Route("api/courses/{id}")]
+        [Route("api/courses/{id:int}")]
         public IHttpActionResult GetMemberCourses(int id)
         {
             try

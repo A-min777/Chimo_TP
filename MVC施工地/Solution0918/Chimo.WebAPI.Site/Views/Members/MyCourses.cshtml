@@ -83,7 +83,7 @@
         border-radius: 50%;
     }
 </style>
-
+<body>
 <div id="app">
 
     <div class="container">
@@ -175,7 +175,7 @@
     @using Chimo.WebAPI.Site.Models
     const { createApp, ref, onMounted } = Vue;
 
-    createApp({
+        const config = {
         setup() {
             const member = ref({
                 id: 0,
@@ -235,7 +235,10 @@
 
             return { member, courses };
         }
-    }).mount("#app");
+        }
+        const app = createApp(config);
+        app.mount("#app")
     </script>
 
 }
+</body>
