@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "EditInfo";
 }
 
@@ -10,7 +9,7 @@
 
     .list-group {
         position: sticky;
-        top: 17vh;
+        top: 175px;
     }
 
     .list-group-item img {
@@ -55,77 +54,90 @@
             color: #fff;
         }
 
-    .avatarA {
-        border-radius: 50%;
+    .profile {
+        position: relative;
+        display: inline-block;
+    }
+
+        .profile:hover .camera {
+            opacity: 0.9; /* 鼠標懸停時顯示 */
+        }
+
+    .camera {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+
+
+    .readonly-field {
+        background-color: #e9ecef; /* 灰色背景 */
+        color: #6c757d; /* 淡灰色文字 */
+        cursor: not-allowed; /* 滑鼠指標變成禁止符號 */
     }
 </style>
 
 <div id="app">
-
     <div class="container">
         <div class="row">
             <div class="col-4 mt-3 mb-3">
                 <div class="text-center list-group align-middle">
                     <div class="list-group-item">
-                        <img :src="member.avatar"
-                             alt="profile"
-                             class="avatarA img-fluid m-3" />
+                        <div class="profile btn border-0">
+                            <input type="file" accept="image/*" v-on:change="updateAvatar" style="display: none;" id="fileInput" />
+                            <img :src="member.avatar"
+                                 alt="profilePic"
+                                 class="avatarA img-fluid m-3"
+                                 v-on:click="document.getElementById('fileInput').click()" />
+                            <img src="~/images/camera.png"
+                                 alt="editProfile"
+                                 class="camera img-fluid " />
+                        </div>
+
                         <h4 class="fw-bolder">{{member.name}}</h4>
                         <p>
                             會員點數：<span class="specialCount">{{member.point}}</span>
                             pt
-                            <button class="chargeTag btn btn-warning p-1 ms-2">
+                            <a href="/Members/TopUp" class="chargeTag btn btn-warning p-1 ms-2">
                                 儲值
-                            </button>
+                            </a>
                         </p>
                     </div>
-                    <a href="#"
-                       class="list-group-item list-group-item-action active align-content-center border-0 rounded"
-                       aria-current="true">
+                    <a href="#" class="list-group-item list-group-item-action active align-content-center border-0 rounded" aria-current="true">
                         會員資料
                     </a>
-                    <a href="myCourses.html"
-                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
-                       aria-current="true">
+                    <a href="/Members/MyCourses" class="list-group-item list-group-item-action align-content-center border-0 rounded" aria-current="true">
                         我的課程
                     </a>
-                    <a href="myCollections.html"
-                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
-                       aria-current="true">
+                    <a href="/Members/MyCollections" class="list-group-item list-group-item-action align-content-center border-0 rounded" aria-current="true">
                         我的收藏
                     </a>
-                    <a href="myOrders.html"
-                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
-                       aria-current="true">
+                    <a href="/Members/MyOrders" class="list-group-item list-group-item-action align-content-center border-0 rounded" aria-current="true">
                         購買紀錄
                     </a>
                 </div>
             </div>
-            <div class="content col-8 mt-3 mb-3">
+            <div class="content col-8 mt-3 mb-3 rounded">
                 <section class="m-4">
                     <div class="d-flex justify-content-between">
                         <h4 class="fw-bolder">會員資料</h4>
                         <h6 class="update fw-bolder">
-                            上次修改時間 {{member.updateTime}}
+                            上次修改時間 {{ member.updatedDate }} <!-- 這裡可以使用 computed 來格式化 -->
                         </h6>
                     </div>
 
                     <div class="d-flex flex-wrap">
                         <div class="mb-3 col-6 p-2">
-                            <label for="exampleFormControlInput1"
-                                   class="form-label fw-bolder">姓名</label>
-                            <input type="text"
-                                   class="form-control"
-                                   id="name"
-                                   :placeholder="member.name" />
+                            <label for="name" class="form-label fw-bolder">姓名</label>
+                            <input type="text" class="form-control" id="name" v-model="member.name" :placeholder="member.name" />
                         </div>
-
                         <div class="mb-3 col-6 p-2">
-                            <label for="exampleFormControlInput1"
-                                   class="form-label fw-bolder">性別</label>
-                            <select v-model="member.gender"
-                                    class="form-select"
-                                    aria-label="Default select example">
+                            <label for="gender" class="form-label fw-bolder">性別</label>
+                            <select v-model="member.gender" class="form-select" aria-label="Default select example">
                                 <option selected>選擇性別</option>
                                 <option value="1">男</option>
                                 <option value="2">女</option>
@@ -133,65 +145,207 @@
                             </select>
                         </div>
                         <div class="mb-3 col-6 p-2">
-                            <label for="exampleFormControlInput1"
-                                   class="form-label fw-bolder">電話</label>
-                            <input type="text"
-                                   class="form-control"
-                                   id="phone"
-                                   :placeholder="member.phone" />
+                            <label for="phone" class="form-label fw-bolder">電話</label>
+                            <input type="text" class="form-control" id="phone" :placeholder="member.phone" v-model="member.phone" />
                         </div>
                         <div class="mb-3 col-6 p-2">
-                            <label for="exampleFormControlInput1"
-                                   class="form-label fw-bolder">信箱</label>
-                            <input type="email"
-                                   class="form-control"
-                                   id="email"
-                                   :placeholder="member.email" />
+                            <label for="email" class="form-label fw-bolder">信箱</label>
+                            <input type="email" class="form-control readonly-field" id="email" :placeholder="member.email" v-model="member.email" disabled />
                         </div>
                         <div class="mb-3 col-6 p-2">
-                            <label for="exampleFormControlTextarea1"
-                                   class="form-label fw-bolder">個人簡介</label>
-                            <textarea class="form-control"
-                                      id="exampleFormControlTextarea1"
-                                      rows="3"
-                                      :placeholder="member.intro"></textarea>
+                            <label for="intro" class="form-label fw-bolder">個人簡介</label>
+                            <textarea class="form-control" id="intro" rows="3" :placeholder="member.intro" v-model="member.intro"></textarea>
                         </div>
                     </div>
-                    <div class="text-end">
-                        <button class="changePwd btn btn-outline-danger me-2">
-                            重設密碼
-                        </button>
-                        <button class="updateBtn btn">修改</button>
-                    </div>
+
+                    <div v-if="message" class="alert" :class="messageType">{{ message }}</div>
+
+                    <section class="m-4">
+                        <div class="text-end">
+                            <a href="@Url.Action("UpdatePassword", "Members")" class="changePwd btn btn-outline-danger me-2" v-on:click="resetPassword">重設密碼</a>
+                            
+                            <button class="updateBtn btn" v-on:click="confirmUpdate">修改</button>
+                        </div>
+                    </section>
                 </section>
             </div>
         </div>
     </div>
+</div>
+@section scripts{
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
+    <script>
+    @using Chimo.WebAPI.Site.Models
+    const { createApp, ref, onMounted } = Vue;
+    createApp({
+        setup() {
 
-    @section scripts{
-        <script src="~/Scripts/bootstrap.bundle.min.js"></script>
-        <script src="~/Scripts/vue.global.js"></script>
-        <script src="~/Scripts/myheader.js"></script>
-        <script>
-            const { createApp, ref } = Vue;
-            const config = {
-                setup() {
-                    const member = ref({
-                        id: 1,
-                        name: "會員A",
-                        avatar:"../images/profilePic5.PNG",
-                        point: 100,
-                        updateTime: "2024/09/11",
-                        gender: 3,
-                        phone: "01-23456789",
-                        email: "abc@gmail.com",
-                        intro: "修改個人簡介",
-                    });
-                    return { member };
-                },
+            //更新頭像用的程式構想
+            /*
+            const updateAvatar = async (event) => {
+                const file = event.target.files[0];
+            
+                if (file) {
+                    if (file.size > maxSize) {
+                        showToast('檔案大小不能超過 2MB', 'text-danger');
+                        return;
+                    }
+            
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        member.value.avatar = e.target.result; // 即時預覽
+                    };
+                    reader.readAsDataURL(file);
+            
+                    const formData = new FormData();
+                    formData.append('avatar', file);
+            
+                    try {
+                        const response = await fetch('/api/upload-avatar', {
+                            method: 'POST',
+                            body: formData,
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            member.value.avatar = data.avatarUrl; // 更新圖片 URL
+                            showToast('上傳成功！', 'text-success'); // 成功提示
+                        } else {
+                            showToast('上傳失敗: ' + data.message, 'text-danger');
+                        }
+                    } catch (error) {
+                        console.error('錯誤:', error);
+                        showToast('上傳時發生錯誤', 'text-danger');
+                    }
+                }
             };
-            const app = createApp(config);
-            app.mount("#app");
-        </script>
-    }
+            */
+            const member = ref({
+                id: 0,
+                name: "",
+                avatar: "",
+                point: 0,
+                gender: 0,
+                phone: "",
+                email: "",
+                intro: "",
+                updatedDate: "",
+            });
+
+            const originalMember = ref({ ...member.value });
+            const message = ref(""); // 提示訊息
+            const messageType = ref(""); // 訊息類型
+
+            const fetchMemberProfile = async () => {
+                try {
+                    const token = '@AuthHelper.GetTokenFromCookie()';
+                    console.log("獲取的Token:", token);
+
+                    // 使用 decodeToken 解碼會員資料
+                    const decodedMember = decodeToken(token);
+                    member.value.id = decodedMember.Id; // 確認這裡的屬性名稱正確
+                    member.value.name = decodedMember.unique_name;
+                    member.value.email = decodedMember.Email;
+                    member.value.point = decodedMember.Point;
+                    member.value.avatar = decodedMember.ProfileImage;
+                    member.value.intro = decodedMember.Intro;
+                    member.value.gender = decodedMember.Gender;
+                    member.value.updatedDate = formatDate(decodedMember.updatedDate); // 格式化日期
+
+                    originalMember.value = { ...member.value }; // 獲取後儲存原始值
+
+                    // 接下來可以用 decodedMember.id 來獲取更詳細的會員資料
+                    const response = await fetch(`/api/profile/${member.value.id}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('網路請求失敗');
+                    }
+
+                    const data = await response.json();
+                    Object.assign(member.value, data);
+                    member.value.updatedDate = formatDate(data.updatedDate); // 格式化日期
+                    originalMember.value = { ...member.value }; // 更新原始值
+                } catch (error) {
+                    console.error("獲取會員資料失敗:", error);
+                }
+            };
+
+            const formatDate = (dateString) => {
+                const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                const date = new Date(dateString);
+                return date.toLocaleDateString('zh-TW', options).replace(/\//g, '/'); // 格式化為 YYYY/MM/DD
+            };
+
+            const confirmUpdate = () => {
+                // 比較變更的欄位
+                const changedFields = [];
+                for (let key in member.value) {
+                    if (member.value[key] !== originalMember.value[key]) {
+                        if (key === 'name') changedFields.push('姓名');
+                        if (key === 'phone') changedFields.push('電話');
+                        if (key === 'gender') changedFields.push('性別');
+                        if (key === 'intro') changedFields.push('個人簡介');
+
+                    }
+                }
+
+                if (changedFields.length > 0) {
+                    if (confirm(`以下欄位已更改：${changedFields.join(', ')}\n確定要提交變更嗎？`)) {
+                        updateProfile();
+                    }
+                } else {
+                    alert("沒有欄位被更改");
+                }
+            };
+
+            const updateProfile = async () => {
+                try {
+                    const token = '@AuthHelper.GetTokenFromCookie()';
+                    const response = await fetch(`/api/profile/${member.value.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(member.value)
+                    });
+                    if (!response.ok) {
+                        throw new Error('更新資料失敗');
+                    } else {
+                        alert("更新成功");
+                        originalMember.value = { ...member.value }; // 更新成功後，將新值設為原始值
+                        window.location.reload();
+
+                    }
+                } catch (error) {
+                    console.error("更新會員資料失敗:", error);
+                }
+            };
+
+            const resetPassword = () => {
+                console.log("重設密碼功能尚未實作");
+            };
+
+            function decodeToken(token) {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                return JSON.parse(jsonPayload);
+            }
+
+            onMounted(fetchMemberProfile); // 組件掛載時自動獲取會員資料
+
+            return { member, message, messageType, confirmUpdate, resetPassword };
+        }
+    }).mount("#app");
+    </script>
+}
+
 

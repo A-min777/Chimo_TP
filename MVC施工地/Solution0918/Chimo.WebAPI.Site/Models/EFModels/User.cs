@@ -19,7 +19,7 @@ namespace Chimo.WebAPI.Site.Models.EFModels
         public string Account { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(70)]
         public string Password { get; set; }
 
         [StringLength(500)]

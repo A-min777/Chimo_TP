@@ -11,21 +11,25 @@ using System.Configuration; // 用於讀取 Web.config 中的設定
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using AutoMapper;
+using Chimo.WebAPI.Site.Models;
 
 namespace Chimo.WebAPI.Site.Services
 {
     public class MemberService
     {
         private MemberRepository _memberRepository;
+        private readonly IMapper _mapper; 
 
 
         public MemberService()
         {
             _memberRepository = new MemberRepository();
         }
-        public MemberService(MemberRepository memberRepository)
+        public MemberService(MemberRepository memberRepository ,IMapper mapper)
         {
             _memberRepository = memberRepository;
+            _mapper = mapper; 
         }
 
         /// <summary>
@@ -33,24 +37,127 @@ namespace Chimo.WebAPI.Site.Services
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        public bool Verify(LoginDto dto)
+        public (bool IsSuccess, string Message, Member Member) VerifyMember(LoginDto dto)
         {
-            // 從資料庫中獲取用戶資料
             var member = _memberRepository.Get(dto.Account);
 
-            // 如果用戶不存在或密碼不匹配，則返回 false
-            if (member == null || !HashUtility.VerifyPasswordHash(dto.Password, member.Password))
+            if (member == null)
             {
-                return false; // 錯誤的用戶名或密碼
+                return (false, "查無此帳號", null); // 查無此帳號
             }
 
-            // 檢查 Status，如果是 0 則不能登入
+            if (!HashUtility.VerifyPasswordHash(dto.Password, member.Password))
+            {
+                return (false, "密碼錯誤", null); // 密碼錯誤
+            }
+
             if (member.Status == 0)
             {
-                return false; // 用戶狀態為禁用
+                return (false, "帳號已被停用", null); // 帳號被停用
             }
 
-            return true; // 驗證成功
+            return (true, "驗證成功", member); // 返回會員對象
+        }
+        public Member GetMemberByAccount(string account)
+        {
+            // 根據帳號查詢會員資料，返回 Member 物件
+            return _memberRepository.Get(account);
+        }
+
+        public ProfileDto GetMemberProfileById(int Id)
+        {
+
+            return _memberRepository.GetMemberProfile(Id);
+        }
+
+        public ProfileDto UpdateMemberProfile(ProfileDto updatedProfile)
+        {
+            var existingMember = _memberRepository.FindById(updatedProfile.Id);
+            if (existingMember == null) return null; // 確保如果找不到會員，返回 null
+
+            // 更新會員資料
+            existingMember.Name = updatedProfile.Name;
+            existingMember.Intro = updatedProfile.Intro;
+            existingMember.Gender = updatedProfile.Gender;
+            existingMember.Phone = updatedProfile.Phone;
+            existingMember.UpdatedDate = DateTime.Now; // 設定為當前時間
+
+            _memberRepository.Update(existingMember); // 使用 Repository 來更新資料
+
+            return new ProfileDto
+            {
+                Id = existingMember.Id,
+                Name = existingMember.Name,
+                Intro = existingMember.Intro,
+                Gender = existingMember.Gender,
+                Phone = existingMember.Phone,
+                UpdatedDate = existingMember.UpdatedDate,
+            };
+        }
+
+
+        public List<CourseDto> GetMemberCoursesById(int Id)
+        {
+
+            // 調用 CourseRepository 的方法來獲取會員課程
+            var courses = _memberRepository.GetMemberCourse(Id);
+
+            // 如果找不到課程，返回 null
+            if (courses == null) return null;
+
+            return courses;
+        }
+
+
+        public List<CollectionsDto> GetMemberCollectionsById(int Id)
+        {
+
+            var collections = _memberRepository.GetMemberCollections(Id);
+
+            if (collections == null) return null;
+
+            return collections;
+        }
+
+        public List<OrderDto> GetMemberOrderById(int Id)
+        {
+
+            var order = _memberRepository.GetMemberOrder(Id);
+
+            if (order == null) return null;
+
+            return order;
+        }
+
+        internal string GetUserIdFromToken()
+        {
+            var token = AuthHelper.GetTokenFromCookie();
+            if(token == null) return null;
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+
+            var userIdClaim = jwtToken.Claims
+                .FirstOrDefault(claim => claim.Type == "Id")
+                .Value;
+
+            if (jwtToken == null || userIdClaim == null)
+            {
+                // 無效的 Token 或找不到 userId 
+                return null;
+            }
+
+            return userIdClaim;
+        }
+
+        internal bool HasPurchasedProduct(int userId, int id)
+        {
+            var member = _memberRepository.FindById(userId);
+            if (member == null) return false;
+
+			bool hasPurchased = _memberRepository.HasPurchased(userId, id);
+
+			return hasPurchased;
         }
     }
 }

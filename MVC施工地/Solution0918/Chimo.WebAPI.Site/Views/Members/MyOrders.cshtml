@@ -1,0 +1,208 @@
+﻿
+@{
+    ViewBag.Title = "MyOrders";
+}
+
+<style>
+    body {
+        background-color: #eee;
+    }
+
+    .list-group {
+        position: sticky;
+        top: 175px;
+    }
+
+    .list-group-item img {
+        max-height: 10vw;
+    }
+
+    .list-group-item {
+        min-height: 60px;
+        font-size: 1.2rem;
+        font-weight: bolder;
+    }
+
+        .list-group-item.active {
+            background-color: #5b468b;
+        }
+
+    .chargeTag {
+        color: #fff;
+    }
+
+    .content {
+        background-color: #fff;
+    }
+
+    .status {
+        color: #5b468b;
+    }
+
+    .thumbnail {
+        transition: transform 0.3s ease;
+        will-change: transform;
+    }
+
+        .thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+    .avatarA {
+        border-radius: 50%;
+    }
+</style>
+
+<div id="app">
+    <div class="container">
+        <div class="row">
+            <div class="col-4 mt-3 mb-3">
+                <div class="text-center list-group">
+                    <div class="list-group-item">
+                        <img :src="member.avatar"
+                             alt="profile"
+                             class="avatarA img-fluid m-3" />
+                        <h4 class="fw-bolder">{{member.name}}</h4>
+                        <p>
+                            會員點數：<span class="specialCount">{{member.point}}</span>
+                            pt
+                            <a href="/Members/TopUp" class="chargeTag btn btn-warning p-1 ms-2">
+                                儲值
+                            </a>
+                        </p>
+                    </div>
+
+                    <a href="/Members/EditInfo"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        會員資料
+                    </a>
+                    <a href="/Members/MyCourses"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        我的課程
+                    </a>
+                    <a href="/Members/MyCollections"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        我的收藏
+                    </a>
+                    <a href="#"
+                       class="list-group-item list-group-item-action active align-content-center border-0 rounded"
+                       aria-current="true">
+                        購買紀錄
+                    </a>
+                </div>
+            </div>
+            <div class="content col-8 mt-3 mb-3">
+                <section class="m-4">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="fw-bolder">購買紀錄</h4>
+                    </div>
+                    <hr />
+                    <div v-for="order in orders" :key="order.id">
+                        <div class="d-flex justify-content-between">
+                            <h6>{{ new Date(order.createdDate).toLocaleDateString() }}</h6>
+                            <h6 class="status fw-bolder">
+                                <h6 class="status fw-bolder">
+                                    <span v-if="order.status === 1" style="color:lawngreen">[ 已結帳 ]</span>
+                                    <span v-else-if="order.status === 0" style="color:darkred">[ 部分退款 ]</span>
+                                    <span v-else-if="order.status === -1" style="color:red">[ 全額退款 ]</span>
+                                </h6>
+                            </h6>
+                        </div>
+
+                        <div v-for="item in order.orderItems" :key="item.id" class="row align-items-center">
+                            <div class="col-md-5 col-sm-12 mt-1">
+                                <a href="course.html">
+                                    <img :src="`../images/${item.thumbnail}`" alt="order-thumbnail" class="thumbnail img-fluid rounded mt-2" />
+                                </a>
+                            </div>
+                            <div class="col-md-6 col-sm-12 mt-2">
+                                <h5 class="fw-bolder">
+                                    {{ item.courseName }}
+                                    <span v-if="item.status === 0" class="text-danger">(已退貨)</span>
+                                </h5>
+                                <small>教師 | {{ item.teacherName }}</small>
+                                <h6 class="mt-2 fw-bolder">NT${{ item.price }}</h6>
+                            </div>
+                        </div>
+
+                        <h5 class="text-end mt-3 fw-bolder">總金額 NT${{ order.totalAmount }}</h5>
+
+                        <hr />
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@section scripts{
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
+    <script>
+@using Chimo.WebAPI.Site.Models
+const { createApp, ref, onMounted } = Vue;
+
+createApp({
+    setup() {
+        const member = ref({
+            id: 0,
+            name: "",
+            avatar: "",
+            point: 0,
+        });
+
+
+                const orders = ref([]);
+                const fetchMemberOrder = async () => {
+                    try {
+                        const token = '@AuthHelper.GetTokenFromCookie()';
+                        const response = await fetch(`/api/order/${member.value.id}`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('獲取訂單資料失敗');
+                        }
+                        const data = await response.json();
+                        orders.value = data;  // 直接將數據設置到 orders 中
+                    } catch (error) {
+                        console.error("獲取訂單資料失敗:", error);
+                    }
+                };
+
+        onMounted(async () => {
+            const token = '@AuthHelper.GetTokenFromCookie()';
+            const decodedMember = decodeToken(token);
+            member.value.id = decodedMember.Id;
+            member.value.name = decodedMember.unique_name;
+            member.value.point = decodedMember.Point;
+            member.value.avatar = decodedMember.ProfileImage;
+
+            await fetchMemberOrder(); //
+        });
+
+        function decodeToken(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+
+            return JSON.parse(jsonPayload);
+        }
+
+        return { member, orders };
+    }
+}).mount("#app");
+    </script>
+}
+
+

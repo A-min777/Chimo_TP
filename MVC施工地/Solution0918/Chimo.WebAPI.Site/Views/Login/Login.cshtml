@@ -1,63 +1,153 @@
-﻿@model Chimo.WebAPI.Site.Models.ViewModels.LoginVm
-
+﻿
 @{
     ViewBag.Title = "Login";
 }
 <link href="~/Content/myLogin.css" rel="stylesheet" />
 
 <div id="app">
-
     <div class="row">
         <div class="loginPic col-sm-12 col-md-8">
             <img src="../images/loginPic.jpg" alt="loginPic" class="img-fluid" />
         </div>
         <div class="loginForm col-md-4 p-5">
-            <div class="d-flex justify-content-between ">
+            <div class="d-flex justify-content-between">
                 <h2 class="mb-3">登入</h2>
-                <a href="/Login/Register"><small class="btn btn-sm btn-link fw-bolder pt-2"  style="text-decoration:none; color:#5b468b">快速註冊</small></a>
+                <a href="/Login/Register">
+                    <small class="btn btn-sm btn-link fw-bolder pt-2" style="text-decoration:none; color:#5b468b">快速註冊</small>
+                </a>
             </div>
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div v-if="errorMessage" class="alert alert-danger fw-bolder" role="alert">{{ errorMessage }}</div>
 
-            <input type="text"
-                   name="userEmail"
-                   id="userEmail"
+        <form v-on:submit.prevent="submitForm" novalidate>
+            <input type="email"
+                   v-model="email"
                    placeholder="電子信箱"
                    class="form-control mb-3"
-                   style="min-width: 200px" />
-            @Html.ValidationMessageFor(model => model.Account, "", new { @class = "text-danger" })
+                   style="min-width: 200px"
+                   required />
+
 
             <input type="password"
-                   name="userPassword"
-                   id="userPassword"
+                   v-model="password"
                    placeholder="密碼"
                    class="form-control mb-3"
-                   style="min-width: 200px; color: #5b468b" />
-            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                   style="min-width: 200px; color: #5b468b"
+                   required />
 
+            
 
-            <button style="height: 65px"
-                    class="loginBtn btn align-center col-12 mb-1 p-3">
-                登入
-            </button>
+            <input type="submit" name="login" value="登入" style="height: 65px"
+                   v-on:click="login"
+                   class="loginBtn btn align-center col-12 mb-1 p-3" />
+
+        </form>
+            
             <a href="ForgotPassword" class="btn col-12 mb-3 p-3">忘記密碼</a>
 
+            
         </div>
     </div>
 </div>
 
-
-@section Scripts {
+@section scripts {
     <script src="~/Scripts/vue.global.js"></script>
-    <script src="~/Scripts/myheader.js"></script>
+    <script src="~/Scripts/myheaderx`x.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+
     <script>
         const { createApp, ref } = Vue;
-        const config = {
+
+        const app = createApp({
             setup() {
-                return {};
+                const email = ref('');
+                const password = ref('');                
+                const errorMessage = ref('');
+                const submitForm = () => {
+                    const emailInput = document.querySelector('input[type="email"]');
+                    const passwordInput = document.querySelector('input[type="password"]');
+
+                    emailInput.setCustomValidity(email.value ? '' : '請輸入信箱');
+                    passwordInput.setCustomValidity(password.value ? '' : '請輸入密碼');
+
+                    if (!email.value ) {
+                        emailInput.reportValidity();                        
+                        return; 
+                    }
+                    else if (!password.value) {                        
+                        passwordInput.reportValidity();
+                        return; 
+                    }
+
+                    login(); // 如果驗證通過，執行登入
+                };
+
+                // 儲存 JWT 到 Cookie
+                const saveTokenToCookie = (token) => {
+                    document.cookie = `jwtToken=${token}; path=/; secure; samesite=strict`;
+                };
+
+                // 從 Cookie 中取得 JWT
+                const getTokenFromCookie = () => {
+                    const name = "jwtToken=";
+                    const decodedCookie = decodeURIComponent(document.cookie);
+                    const cookies = decodedCookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        let cookie = cookies[i].trim();
+                        if (cookie.indexOf(name) === 0) {
+                            return cookie.substring(name.length, cookie.length);
+                        }
+                    }
+                    return null;
+                };
+
+              
+
+                // 登入邏輯
+                const login = async () => {
+                    try {
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                Account: email.value,
+                                Password: password.value
+                            })
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            const token = data.token;
+
+                            if (token) {
+                                saveTokenToCookie(token);  // 儲存 token 到 cookie
+                                window.location.href = "/Home/Index"; // 導向主頁
+                            } else {
+                                errorMessage.value = "未收到有效的 Token";
+                            }
+                        } else {
+                            const errorData = await response.json(); // 獲取錯誤物件
+                            errorMessage.value = errorData.message; // 只取出 message 部分
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        errorMessage.value = "無法連接伺服器";
+                    }
+                };
+
+                return {
+                    email,
+                    password,
+                    login,
+                    errorMessage,
+                    submitForm,
+                };
             },
-        };
-        const app = createApp(config);
+        });
+
         app.mount("#app");
     </script>
+
     @Scripts.Render("~/bundles/jqueryval")
 }

@@ -95,7 +95,7 @@
 	JOIN OrderItems OI ON OI.CourseId = C.Id AND OI.Status = 1
 	JOIN Orders O ON OI.OrderId = O.Id
 	JOIN Members M ON O.MemberId = M.Id
-	WHERE M.Id = 10
+	WHERE M.Id = 11
 
 
 --§Úªº¦¬ÂÃ

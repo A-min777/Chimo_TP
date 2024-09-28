@@ -1,0 +1,239 @@
+﻿
+@{
+    ViewBag.Title = "MyCourses";
+}
+
+<style>
+    body {
+        background-color: #eee;
+    }
+
+    .list-group {
+        position: sticky;
+        top: 175px;
+    }
+
+    .list-group-item img {
+        max-height: 10vw;
+    }
+
+    .list-group-item {
+        min-height: 60px;
+        font-size: 1.2rem;
+        font-weight: bolder;
+    }
+
+        .list-group-item.active {
+            background-color: #5b468b;
+        }
+
+    .chargeTag {
+        color: #fff;
+    }
+
+    .content {
+        background-color: #fff;
+    }
+
+    .cardContainer {
+        margin: 0 auto;
+    }
+
+    .mycard p {
+        font-weight: bolder;
+        font-size: large;
+    }
+
+    .title {
+        min-height: 60px;
+        max-height: 60px;
+        overflow: hidden;
+    }
+
+        .title:hover {
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #5b468b #fff;
+        }
+
+    .mycard img {
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .mycard .tag {
+        background-color: #5b468b;
+        color: #fff;
+    }
+
+    .thumbnail {
+        transition: transform 0.3s ease;
+        will-change: transform;
+    }
+
+        .thumbnail:hover {
+            transform: scale(1.1);
+        }
+
+    .refund {
+        align-items: baseline;
+    }
+
+    .avatarA {
+        border-radius: 50%;
+    }
+</style>
+
+<div id="app">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-4 mt-3 mb-3">
+                <div class="text-center list-group">
+                    <div class="list-group-item">
+                        <img :src="member.avatar"
+                             alt="profile"
+                             class="avatarA img-fluid m-3" />
+                        <h4 class="fw-bolder">{{member.name}}</h4>
+                        <p>
+                            會員點數：<span class="specialCount">{{member.point}}</span>
+                            pt
+                            <a href="/Members/TopUp" class="chargeTag btn btn-warning p-1 ms-2">
+                                儲值
+                            </a>
+                        </p>
+                    </div>
+
+                    <a href="/Members/EditInfo"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        會員資料
+                    </a>
+                    <a href="#"
+                       class="list-group-item list-group-item-action active align-content-center border-0 rounded"
+                       aria-current="true">
+                        我的課程
+                    </a>
+                    <a href="/Members/MyCollections"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        我的收藏
+                    </a>
+                    <a href="/Members/MyOrders"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        購買紀錄
+                    </a>
+                </div>
+            </div>
+            <div class="content col-8 mt-3 mb-3 rounded">
+                <section class="m-4">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="fw-bolder">我的課程</h4>
+                    </div>
+                    <hr />
+                    <div class="d-flex flex-wrap">
+                        <div class="cardContainer d-flex flex-wrap">
+                            <div v-for="card in courses"
+                                 :key="card.id"
+                                 class="mycard col-lg-4 col-md-6 col-sm-12 p-3 pb-5 ps-0">
+                                <a href="@Url.Action("ViewProduct", "Products")">
+                                    <img :src="`../images/${card.img}`"
+                                         alt="course-thumbnail "
+                                         class="thumbnail pb-2 img-fluid rounded" />
+                                </a>
+                                <div class="prodct-info">
+                                    <small class="tag p-1 rounded-1 fw-bolder">課程</small>
+                                    <p class="title pt-1">{{card.title}}</p>
+                                    <small>{{card.teacher}}</small>
+                                </div>
+                                <p class="price border-top border-bottom pt-2 pb-2">
+                                    NT${{card.price}}
+                                </p>
+                                <div class="refund d-flex justify-content-between align-items-center">
+                                    <small>購買日期：{{card.buyDate}}</small>
+                                    <button class="btn btn-danger text-nowrap me-1">
+                                        退貨
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
+    <script>
+    @using Chimo.WebAPI.Site.Models
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+        setup() {
+            const member = ref({
+                id: 0,
+                name: "",
+                avatar: "",
+                point: 0,
+            });
+
+            const courses = ref([]); // 存放會員課程資料
+            const fetchMemberCourses = async () => {
+                try {
+                    const token = '@AuthHelper.GetTokenFromCookie()';
+                    const response = await fetch(`/api/courses/${member.value.id}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('獲取課程資料失敗');
+                    }
+
+                    const data = await response.json();
+                    courses.value = data.map(course => ({
+                        id: course.id,
+                        title: course.title,
+                        img: course.thumbnail,
+                        teacher: course.teacher.name,
+                        price: course.price,
+                        buyDate: new Date(course.createdDate).toLocaleDateString()
+                    }));
+                } catch (error) {
+                    console.error("獲取課程資料失敗:", error);
+                }
+            };
+
+            onMounted(async () => {
+                const token = '@AuthHelper.GetTokenFromCookie()';
+                const decodedMember = decodeToken(token);
+                member.value.id = decodedMember.Id;
+                member.value.name = decodedMember.unique_name;
+                member.value.point = decodedMember.Point;
+                member.value.avatar = decodedMember.ProfileImage;
+
+                await fetchMemberCourses(); // 獲取會員課程資料
+            });
+
+            function decodeToken(token) {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+
+                return JSON.parse(jsonPayload);
+            }
+
+            return { member, courses };
+        }
+    }).mount("#app");
+    </script>
+
+}

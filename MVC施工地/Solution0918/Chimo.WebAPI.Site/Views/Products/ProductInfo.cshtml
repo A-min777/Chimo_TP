@@ -3,7 +3,26 @@
     ViewBag.Title = "ProductInfo";
 }
 
+@using Chimo.WebAPI.Site.Models
+
+@{
+    bool isLoggedIn = AuthHelper.IsLoggedIn(Request);  // 檢查是否已登入
+    ViewData["IsLoggedIn"] = isLoggedIn;
+    // 從 Cookie 中獲取 JWT
+    var token = AuthHelper.GetTokenFromCookie();
+    Chimo.WebAPI.Site.Models.EFModels.Member member = null;
+
+    // 如果 token 存在，則解碼並獲取會員資料
+    if (isLoggedIn)
+    {
+        member = JwtUtility.DecodeToken(token);
+    }
+}
+
+
+
 <style>
+
     a {
         text-decoration: none;
     }
@@ -24,8 +43,9 @@
         color: #fff;
     }
 
-    .accordion {
-        background-color: #fffacc;
+
+    .accordion-body {
+        background-color: #eeebf8;
     }
 
     .accordion-button:not(.collapsed) {
@@ -33,6 +53,16 @@
         color: #fff;
         border-radius: 10px;
     }
+
+        .accordion-button:not(.collapsed)::after {
+            color: #fff;
+        }
+
+    .accordion-button:hover {
+        background-color: #5b468b;
+        color: #fff;
+    }
+
 
     .cartIcon {
         object-fit: contain;
@@ -43,36 +73,89 @@
     .avatarA {
         border-radius: 50%;
     }
-    
+
+    .confirmBtn {
+        color: #fff;
+        background-color: #5b468b;
+    }
+
+        .confirmBtn:hover {
+            color: #fff;
+            background-color: #342557 !important;
+        }
+
+    .alertImg {
+        animation: squish 0.5s ease;
+        transform-origin: bottom;
+    }
+
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+    }
 </style>
 
 <div id="app">
+    <div class="modal" v-if="isModalVisible" v-on:click.self="hideModal">
+        <div class="modal-dialog"
+             :class="{'slide-in': isModalVisible, 'slide-out': !isModalVisible}">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0 mt-0">
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="text-center">
+                    <img src="~/images/point.png"
+                         alt="point"
+                         class="alertImg img-fluid mt-4"
+                         style="max-width: 100px" />
+                    <div class="modal-body">確定要執行此操作嗎？</div>
+                </div>
+
+                <div class="text-center mb-4">
+                    <button type="button" class="confirmBtn btn btn-md">確認</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- 頁首課程預覽 bg-->
     <div class="product mb-4 pt-3">
         <div class="container">
-            <nav aria-label="breadcrumb " class="root pt-3">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/Home/Index">首頁</a></li>
-                    <li class="breadcrumb-item"><a href="#">分類</a></li>
-                    <li class="breadcrumb-item active text-light" aria-current="page">
-                        課程名稱
-                    </li>
-                </ol>
-            </nav>
-            <div class="row pb-5 justify-content-between">
+            <div class="d-flex justify-content-between align-items-center">
+                <nav aria-label="breadcrumb " class="root pt-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/Home/Index">首頁</a></li>
+                        <li class="breadcrumb-item"><a href="#">分類</a></li>
+                        <li class="breadcrumb-item active text-light" aria-current="page">
+                            {{courseContents.title}}
+                        </li>
+                    </ol>
+                </nav>
+                <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
+            </div>
+            <div class="row pb-5 justify-content-between" v-if="courseDetail && courseDetail.teacher">
                 <div class="col-xs-12 col-md-6 col-lg-7 p-3">
-                    <small class="text-light">教師 | {{courses.teacher}}</small>
+                    <small class="text-light">教師 | {{courseDetail.teacher.name}}</small>
                     <hr class="border" />
-                    <h1 class="fw-bolder text-light">{{courses.name}}</h1>
+                    <h1 class="fw-bolder text-light">{{courseDetail.title}}</h1>
                     <div class="d-lg-flex">
-                        <p class="fs-1 fw-bolder text-light">NT${{courses.price}}</p>
-                        <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3">
+                        <p class="fs-1 fw-bolder text-light">NT${{courseDetail.price}}</p>
+                        <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3" v-on:click="showModal">
                             立即購買
                         </button>
                     </div>
                 </div>
                 <div class="col-xs-12 col-md-6 col-lg-4">
-                    <video ref="videoPlayer" controls :src="courses.video" muted type="video/mp4" class="container rounded-5"></video>
+                    <video ref="videoPlayer" controls :src="formatVideoRoute(courseFirstVideo)" muted type="video/mp4" class="container rounded-5"></video>
                 </div>
             </div>
         </div>
@@ -87,71 +170,76 @@
                 <hr />
                 <ul class="list-group list-group-horizontal">
                     <li class="list-group-item me-5 border-0">
-                        總章節：{{courses.totalContent}}章
+                        總章節：{{courseChapterCount}}章
                     </li>
                     <li class="list-group-item border-0">
-                        報名人數：{{courses.buyer}}人
+                        報名人數：{{courseBuyerCount}}人
                     </li>
                 </ul>
                 <hr />
                 <h2 class="fw-bolder">課程介紹</h2>
-                <p>{{courses.intro}}</p>
+                <p>{{courseDetail.description}}</p>
                 <hr />
+
                 <h2 class="fw-bolder">章節預覽</h2>
-                <div v-for="content in courseContents"
-                     :key="content.id"
+                <div v-for="catalog in courseContents.courseCatalogs"
+                     :key="catalog.id"
                      class="accordion rounded-3 mb-4"
-                     :id="'accordionExsemple'+'content.id'">
-                    <div class="according-item">
+                     :id="'accordionExample-' + catalog.id">
+
+                    <div class="accordion-item">
                         <div class="accordion-header">
                             <button class="accordion-button collapsed"
                                     type="button"
                                     data-bs-toggle="collapse"
-                                    :data-bs-target="'#flush-collapse-' + content.id"
+                                    :data-bs-target="'#flush-collapse-' + catalog.id"
                                     aria-expanded="false"
-                                    :aria-controls="'flush-collapse-' + content.id">
-                                {{content.catalogName}}
+                                    :aria-controls="'flush-collapse-' + catalog.id">
+                                {{ catalog.name }}
                             </button>
-                            <div :id="'flush-collapse-' + content.id"
-                                 class="accordion-collapse collapse"
-                                 data-bs-parent="#accordionFlushExample">
-                                <div v-for="item in content.content"
-                                     class="accordion-body fw-bolder">
-                                    {{item.name}}
-                                </div>
+                        </div>
+                        <div :id="'flush-collapse-' + catalog.id"
+                             class="accordion-collapse collapse"
+                             data-bs-parent="#accordionExample">
+                            <div v-for="chapter in catalog.courseChapters"
+                                 :key="chapter.id"
+                                 class="accordion-body fw-bolder">
+                                {{ chapter.name }}
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <hr />
                 <h2 class="fw-bolder">教師資訊</h2>
-                <div class="teacher row mb-3 mt-2">
-                    <img src="../images/profilePic.PNG"
+                <div class="teacher row mb-3 mt-2"
+                     v-if="courseDetail && courseDetail.teacher">
+                    <img :src="formatThumbnailUrl(courseDetail.teacher.profileImage)"
                          alt="taPic"
                          class="avatarA col-md-5 col-lg-3 col-sm-3 " />
                     <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
                          style="height: 50%; align-self: center">
-                        <h6>{{courses.teacher}}</h6>
+                        <h6>{{courseDetail.teacher.name}}</h6>
                         <hr />
-                        <p>{{courses.teackerInfo}}</p>
+                        <p>{{courseDetail.teacher.intro}}</p>
                     </div>
                 </div>
             </section>
             <!-- 左側資訊 end-->
             <!-- 右側購買連結 bg -->
-            <div class="col-md-5 col-lg-4">
+            <div class="col-md-5 col-lg-4 mb-5">
                 <div class="ps-3 pe-3 border rounded shadow">
-                    <img src="../images/thumbnail.jpg"
+                    <img :src="formatThumbnailUrl(courseDetail.thumbnail, `course`)"
                          alt="thumbnail"
                          class="img-fluid mt-3 mb-4 rounded" />
-                    <h2>{{courses.name}}</h2>
-                    <h2>NT${{courses.price}}</h2>
+                    <h2>{{courseDetail.title}}</h2>
+                    <h2>NT${{courseDetail.price}}</h2>
                     <div class="d-flex justify-content-between">
                         <button class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
                             立即購買
                         </button>
                         <button class="rounded btn border mb-3">
-                            <img src="../images/cart.png"
+                            <img src="~/images/cart.png"
                                  alt="cart"
                                  class="cartIcon img-fluid" />
                         </button>
@@ -161,15 +249,64 @@
             <!-- 右側購買連結 end -->
         </div>
     </div>
- </div>
-    @section scripts{
-        <script src="~/Scripts/bootstrap.bundle.min.js"></script>
-        <script src="~/Scripts/vue.global.js"></script>
-        <script src="~/Scripts/myheader.js"></script>
-        <script>
+</div>
+
+
+
+<!-- Modal 結構 -->
+
+
+@section scripts{
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
+    <script>
+            var isLoggedIn = @Html.Raw(Json.Encode(ViewData["IsLoggedIn"]));
+
+        // 输出到控制台
+        console.log("User is logged in:", isLoggedIn);
+    </script>
+    <script>
+
             const { createApp, ref, onMounted } = Vue;
             const config = {
                 setup() {
+                    const isModalVisible = ref(false) 
+
+                    function showModal() {
+                        isModalVisible.value = true;
+                    }
+
+                    function hideModal() {
+                        isModalVisible.value = false;
+                    }
+
+                    const Bookmark = ref({
+                        isBooked: false,
+                        defaultImg: "~/images/book_w.png",
+                        bookedImg: "~/images/booked_w.png",
+                        currentImage() {
+                            return this.isBooked ? this.bookedImg : this.defaultImg;
+                        },
+                    });
+
+                    function toggleBookmark() {
+                        Bookmark.value.isBooked = !Bookmark.value.isBooked;
+                    }
+
+
+                    //這裡呼叫查看收藏的api
+                    /*const getBookedStatus = async () => {
+                        try {
+                            // 假設這是你的 API 端點
+                            const response = await fetch('/api/checkBookmark');
+                            const data = await response.json();
+                            Bookmark.value.isBooked = data.isBookmarked; // 根據 API 回應設定
+                        } catch (error) {
+                            console.error('獲取收藏狀態時出錯:', error);
+                        }
+                    };*/
+
                     const videoPlayer = ref(null);
                     function checkVideoTime() {
                         if (videoPlayer.value && videoPlayer.value.currentTime >= 10) {
@@ -180,46 +317,84 @@
                         if (videoPlayer.value) {
                             videoPlayer.value.addEventListener('timeupdate', checkVideoTime);
                         }
+
+                        fetchCourseInfo(id);
+
                     });
-                    const courseContents = ref([
-                        {
-                            id: 1,
-                            catalogName: "目錄一：目錄標題。",
-                            content: [
-                                { id: 1, name: "第一章節:標題" },
-                                { id: 2, name: "第二章節:標題" },
-                            ],
-                        },
-                        {
-                            id: 2,
-                            catalogName: "目錄二：目錄標題。",
-                            content: [
-                                { id: 1, name: "第一章節:標題" },
-                                { id: 2, name: "第二章節:標題" },
-                                { id: 3, name: "第三章節:標題" },
-                            ],
-                        },
-                    ]);
-                    const courses = ref({
-                        video: "../video/testVideo2.mp4",
-                        name: "課程名稱",
-                        totalContent: 10,
-                        buyer: 100,
-                        price: "1000",
-                        teacher: "Mr.C",
-                        teackerInfo: "這裡是教師資訊頁裡的個人簡介",
-                        intro: `有點遠她們台中避免客人搭配操作系統，
-                              是從嚴格很有雙手打開貼圖，歐洲圖書館母親遇到
-                              郵遞區號主動行情生日也要笑道女人，精選開放其實
-                              書庫夏天緊張本地認證，最好的一名此次被人光臨倒是陽光，
-                              工藝章節，歡迎我去本地下載常見規劃總體國內外構成檢索，
-                              不喜歡保健讓她適用於。`,
-                    });
-                    return { courseContents, courses, videoPlayer, checkVideoTime };
+
+
+                    const formatThumbnailUrl = (thumbnailPath, target = "people") => {
+
+                        thumbnailPath = handleThumbnailNull(thumbnailPath, target);
+
+                        if (thumbnailPath.startsWith("~/")) {
+                            // 將 "~/" 替換為實際的程式根目錄
+                            return thumbnailPath.replace("~", window.location.origin);
+                        }
+                        return thumbnailPath;
+                    };
+
+                    const handleThumbnailNull = (path, target) => {
+                        if (path == null || path.length == 0) { // 如果thumbnail是null 或沒有內容
+
+                            // 判斷target是人(teacher 或 member) 或是課程，給予不同的default圖片路徑
+                            target === "people" ? path = "~/images/profilePic.PNG"
+                                : path = "~/images/thumbnail.jpg"; // 設成default thumbnail
+                        }
+
+                        return path;
+                    }
+
+                    const formatVideoRoute = (videoRoute) => {
+
+                        if (videoRoute.startsWith("~/")) {
+                            // 將 "~/" 替換為實際的程式根目錄
+                            return videoRoute.replace("~", window.location.origin);
+                        }
+                        return videoRoute;
+                    };
+
+                    const courseContents = ref([]);
+                    const  id = @Html.Raw(ViewBag.ProductId);
+                    const fetchCourseInfo = async (id) => {
+                        try {
+
+                            const response = await fetch(`/api/products/productinfo/${id}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+
+                            const courseInfo = await response.json();
+
+                            courseContents.value = courseInfo.courseContent;
+                            courseDetail.value = courseInfo.courseDetail;
+                            courseFirstVideo.value = courseInfo.firstVideo;
+                            courseBuyerCount.value = courseInfo.buyerCount;
+                            courseChapterCount.value = courseInfo.chapterCount;
+                        }
+                        catch (error) {
+                            console.error('Error fetching ProductInfo:', error);
+                        }
+                    };
+
+
+                    const courseDetail = ref([]);
+                    const courseFirstVideo = ref();
+                    const courseBuyerCount = ref();
+                    const courseChapterCount = ref();
+
+
+                    return {
+                        courseContents, courseDetail, videoPlayer, checkVideoTime,
+                        courseFirstVideo, courseBuyerCount, courseChapterCount,
+                        formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute, isModalVisible, showModal, hideModal
+                    };
                 },
             };
 
             const app = createApp(config);
             app.mount("#app");
-        </script>
-    }
+    </script>
+}

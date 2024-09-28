@@ -37,12 +37,60 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
 		}
 
 		[HttpGet]
-		[Route("api/courses/purchased")]
-		public IHttpActionResult GetPurchasedCourses()
+		[Route("api/courses/purchased/{memberId}")]
+		public IHttpActionResult GetPurchasedCourses(int memberId)
 		{
-			
+            try
+            {
+                var purchasedCourses = _service.GetPurchasedCourseById(memberId);
+                
+                return Ok(purchasedCourses);
+            }
 
-			return Ok();
-		}
-	}
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+
+        }
+
+		[HttpGet]
+		[Route("api/products/productinfo/{id}")]
+        public IHttpActionResult GetCourseInfo(int id)
+        {
+            var productInfo = _service.GetCourseInfoById(id);
+            if (productInfo == null)
+            {
+                return NotFound();
+            }
+
+			return Ok(productInfo);
+        }
+
+
+        [HttpGet]
+        [Route("api/products/course/{courseId}/chapter/{chapterId?}")]
+        public IHttpActionResult GetMyCourseInfo(int courseId, int? chapterId = null)
+        {
+            var courseInfo = _service.GetMyCourseInfoById(courseId);
+
+            if (courseInfo == null)
+            {
+                return NotFound();
+            }
+
+            if (chapterId.HasValue)
+            {
+                var chapter = _service.GetChapterById(courseId, chapterId.Value);
+
+                if (chapter == null)
+                {
+                    return NotFound();
+                }
+                return Ok(new { courseInfo, chapter });
+            }
+            
+			return Ok(courseInfo);
+        }
+    }
 }
