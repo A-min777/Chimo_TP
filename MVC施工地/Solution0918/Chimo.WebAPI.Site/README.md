@@ -135,3 +135,12 @@ ReadMe For Chimo.WebApi.Site
 	[V] 新增 CollectionsApiController, 完成新增跟取消收藏的api
 
 	[working on] 修改 Course.cshtml, 呼叫收藏api
+
+
+	------------------------------2024/9/29----------------------------------
+
+	[V] 為了在新增及取消收藏時能抓到課程id,在 CollectionDto 新增 CourseId 屬性
+
+	[V] 修改 Course.cshtml 及 ProductInfo.cshtml, 呼叫處理收藏的api, 完成新增及取消收藏功能
+
+	[working on] 尚未處理在 ProductInfo.cshtml 使用者未登入時點擊收藏的情形，目前程式會死掉

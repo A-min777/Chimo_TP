@@ -65,129 +65,143 @@
 </style>
 <div id="app">
 
-    <!-- 頁首課程預覽 bg-->
-    <div class="product mb-4 pt-3">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <nav aria-label="breadcrumb " class="root pt-3">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/Home/Index">首頁</a></li>
-                        <li class="breadcrumb-item"><a href="#">分類</a></li>
-                        <li class="breadcrumb-item active text-light" aria-current="page">
-                            {{courseContents.title}}
-                        </li>
-                    </ol>
-                </nav>
-                <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
-            </div>
-            <div class="row pb-5 justify-content-between">
-                <div class="col-xs-12 col-md-6 col-lg-7 p-3">
-                    <video controls
-                           :src="formattedVideoRoute"
-                           muted
-                           type="video/mp4"
-                           class="container rounded-5"></video>
+    @using Chimo.WebAPI.Site.Models
+    @{
+        bool isLoggedIn = AuthHelper.IsLoggedIn(Request);  // 檢查是否已登入
+        var token = AuthHelper.GetTokenFromCookie();
+        Chimo.WebAPI.Site.Models.EFModels.Member member = null;
+
+        // 如果 token 存在，則解碼並獲取會員資料
+        if (isLoggedIn)
+        {
+            member = JwtUtility.DecodeToken(token);
+        }
+
+        <!-- 頁首課程預覽 bg-->
+        <div class="product mb-4 pt-3">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <nav aria-label="breadcrumb " class="root pt-3">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/Home/Index">首頁</a></li>
+                            <li class="breadcrumb-item"><a href="#">分類</a></li>
+                            <li class="breadcrumb-item active text-light" aria-current="page">
+                                {{courseContents.title}}
+                            </li>
+                        </ol>
+                    </nav>
+                    <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
                 </div>
-                <!-- 章節選擇 bg -->
-                <div class="content col-xs-12 col-md-6 col-lg-4 border rounded-3">
-                    <div v-for="content in courseContents.courseCatalogs"
-                         :key="content.id"
-                         class="accordion rounded-3 mt-3 mb-3"
-                         :id="'accordionExsemple'+'content.id'">
-                        <div class="according-item">
-                            <div class="accordion-header">
-                                <button class="accordion-button collapsed"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        :data-bs-target="'#flush-collapse-' + content.id"
-                                        aria-expanded="false"
-                                        :aria-controls="'flush-collapse-' + content.id">
-                                    {{content.name}}
-                                </button>
-                                <div :id="'flush-collapse-' + content.id"
-                                     class="accordion-collapse collapse"
-                                     data-bs-parent="#accordionFlushExample">
-                                    
-                                    <div v-for="item in content.courseChapters"
-                                         :key="item.id"
-                                         class="accordion-body fw-bolder"
-                                         >
-                                        <a :href="`/products/course/${courseId}/chapter/${item.id}`">{{item.name}}</a>
+                <div class="row pb-5 justify-content-between">
+                    <div class="col-xs-12 col-md-6 col-lg-7 p-3">
+                        <video controls
+                               :src="formattedVideoRoute"
+                               muted
+                               type="video/mp4"
+                               class="container rounded-5"></video>
+                    </div>
+                    <!-- 章節選擇 bg -->
+                    <div class="content col-xs-12 col-md-6 col-lg-4 border rounded-3">
+                        <div v-for="content in courseContents.courseCatalogs"
+                             :key="content.id"
+                             class="accordion rounded-3 mt-3 mb-3"
+                             :id="'accordionExsemple'+'content.id'">
+                            <div class="according-item">
+                                <div class="accordion-header">
+                                    <button class="accordion-button collapsed"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            :data-bs-target="'#flush-collapse-' + content.id"
+                                            aria-expanded="false"
+                                            :aria-controls="'flush-collapse-' + content.id">
+                                        {{content.name}}
+                                    </button>
+                                    <div :id="'flush-collapse-' + content.id"
+                                         class="accordion-collapse collapse"
+                                         data-bs-parent="#accordionFlushExample">
+
+                                        <div v-for="item in content.courseChapters"
+                                             :key="item.id"
+                                             class="accordion-body fw-bolder">
+                                            <a :href="`/products/course/${courseId}/chapter/${item.id}`">{{item.name}}</a>
+                                        </div>
+
                                     </div>
-                                    
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <!-- 章節選擇 ed -->
                 </div>
-                <!-- 章節選擇 ed -->
             </div>
         </div>
-    </div>
-    <!-- 頁首課程預覽 end -->
+        <!-- 頁首課程預覽 end -->
 
-    <div class="container">
-        <div class="row justify-content-between">
-            <!-- 左側資訊 bg-->
-            <section class="col-md-7 col-lg-8 pe-5">
-                <hr />
-                <h2 class="fw-bolder">課程介紹</h2>
-                <p>{{courseDetail.description}}</p>
-                <hr />
-                <h2 class="fw-bolder">教師資訊</h2>
-                <div class="teacher row mb-3 mt-2" v-if="courseDetail && courseDetail.teacher">
-                    <img :src="formatThumbnailUrl(courseDetail.teacher.profileImage)"
-                         alt="taPic"
-                         class="avatarA img.fluid col-md-5 col-lg-3 col-sm-3" />
-                    <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
-                         style="height: 50%; align-self: center">
-                        <h6>{{courseDetail.teacher.name}}</h6>
-                        <hr />
-                        <p>{{courseDetail.teacher.intro}}</p>
-                    </div>
-                </div>
-                <hr />
-                <h2 class="fw-bolder">課程留言</h2>
-                <textarea name="commend"
-                          id="commend"
-                          class="form-control"
-                          rows="5"></textarea>
-                <div class="text-end">
-                    <button class="commendBtn btn btn-warning btn-lg mt-3 mb-3 fw-bolder">
-                        發送
-                    </button>
-                </div>
-            </section>
-            <!-- 左側資訊 end-->
-            <!-- 右側購買連結 bg -->
-            <div class="col-md-5 col-lg-4 mb-5">
-                <div class="ps-3 pe-3 border rounded shadow" v-if="courseDetail && courseDetail.teacher">
-                    <p class="mt-3">{{courseDetail.teacher.name}}的其他課程</p>
-                    <div v-for="course in recommendProducts" class="mb-2">
-                        <a :href="`@Url.Action("ViewProduct", "Products")/${course.id}`">
-                            <img :src="formatThumbnailUrl(course.thumbnail, `course`)"
-                                 alt="thumbnail"
-                                 class="img-fluid mb-4 rounded" />
-                        </a>
-                        <h2>{{course.title}}</h2>
-                        <h2>NT${{course.price}}</h2>
-                        <div class="d-flex justify-content-between">
-                            <button class="btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
-                                立即購買
-                            </button>
-                            <button class="rounded btn border mb-3">
-                                <img src="~/images/cart.png"
-                                     alt="cart"
-                                     class="cartIcon img-fluid" />
-                            </button>
+        <div class="container">
+            <div class="row justify-content-between">
+                <!-- 左側資訊 bg-->
+                <section class="col-md-7 col-lg-8 pe-5">
+                    <hr />
+                    <h2 class="fw-bolder">課程介紹</h2>
+                    <p>{{courseDetail.description}}</p>
+                    <hr />
+                    <h2 class="fw-bolder">教師資訊</h2>
+                    <div class="teacher row mb-3 mt-2" v-if="courseDetail && courseDetail.teacher">
+                        <img :src="formatThumbnailUrl(courseDetail.teacher.profileImage)"
+                             alt="taPic"
+                             class="avatarA img.fluid col-md-5 col-lg-3 col-sm-3" />
+                        <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
+                             style="height: 50%; align-self: center">
+                            <h6>{{courseDetail.teacher.name}}</h6>
+                            <hr />
+                            <p>{{courseDetail.teacher.intro}}</p>
                         </div>
                     </div>
-                    
+                    <hr />
+                    <h2 class="fw-bolder">課程留言</h2>
+                    <textarea name="commend"
+                              id="commend"
+                              class="form-control"
+                              rows="5"></textarea>
+                    <div class="text-end">
+                        <button class="commendBtn btn btn-warning btn-lg mt-3 mb-3 fw-bolder">
+                            發送
+                        </button>
+                    </div>
+                </section>
+                <!-- 左側資訊 end-->
+                <!-- 右側購買連結 bg -->
+                <div class="col-md-5 col-lg-4 mb-5">
+                    <div class="ps-3 pe-3 border rounded shadow" v-if="courseDetail && courseDetail.teacher">
+                        <p class="mt-3">{{courseDetail.teacher.name}}的其他課程</p>
+                        <div v-for="course in recommendProducts" class="mb-2">
+                            <a :href="`@Url.Action("ViewProduct", "Products")/${course.id}`">
+                                <img :src="formatThumbnailUrl(course.thumbnail, `course`)"
+                                     alt="thumbnail"
+                                     class="img-fluid mb-4 rounded" />
+                            </a>
+                            <h2>{{course.title}}</h2>
+                            <h2>NT${{course.price}}</h2>
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
+                                    立即購買
+                                </button>
+                                <button class="rounded btn border mb-3">
+                                    <img src="~/images/cart.png"
+                                         alt="cart"
+                                         class="cartIcon img-fluid" />
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
+                <!-- 右側購買連結 end -->
             </div>
-            <!-- 右側購買連結 end -->
         </div>
-    </div>
+
+    }
+
 </div>
 
 @section scripts{
@@ -197,18 +211,8 @@
     <script>
         const { createApp, ref, onMounted, computed } = Vue;
         const config = {
-            props: {
-                courseId: {
-                    type: Number,
-                    required: true,
-                },
-                memberId: {
-                    type: Number,
-                    required: true,
-                },
-            },
 
-            setup(props) {
+            setup() {
                 const Bookmark = ref({
                     isBooked: false,
                     defaultImg: "~/images/book_w.png",
@@ -222,24 +226,23 @@
 
                 const checkIsCollection = async () => { // 判斷會員是否有收藏課程
                     try {
-                        const response = await fetch(`/api/collections/${props.memberId}`);
+                        const response = await fetch(`/api/collections/${memberId}`);
                         const data = await response.json();
                         
-                        isCollection.value = data.some((collection) => collection.id === props.courseId);
-                        // courseTitle.value = data.find((course) => course.id === props.courseId)?.courseName || '';
+                        Bookmark.value.isBooked = data.some((collection) => collection.courseId === courseId.value);
                     } catch (error) {
                         console.error("fetch 收藏課程失敗", error);
                     }
                 };
 
-                const toggleCollection = async () => {
+                const toggleBookmark = async () => {
                     try {
-                        if (isCollection.value) {
+                        if (Bookmark.value.isBooked) {
                             // 移除收藏
-                            await fetch(`/api/updateCollections/${props.courseId}/${props.memberId}`, {
+                            await fetch(`/api/updateCollections/${courseId.value}/${memberId}`, {
                                 method: 'DELETE',
                             });
-                            isCollection.value = false;
+                            Bookmark.value.isBooked = false;
                         } else {
                             // 新增收藏
                             const response = await fetch(`/api/updateCollections`, {
@@ -248,12 +251,12 @@
                                     'Content-Type': 'application/json',
                                 },
                                 body: JSON.stringify({
-                                    memberId: props.memberId,
-                                    courseId: props.courseId,
+                                    memberId: memberId,
+                                    courseId: courseId.value,
                                 }),
                             });
                             if (response.ok) {
-                                isCollection.value = true;
+                                Bookmark.value.isBooked = true;
                             } else {
                                 console.error("新增收藏失敗");
                             }
@@ -286,10 +289,6 @@
                 }
 
 
-                function toggleBookmark() {
-                    Bookmark.value.isBooked = !Bookmark.value.isBooked;
-                }
-
                 const formatVideoRoute = (videoRoute) => {
                     if (videoRoute.startsWith("~/")) {
                         // 將 "~/" 替換為實際的程式根目錄
@@ -299,26 +298,15 @@
                 };
 
                 onMounted(() => {
-                    
+
                     fetchCourseInfo(courseId.value, chapterId);
-                    
+                    checkIsCollection();
                 });
 
-                //這裡呼叫查看收藏的api
-                /*const getBookedStatus = async () => {
-                    try {
-                        // 假設這是你的 API 端點
-                        const response = await fetch('/api/checkBookmark');
-                        const data = await response.json();
-                        Bookmark.value.isBooked = data.isBookmarked; // 根據 API 回應設定
-                    } catch (error) {
-                        console.error('獲取收藏狀態時出錯:', error);
-                    }
-                };*/
 
-                
                 const courseId = ref(@Html.Raw(ViewBag.ProductId));
                 const chapterId = @Html.Raw(ViewBag.ChapterId);
+                const memberId =  @Html.Raw(Json.Encode(member?.Id));
                 const fetchCourseInfo = async (courseId, chapterId) => {
                     try {
 
