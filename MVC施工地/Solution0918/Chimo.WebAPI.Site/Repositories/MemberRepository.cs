@@ -143,6 +143,7 @@ namespace Chimo.WebAPI.Site.Repositories
                                    select new CollectionsDto
                                    {
                                        Id = memberId,
+                                       CourseId = c.Id,
                                        Price = c.Price,
                                        TeacherName = c.Teacher.Name,
                                        Thumbnail = c.Thumbnail,
