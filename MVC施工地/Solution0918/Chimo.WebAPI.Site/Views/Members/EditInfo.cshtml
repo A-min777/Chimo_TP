@@ -1,7 +1,19 @@
 ﻿@{
     ViewBag.Title = "EditInfo";
 }
+@{
+    bool isLoggedIn = AuthHelper.IsLoggedIn(Request);  // 檢查是否已登入
+    ViewData["IsLoggedIn"] = isLoggedIn;
+    // 從 Cookie 中獲取 JWT
+    var token = AuthHelper.GetTokenFromCookie();
+    Chimo.WebAPI.Site.Models.EFModels.Member member = null;
 
+    // 如果 token 存在，則解碼並獲取會員資料
+    if (isLoggedIn)
+    {
+        member = JwtUtility.DecodeToken(token);
+    }
+}
 <style>
     body {
         background-color: #eee;
@@ -79,9 +91,73 @@
         color: #6c757d; /* 淡灰色文字 */
         cursor: not-allowed; /* 滑鼠指標變成禁止符號 */
     }
+
+    .confirmBtn {
+        color: #fff;
+        background-color: #5b468b;
+    }
+
+        .confirmBtn:hover {
+            color: #fff;
+            background-color: #342557 !important;
+        }
+
+    .alertImg {
+        animation: squish 0.5s ease;
+        transform-origin: bottom;
+    }
+
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+    }
+
+    .modal-content {
+        width: 300px;
+    }
 </style>
 
 <div id="app">
+    @* 警告modal *@
+    <div class="modal" v-if="modal.isModalVisible" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0 mt-0">
+                    <button type="button"
+                            class="btn-close"
+                            v-on:click="modal.hideModal()"></button>
+                </div>
+                <div class="text-center">
+                    <img :src="modal.img"
+                         alt="point"
+                         class="alertImg mt-4"
+                         style="max-width: 100px" />
+                    <div class="modal-body">
+                    <h5><pre class="mb-0" style="line-height:30px">{{modal.message}}</pre></h5>
+                    </div>
+                </div>
+
+                <div class="text-center mb-4" v-if="modal.isChange">
+                    <a class="confirmBtn btn btn-md " v-on:click="updateProfile">
+                        確認
+                    </a>
+                </div>
+                <div class="text-center mb-4" v-if="!modal.isChange">
+                    <button class="confirmBtn btn btn-md" v-on:click="modal.hideModal()">
+                        返回
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* 警告modal *@
     <div class="container">
         <div class="row">
             <div class="col-4 mt-3 mb-3">
@@ -158,12 +234,12 @@
                         </div>
                     </div>
 
-                    <div v-if="message" class="alert" :class="messageType">{{ message }}</div>
+                    @*<div v-if="message" class="alert" :class="messageType">{{ message }}</div>*@
 
                     <section class="m-4">
                         <div class="text-end">
                             <a href="@Url.Action("UpdatePassword", "Members")" class="changePwd btn btn-outline-danger me-2" v-on:click="resetPassword">重設密碼</a>
-                            
+
                             <button class="updateBtn btn" v-on:click="confirmUpdate">修改</button>
                         </div>
                     </section>
@@ -179,29 +255,48 @@
     <script>
     @using Chimo.WebAPI.Site.Models
     const { createApp, ref, onMounted } = Vue;
-    createApp({
-        setup() {
+        createApp({
+            setup() {
+                const modal = ref({
+                    message: "",
+                    img: "",
+                    isChange: false,
+                    isModalVisible: false,
+                    showModal() {
+                        this.isModalVisible = true;
+                    },
+                    hideModal() {
+                        this.isModalVisible = false;
+                    },
+                });
 
+            //function showModal() {
+            //    isModalVisible.value = true;
+            //}
+
+            //function hideModal() {
+            //    isModalVisible.value = false;
+            //}
             //更新頭像用的程式構想
             /*
             const updateAvatar = async (event) => {
                 const file = event.target.files[0];
-            
+
                 if (file) {
                     if (file.size > maxSize) {
                         showToast('檔案大小不能超過 2MB', 'text-danger');
                         return;
                     }
-            
+
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         member.value.avatar = e.target.result; // 即時預覽
                     };
                     reader.readAsDataURL(file);
-            
+
                     const formData = new FormData();
                     formData.append('avatar', file);
-            
+
                     try {
                         const response = await fetch('/api/upload-avatar', {
                             method: 'POST',
@@ -234,8 +329,7 @@
             });
 
             const originalMember = ref({ ...member.value });
-            const message = ref(""); // 提示訊息
-            const messageType = ref(""); // 訊息類型
+           
 
             const fetchMemberProfile = async () => {
                 try {
@@ -248,7 +342,7 @@
                     member.value.name = decodedMember.unique_name;
                     member.value.email = decodedMember.Email;
                     member.value.point = decodedMember.Point;
-                    member.value.avatar = decodedMember.ProfileImage;
+                    member.value.avatar = `../images/` + decodedMember.ProfileImage;
                     member.value.intro = decodedMember.Intro;
                     member.value.gender = decodedMember.Gender;
                     member.value.updatedDate = formatDate(decodedMember.updatedDate); // 格式化日期
@@ -296,11 +390,15 @@
                 }
 
                 if (changedFields.length > 0) {
-                    if (confirm(`以下欄位已更改：${changedFields.join(', ')}\n確定要提交變更嗎？`)) {
-                        updateProfile();
-                    }
+                    modal.value.message = `以下欄位已更改：\n${changedFields.join(', ')}\n確定要提交變更嗎？`;
+                    modal.value.isChange = true;
+                    modal.value.img = "../images/alert.gif"
+                    modal.value.showModal();
                 } else {
-                    alert("沒有欄位被更改");
+                    modal.value.message = "沒有欄位被更改";
+                    modal.value.isChange = false;
+                    modal.value.img = "../images/alert.gif"
+                    modal.value.showModal();
                 }
             };
 
@@ -318,9 +416,10 @@
                     if (!response.ok) {
                         throw new Error('更新資料失敗');
                     } else {
-                        alert("更新成功");
+                        modal.value.message = "更新成功";
+                        modal.value.img = "../images/ok.gif"
                         originalMember.value = { ...member.value }; // 更新成功後，將新值設為原始值
-                        window.location.reload();
+                        modal.value.isChange = false;
 
                     }
                 } catch (error) {
@@ -342,7 +441,7 @@
 
             onMounted(fetchMemberProfile); // 組件掛載時自動獲取會員資料
 
-            return { member, message, messageType, confirmUpdate, resetPassword };
+            return { member,  confirmUpdate, updateProfile, resetPassword, modal };
         }
     }).mount("#app");
     </script>
