@@ -7,7 +7,9 @@ namespace Chimo.WebAPI.Site.Models.Dtos
 {
     public class CollectionsDto
     {
-        public int Id { get; set; }  
+        public int Id { get; set; }
+
+        public int CourseId { get; set; }
         public string Title { get; set; }  
         public string Thumbnail { get; set; }  
 
