@@ -22,6 +22,10 @@ namespace Chimo.WebAPI.Site.Services
             _repo = new CourseRepository();
         }
 
+        /// <summary>
+        /// 抓取首頁的熱門推薦課程
+        /// </summary>
+        /// <returns></returns>
         public List<RecommendedCourseVm> GetRecommendedCourses()
 		{
 			string prefix = "../images/"; // 存放課程圖片檔案的相對位置資料夾
@@ -49,6 +53,11 @@ namespace Chimo.WebAPI.Site.Services
             return _repo.GetChapterById(courseId, chapterId).FormatVideoRoute(VideoPrefix);
         }
 
+        /// <summary>
+        /// 抓取呈現購買前的課程頁面所需資料
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         internal ProductInfoVm GetCourseInfoById(int id)
         {
 			string ImagePrefix = "~/images/";
@@ -87,6 +96,11 @@ namespace Chimo.WebAPI.Site.Services
            return _repo.GetFirstChapterId(courseId);
         }
 
+        /// <summary>
+        /// 抓取呈現已購買後的課程頁面所需資料
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         internal CourseInfoVm GetMyCourseInfoById(int id)
         {
             string prefix = "~/images/";
@@ -106,6 +120,30 @@ namespace Chimo.WebAPI.Site.Services
                 CourseDetail = Course,
                 OtherCourses= OtherCourses
             };
+        }
+
+        /// <summary>
+        /// 抓取首頁會員的已購買課程
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        internal List<RecommendedCourseVm> GetPurchasedCourseById(int memberId)
+        {
+            if (!new MemberRepository().IsExistMember(memberId))
+            {
+                throw new ArgumentException("不存在此會員");
+            }
+
+            string prefix = "../images/";
+
+            var courses = _repo.GetPurchasedCourseById(memberId).FormatThumbnail(prefix);
+
+            // CourseDTO 轉 RecommendedCourseViewModel
+            var MyCourses = WebApiApplication._mapper
+                .Map<List<RecommendedCourseVm>>(courses);
+
+
+            return MyCourses;
         }
     }
 }

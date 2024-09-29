@@ -3,7 +3,26 @@
     ViewBag.Title = "ProductInfo";
 }
 
+@using Chimo.WebAPI.Site.Models
+
+@{
+    bool isLoggedIn = AuthHelper.IsLoggedIn(Request);  // 檢查是否已登入
+    ViewData["IsLoggedIn"] = isLoggedIn;
+    // 從 Cookie 中獲取 JWT
+    var token = AuthHelper.GetTokenFromCookie();
+    Chimo.WebAPI.Site.Models.EFModels.Member member = null;
+
+    // 如果 token 存在，則解碼並獲取會員資料
+    if (isLoggedIn)
+    {
+        member = JwtUtility.DecodeToken(token);
+    }
+}
+
+
+
 <style>
+
     a {
         text-decoration: none;
     }
@@ -24,8 +43,9 @@
         color: #fff;
     }
 
-    .accordion {
-        background-color: #fffacc;
+
+    .accordion-body {
+        background-color: #eeebf8;
     }
 
     .accordion-button:not(.collapsed) {
@@ -33,6 +53,16 @@
         color: #fff;
         border-radius: 10px;
     }
+
+        .accordion-button:not(.collapsed)::after {
+            color: #fff;
+        }
+
+    .accordion-button:hover {
+        background-color: #5b468b;
+        color: #fff;
+    }
+
 
     .cartIcon {
         object-fit: contain;
@@ -43,10 +73,60 @@
     .avatarA {
         border-radius: 50%;
     }
-    
+
+    .confirmBtn {
+        color: #fff;
+        background-color: #5b468b;
+    }
+
+        .confirmBtn:hover {
+            color: #fff;
+            background-color: #342557 !important;
+        }
+
+    .alertImg {
+        animation: squish 0.5s ease;
+        transform-origin: bottom;
+    }
+
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+    }
 </style>
 
 <div id="app">
+    <div class="modal" v-if="isModalVisible" v-on:click.self="hideModal">
+        <div class="modal-dialog"
+             :class="{'slide-in': isModalVisible, 'slide-out': !isModalVisible}">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0 mt-0">
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="text-center">
+                    <img src="~/images/point.png"
+                         alt="point"
+                         class="alertImg img-fluid mt-4"
+                         style="max-width: 100px" />
+                    <div class="modal-body">確定要執行此操作嗎？</div>
+                </div>
+
+                <div class="text-center mb-4">
+                    <button type="button" class="confirmBtn btn btn-md">確認</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- 頁首課程預覽 bg-->
     <div class="product mb-4 pt-3">
         <div class="container">
@@ -63,13 +143,13 @@
                 <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
             </div>
             <div class="row pb-5 justify-content-between" v-if="courseDetail && courseDetail.teacher">
-                <div class="col-xs-12 col-md-6 col-lg-7 p-3" >
+                <div class="col-xs-12 col-md-6 col-lg-7 p-3">
                     <small class="text-light">教師 | {{courseDetail.teacher.name}}</small>
                     <hr class="border" />
                     <h1 class="fw-bolder text-light">{{courseDetail.title}}</h1>
                     <div class="d-lg-flex">
                         <p class="fs-1 fw-bolder text-light">NT${{courseDetail.price}}</p>
-                        <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3">
+                        <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3" v-on:click="showModal">
                             立即購買
                         </button>
                     </div>
@@ -138,8 +218,7 @@
                          alt="taPic"
                          class="avatarA col-md-5 col-lg-3 col-sm-3 " />
                     <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
-                         style="height: 50%; align-self: center"
-                         >
+                         style="height: 50%; align-self: center">
                         <h6>{{courseDetail.teacher.name}}</h6>
                         <hr />
                         <p>{{courseDetail.teacher.intro}}</p>
@@ -170,15 +249,37 @@
             <!-- 右側購買連結 end -->
         </div>
     </div>
- </div>
-    @section scripts{
-        <script src="~/Scripts/bootstrap.bundle.min.js"></script>
-        <script src="~/Scripts/vue.global.js"></script>
-        <script src="~/Scripts/myheader.js"></script>
-        <script>
+</div>
+
+
+
+<!-- Modal 結構 -->
+
+
+@section scripts{
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
+    <script>
+            var isLoggedIn = @Html.Raw(Json.Encode(ViewData["IsLoggedIn"]));
+
+        // 输出到控制台
+        console.log("User is logged in:", isLoggedIn);
+    </script>
+    <script>
+
             const { createApp, ref, onMounted } = Vue;
             const config = {
                 setup() {
+                    const isModalVisible = ref(false) 
+
+                    function showModal() {
+                        isModalVisible.value = true;
+                    }
+
+                    function hideModal() {
+                        isModalVisible.value = false;
+                    }
 
                     const Bookmark = ref({
                         isBooked: false,
@@ -218,9 +319,9 @@
                         }
 
                         fetchCourseInfo(id);
-                        
+
                     });
-                    
+
 
                     const formatThumbnailUrl = (thumbnailPath, target = "people") => {
 
@@ -278,7 +379,7 @@
                         }
                     };
 
-                  
+
                     const courseDetail = ref([]);
                     const courseFirstVideo = ref();
                     const courseBuyerCount = ref();
@@ -288,12 +389,12 @@
                     return {
                         courseContents, courseDetail, videoPlayer, checkVideoTime,
                         courseFirstVideo, courseBuyerCount, courseChapterCount,
-                        formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute
+                        formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute, isModalVisible, showModal, hideModal
                     };
                 },
             };
 
             const app = createApp(config);
             app.mount("#app");
-        </script>
-    }
+    </script>
+}
