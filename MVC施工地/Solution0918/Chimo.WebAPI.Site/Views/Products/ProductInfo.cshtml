@@ -100,6 +100,10 @@
         align-items: center;
         z-index: 1050;
     }
+
+    .modal-content{
+        width:300px;
+    }
 </style>
 
 <div id="app">
@@ -111,18 +115,22 @@
                     <button type="button"
                             class="btn-close"
                             data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                            aria-label="Close"
+                            v-on:click="hideModal"></button>
                 </div>
                 <div class="text-center">
-                    <img src="~/images/point.png"
+                    <img src="~/images/alert.gif"
                          alt="point"
-                         class="alertImg img-fluid mt-4"
+                         class="alertImg mt-4"
                          style="max-width: 100px" />
-                    <div class="modal-body">確定要執行此操作嗎？</div>
+                    <div class="modal-body">請先完成登入後再進行操作</div>
                 </div>
 
                 <div class="text-center mb-4">
-                    <button type="button" class="confirmBtn btn btn-md">確認</button>
+                    <a :href="`@Url.Action("Login", "Login")`"
+                       class="confirmBtn btn btn-md ">
+                        登入
+                    </a>
                 </div>
             </div>
         </div>
@@ -149,9 +157,18 @@
                     <h1 class="fw-bolder text-light">{{courseDetail.title}}</h1>
                     <div class="d-lg-flex">
                         <p class="fs-1 fw-bolder text-light">NT${{courseDetail.price}}</p>
-                        <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3" v-on:click="showModal">
-                            立即購買
-                        </button>
+                        @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+                        {
+                            <a :href="`@Url.Action("Checkout", "Members")`" 
+                               class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3">
+                                立即購買
+                            </a>}
+                        else
+                        {
+                            <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3" v-on:click="showModal">
+                                立即購買
+                            </button>
+                        }
                     </div>
                 </div>
                 <div class="col-xs-12 col-md-6 col-lg-4">
@@ -235,9 +252,18 @@
                     <h2>{{courseDetail.title}}</h2>
                     <h2>NT${{courseDetail.price}}</h2>
                     <div class="d-flex justify-content-between">
-                        <button class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
-                            立即購買
-                        </button>
+                        @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+                        {
+                            <a :href="`@Url.Action("Checkout", "Members")`"
+                               class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
+                                立即購買
+                            </a>}
+                        else
+                        {
+                            <button class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap" v-on:click="showModal">
+                                立即購買
+                            </button>
+                        }
                         <button class="rounded btn border mb-3">
                             <img src="~/images/cart.png"
                                  alt="cart"
@@ -260,12 +286,7 @@
     <script src="~/Scripts/bootstrap.bundle.min.js"></script>
     <script src="~/Scripts/vue.global.js"></script>
     <script src="~/Scripts/myheader.js"></script>
-    <script>
-            var isLoggedIn = @Html.Raw(Json.Encode(ViewData["IsLoggedIn"]));
-
-        // 输出到控制台
-        console.log("User is logged in:", isLoggedIn);
-    </script>
+   
     <script>
 
             const { createApp, ref, onMounted } = Vue;

@@ -295,6 +295,7 @@
     <Content Include="Content\realHeader.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="images\alert.gif" />
     <Content Include="images\banner01.jpg" />
     <Content Include="images\banner02.jpg" />
     <Content Include="images\banner03.jpg" />
@@ -309,6 +310,8 @@
     <Content Include="images\loginPic.jpg" />
     <Content Include="images\LOGO.png" />
     <Content Include="images\logo2_w.png" />
+    <Content Include="images\notFoundImg.png" />
+    <Content Include="images\ok.gif" />
     <Content Include="images\point.png" />
     <Content Include="images\profilePic.PNG" />
     <Content Include="images\profilePic2.PNG" />
@@ -317,9 +320,14 @@
     <Content Include="images\profilePic5.PNG" />
     <Content Include="images\thumbnail.jpg" />
     <Content Include="images\thumbnail_ADO.Net.png" />
+    <Content Include="images\thumbnail_CSS入門.png" />
     <Content Include="images\thumbnail_C入門.png" />
     <Content Include="images\thumbnail_Dapper.png" />
+    <Content Include="images\thumbnail_HTML入門.png" />
+    <Content Include="images\thumbnail_JS入門.png" />
+    <Content Include="images\thumbnail_MYSQL入門.png" />
     <Content Include="images\thumbnail_Python程式設計入門.png" />
+    <Content Include="images\thumbnail_SSMS入門.png" />
     <Content Include="images\thumbnail_平面設計基礎.png" />
     <Content Include="images\video.jpg" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
