@@ -15,6 +15,7 @@ namespace Chimo.WebAPI.Site.Models.Dtos
 
         public string ProfileImage { get; set; }
 
+
         public string Intro {  get; set; }
 
         public string Phone { get; set; }
