@@ -6,16 +6,20 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
+using System.Web.Http.Results;
 
 namespace Chimo.WebAPI.Site.Controllers.Apis
 {
     public class RegisterApiController : ApiController
     {
         private readonly RegisterService _registerService;
+        private readonly MemberService _memberService;
         public RegisterApiController()
         {
             _registerService = new RegisterService();
+            _memberService = new MemberService();
 
         }
         [HttpPost]
@@ -50,21 +54,39 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
 
         [HttpPost]
         [Route("api/updateMember/{userId}")]
-        public IHttpActionResult UpdateMember(int userId, [FromBody] RegisterDto dto)
+        public IHttpActionResult UpdateMember(int userId)
         {
-            if (dto == null)
+            var httpRequest = HttpContext.Current.Request;
+
+            // 檢查是否有檔案
+            if (httpRequest.Files.Count > 0)
             {
-                return BadRequest("無效的請求");
+                var file = httpRequest.Files[0];
+                var avatar = _memberService.UpdateProfileImage(userId, file).ProfileImage;
+
+                // 從請求中讀取其他參數
+                string phone = httpRequest.Form["phone"];
+                int gender = int.TryParse(httpRequest.Form["gender"], out int temp) ? temp : 0;
+                string introduction = httpRequest.Form["introduction"];
+
+                // 構建 RegisterDto
+                var dto = new RegisterDto
+                {
+                    Phone = phone,
+                    Gender = gender,
+                    Intro = introduction 
+                };
+
+                var result = _registerService.UpdateMember(userId, dto, avatar);
+                if (result)
+                {
+                    return Ok("更新成功");
+                }
             }
 
-            var result = _registerService.UpdateMember(userId, dto);
-
-            if (result)
-            {
-                return Ok("更新成功");
-            }
-            return NotFound();
+            return Ok("沒有需要更新的資料");
         }
+
     }
-    }
+}
 

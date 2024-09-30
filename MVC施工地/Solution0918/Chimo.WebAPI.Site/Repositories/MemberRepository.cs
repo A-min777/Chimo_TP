@@ -8,6 +8,8 @@ using System.Web;
 using Chimo.WebAPI.Site.Utilities;
 using System.Data.Entity;
 using AutoMapper;
+using System.Threading.Tasks;
+using System.Web.Configuration;
 
 namespace Chimo.WebAPI.Site.Repositories
 {
@@ -136,18 +138,18 @@ namespace Chimo.WebAPI.Site.Repositories
 
 
             var CollectionsCourses = (from mc in _db.MemberCollections
-                                   join m in _db.Members on mc.MemberId equals m.Id
-                                   join c in _db.Courses on mc.CourseId equals c.Id
-                                   join t in _db.Teachers on c.TeacherId equals t.Id
-                                   where m.Id == memberId && c.Status == 1
-                                   select new CollectionsDto
-                                   {
-                                       Id = memberId,
-                                       Price = c.Price,
-                                       TeacherName = c.Teacher.Name,
-                                       Thumbnail = c.Thumbnail,
-                                       Title = c.Title,
-                                   }).ToList();
+                                      join m in _db.Members on mc.MemberId equals m.Id
+                                      join c in _db.Courses on mc.CourseId equals c.Id
+                                      join t in _db.Teachers on c.TeacherId equals t.Id
+                                      where m.Id == memberId && c.Status == 1
+                                      select new CollectionsDto
+                                      {
+                                          Id = memberId,
+                                          Price = c.Price,
+                                          TeacherName = c.Teacher.Name,
+                                          Thumbnail = c.Thumbnail,
+                                          Title = c.Title,
+                                      }).ToList();
 
             return CollectionsCourses;
 
@@ -180,26 +182,40 @@ namespace Chimo.WebAPI.Site.Repositories
             return orders; // 返回 List<OrderDto>
         }
 
-		/// <summary>
-		/// 根據使用者Id跟課程Id判斷使用者是否已購買該課程
-		/// </summary>
-		/// <param name="userId"></param>
-		/// <param name="courseId"></param>
-		/// <returns></returns>
-		internal bool HasPurchased(int userId, int courseId)
-		{
-			var purchasedCourse = _db.Orders
-			.AsNoTracking()
-			.Include(o => o.OrderItems.Select(oi => oi.Cours))
-			.Where(o => o.MemberId == userId)
-			.SelectMany(o => o.OrderItems)
-			.Where(oi => oi.CourseId == courseId)
-			.Select(oi => oi.Cours)
-			.FirstOrDefault();
+        /// <summary>
+        /// 根據使用者Id跟課程Id判斷使用者是否已購買該課程
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="courseId"></param>
+        /// <returns></returns>
+        internal bool HasPurchased(int userId, int courseId)
+        {
+            var purchasedCourse = _db.Orders
+            .AsNoTracking()
+            .Include(o => o.OrderItems.Select(oi => oi.Cours))
+            .Where(o => o.MemberId == userId)
+            .SelectMany(o => o.OrderItems)
+            .Where(oi => oi.CourseId == courseId)
+            .Select(oi => oi.Cours)
+            .FirstOrDefault();
 
-			return purchasedCourse != null;
-		}
-	}
+            return purchasedCourse != null;
+        }
+
+        public void UpdateProfileImage(int memberId, string imagePath)
+        {
+            var member = _db.Members.Find(memberId);
+
+            if (member != null)
+            {
+                member.ProfileImage = imagePath;
+                _db.SaveChanges();
+            }
+
+
+        }
+
+    }
 }
 
 

@@ -233,6 +233,7 @@
     <Compile Include="Models\Dtos\LoginDto.cs" />
     <Compile Include="Models\Dtos\OrderDto.cs" />
     <Compile Include="Models\Dtos\ProfileDto.cs" />
+    <Compile Include="Models\Dtos\ProfileImageDto.cs" />
     <Compile Include="Models\Dtos\RegisterDto.cs" />
     <Compile Include="Models\Dtos\TeacherDto.cs" />
     <Compile Include="Models\EFModels\AppDbContext.cs" />

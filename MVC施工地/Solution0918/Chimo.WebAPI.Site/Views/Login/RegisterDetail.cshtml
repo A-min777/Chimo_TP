@@ -15,6 +15,24 @@
     .avatarA {
         border-radius: 50%;
     }
+
+    .profile {
+        position: relative;
+        display: inline-block;
+    }
+
+        .profile:hover .camera {
+            opacity: 0.9; /* 鼠標懸停時顯示 */
+        }
+
+    .camera {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
 </style>
 <body>
     <div id="app">
@@ -29,11 +47,20 @@
                     <small class="blockquote-footer">可稍後再至個人頁面編輯</small>
                 </div>
 
-                <div class="register text-center">
-                    <img src="../images/profilePic4.PNG"
-                         alt="profile"
-                         class="avatarA img-fluid m-3" />
-                </div>
+                <form id="imageForm" method=post enctype="multipart/form-data">
+                    <div class="register text-center">
+                        <div class="profile btn border-0">
+                            <input type="file" accept="image/*" v-on:change="updateAvatar" style="display: none;" id="fileInput" />
+                            <img v-bind:src="avatar"
+                                 alt="profile"
+                                 class="avatarA img-fluid m-3" />
+                            <img src="~/images/camera.png"
+                                 alt="editProfile"
+                                 class="camera img-fluid "
+                                 v-on:click="triggerFileInput" />
+                        </div>
+                    </div>
+                </form>
 
                 <input type="text"
                        name="phone"
@@ -63,6 +90,7 @@
             </div>
         </div>
     </div>
+
     @section scripts{
         <script src="~/Scripts/bootstrap.bundle.min.js"></script>
         <script src="~/Scripts/vue.global.js"></script>
@@ -75,33 +103,49 @@
                     const phone = ref('');
                     const gender = ref('');
                     const introduction = ref('');
+                    const avatar = ref('../images/profilePic4.PNG'); // 預設頭像
 
-                    // 獲取 URL 查詢參數中的 userId
                     const params = new URLSearchParams(window.location.search);
                     const userId = params.get('userId');
 
-                    // 提交表單
+                    // 開啟選擇檔案視窗
+                    const triggerFileInput = () => {
+                        document.getElementById('fileInput').click();
+                    };
+
+                    // 即時更新頭像預覽
+                    const updateAvatar = (event) => {
+                        const file = event.target.files[0];
+                        if (file) {
+                            avatar.value = URL.createObjectURL(file); // 即時預覽
+                        }
+                    };
+
+                    // 提交表單及上傳圖片
                     window.submit = async () => {
-                        if (!phone.value && !gender.value && !introduction.value) {
-                            // 如果所有輸入為空，重定向至首頁
+                        const fileInput = document.getElementById('fileInput');
+                        const file = fileInput.files[0];
+
+                        if (!phone.value && !gender.value && !introduction.value && !file) {
                             window.location.href = '/Home/Index';
                         } else {
-                            // 這裡可以呼叫 API 進行更新
+                            const formData = new FormData();
+
+                            formData.append('phone', phone.value);
+                            formData.append('gender', gender.value);
+                            formData.append('introduction', introduction.value);
+
+                            if (file) {
+                                formData.append('file', file); // 將圖片加入FormData
+                            }
+
                             try {
                                 const response = await fetch(`/api/updateMember/${userId}`, {
                                     method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        phone: phone.value,
-                                        gender: gender.value,
-                                        introduction: introduction.value
-                                    })
+                                    body: formData
                                 });
 
                                 if (response.ok) {
-                                    // 更新成功後可以重定向至其他頁面
                                     window.location.href = '/Login/Login';
                                 } else {
                                     console.error("更新失敗:", await response.text());
@@ -115,12 +159,15 @@
                     return {
                         phone,
                         gender,
-                        introduction
+                        introduction,
+                        avatar,
+                        updateAvatar,
+                        triggerFileInput
                     };
                 },
             };
             const app = createApp(config);
             app.mount("#app")
-  </script>
-       }
+        </script>
+    }
 </body>
