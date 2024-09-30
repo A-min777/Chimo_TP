@@ -100,7 +100,9 @@
                     return null;
                 };
 
-              
+                const urlParams = new URLSearchParams(window.location.search);
+                const returnUrl = urlParams.get('returnUrl') || '/Home/Index';
+                
 
                 // 登入邏輯
                 const login = async () => {
@@ -122,7 +124,10 @@
 
                             if (token) {
                                 saveTokenToCookie(token);  // 儲存 token 到 cookie
-                                window.location.href = "/Home/Index"; // 導向主頁
+
+                                
+                                // 導向到原始頁面或首頁
+                                window.location.href = returnUrl;
                             } else {
                                 errorMessage.value = "未收到有效的 Token";
                             }

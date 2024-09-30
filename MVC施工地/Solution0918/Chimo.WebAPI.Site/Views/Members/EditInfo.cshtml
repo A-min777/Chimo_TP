@@ -270,52 +270,6 @@
                     },
                 });
 
-            //function showModal() {
-            //    isModalVisible.value = true;
-            //}
-
-            //function hideModal() {
-            //    isModalVisible.value = false;
-            //}
-            //更新頭像用的程式構想
-            /*
-            const updateAvatar = async (event) => {
-                const file = event.target.files[0];
-
-                if (file) {
-                    if (file.size > maxSize) {
-                        showToast('檔案大小不能超過 2MB', 'text-danger');
-                        return;
-                    }
-
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        member.value.avatar = e.target.result; // 即時預覽
-                    };
-                    reader.readAsDataURL(file);
-
-                    const formData = new FormData();
-                    formData.append('avatar', file);
-
-                    try {
-                        const response = await fetch('/api/upload-avatar', {
-                            method: 'POST',
-                            body: formData,
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            member.value.avatar = data.avatarUrl; // 更新圖片 URL
-                            showToast('上傳成功！', 'text-success'); // 成功提示
-                        } else {
-                            showToast('上傳失敗: ' + data.message, 'text-danger');
-                        }
-                    } catch (error) {
-                        console.error('錯誤:', error);
-                        showToast('上傳時發生錯誤', 'text-danger');
-                    }
-                }
-            };
-            */
             const member = ref({
                 id: 0,
                 name: "",
