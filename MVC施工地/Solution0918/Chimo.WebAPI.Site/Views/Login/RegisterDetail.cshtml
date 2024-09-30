@@ -1,4 +1,4 @@
-﻿    
+﻿
 @{
     ViewBag.Title = "RegisterDetail";
 }
@@ -15,112 +15,159 @@
     .avatarA {
         border-radius: 50%;
     }
+
+    .profile {
+        position: relative;
+        display: inline-block;
+    }
+
+        .profile:hover .camera {
+            opacity: 0.9; /* 鼠標懸停時顯示 */
+        }
+
+    .camera {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
 </style>
+<body>
+    <div id="app">
 
-<div id="app">
-
-    <div class="row">
-        <div class="loginPic col-sm-12 col-md-8">
-            <img src="../images/loginPic.jpg" alt="loginPic" class=" img-fluid" />
-        </div>
-        <div class="loginForm col-md-4 p-5">
-            <div class="mb-3">
-                <h2 class="">會員資料</h2>
-                <small class="blockquote-footer">可稍後再至個人頁面編輯</small>
+        <div class="row">
+            <div class="loginPic col-sm-12 col-md-8">
+                <img src="../images/loginPic.jpg" alt="loginPic" class=" img-fluid" />
             </div>
+            <div class="loginForm col-md-4 p-5">
+                <div class="mb-3">
+                    <h2 class="">會員資料</h2>
+                    <small class="blockquote-footer">可稍後再至個人頁面編輯</small>
+                </div>
 
-            <div class="register text-center">
-                <img src="../images/profilePic4.PNG"
-                     alt="profile"
-                     class="avatarA img-fluid m-3" />
+                <form id="imageForm" method=post enctype="multipart/form-data">
+                    <div class="register text-center">
+                        <div class="profile btn border-0">
+                            <input type="file" accept="image/*" v-on:change="updateAvatar" style="display: none;" id="fileInput" />
+                            <img v-bind:src="avatar"
+                                 alt="profile"
+                                 class="avatarA img-fluid m-3" />
+                            <img src="~/images/camera.png"
+                                 alt="editProfile"
+                                 class="camera img-fluid "
+                                 v-on:click="triggerFileInput" />
+                        </div>
+                    </div>
+                </form>
+
+                <input type="text"
+                       name="phone"
+                       id="phone"
+                       placeholder="連絡電話"
+                       class="form-control mb-3"
+                       v-model="phone" />
+
+                <select class="form-select mb-3" v-model="gender" aria-label="Default select example">
+                    <option value="0">選擇性別</option>
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                    <option value="3">其他</option>
+                </select>
+
+                <textarea class="form-control mb-3"
+                          id="exampleFormControlTextarea1"
+                          v-model="introduction"
+                          rows="3"
+                          placeholder="請輸入簡介"></textarea>
+
+                <button style="height: 65px"
+                        class="loginBtn btn align-center col-12 mb-3 p-3" onclick="submit()">
+                    完成
+                </button>
+
             </div>
-
-            <input type="text"
-                   name="phone"
-                   id="phone"
-                   placeholder="連絡電話"
-                   class="form-control mb-3"
-                   v-model="phone" />
-
-            <select class="form-select mb-3" v-model="gender" aria-label="Default select example">
-                <option value="0">選擇性別</option>
-                <option value="1">男</option>
-                <option value="2">女</option>
-                <option value="3">其他</option>
-            </select>
-
-            <textarea class="form-control mb-3"
-                      id="exampleFormControlTextarea1"
-                      v-model="introduction"
-                      rows="3"
-                      placeholder="請輸入簡介"></textarea>
-
-            <button style="height: 65px"
-                    class="loginBtn btn align-center col-12 mb-3 p-3" onclick="submit()">
-                完成
-            </button>
-
         </div>
     </div>
-</div>
-@section scripts{
-    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
-    <script src="~/Scripts/vue.global.js"></script>
-    <script src="~/Scripts/myheader.js"></script>
-    <script>
-        const { createApp, ref } = Vue;
 
-        const app = createApp({
-            setup() {
-                const phone = ref('');
-                const gender = ref('');
-                const introduction = ref('');
+    @section scripts{
+        <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+        <script src="~/Scripts/vue.global.js"></script>
+        <script src="~/Scripts/myheader.js"></script>
+        <script>
+            const { createApp, ref } = Vue;
 
-                // 獲取 URL 查詢參數中的 userId
-                const params = new URLSearchParams(window.location.search);
-                const userId = params.get('userId');
+            const config = {
+                setup() {
+                    const phone = ref('');
+                    const gender = ref('');
+                    const introduction = ref('');
+                    const avatar = ref('../images/profilePic4.PNG'); // 預設頭像
 
-                // 提交表單
-                window.submit = async () => {
-                    if (!phone.value && !gender.value && !introduction.value) {
-                        // 如果所有輸入為空，重定向至首頁
-                        window.location.href = '/Home/Index';
-                    } else {
-                        // 這裡可以呼叫 API 進行更新
-                        try {
-                            const response = await fetch(`/api/updateMember/${userId}`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    phone: phone.value,
-                                    gender: gender.value,
-                                    introduction: introduction.value
-                                })
-                            });
+                    const params = new URLSearchParams(window.location.search);
+                    const userId = params.get('userId');
 
-                            if (response.ok) {
-                                // 更新成功後可以重定向至其他頁面
-                                window.location.href = '/Login/Login';
-                            } else {
-                                console.error("更新失敗:", await response.text());
-                            }
-                        } catch (error) {
-                            console.error("無法連接伺服器:", error);
+                    // 開啟選擇檔案視窗
+                    const triggerFileInput = () => {
+                        document.getElementById('fileInput').click();
+                    };
+
+                    // 即時更新頭像預覽
+                    const updateAvatar = (event) => {
+                        const file = event.target.files[0];
+                        if (file) {
+                            avatar.value = URL.createObjectURL(file); // 即時預覽
                         }
-                    }
-                };
+                    };
 
-                return {
-                    phone,
-                    gender,
-                    introduction
-                };
-            },
-        });
+                    // 提交表單及上傳圖片
+                    window.submit = async () => {
+                        const fileInput = document.getElementById('fileInput');
+                        const file = fileInput.files[0];
 
-        app.mount("#app");
-    </script>
-}
+                        if (!phone.value && !gender.value && !introduction.value && !file) {
+                            window.location.href = '/Home/Index';
+                        } else {
+                            const formData = new FormData();
 
+                            formData.append('phone', phone.value);
+                            formData.append('gender', gender.value);
+                            formData.append('introduction', introduction.value);
+
+                            if (file) {
+                                formData.append('file', file); // 將圖片加入FormData
+                            }
+
+                            try {
+                                const response = await fetch(`/api/updateMember/${userId}`, {
+                                    method: 'POST',
+                                    body: formData
+                                });
+
+                                if (response.ok) {
+                                    window.location.href = '/Login/Login';
+                                } else {
+                                    console.error("更新失敗:", await response.text());
+                                }
+                            } catch (error) {
+                                console.error("無法連接伺服器:", error);
+                            }
+                        }
+                    };
+
+                    return {
+                        phone,
+                        gender,
+                        introduction,
+                        avatar,
+                        updateAvatar,
+                        triggerFileInput
+                    };
+                },
+            };
+            const app = createApp(config);
+            app.mount("#app")
+        </script>
+    }
+</body>

@@ -52,7 +52,7 @@ namespace Chimo.WebAPI.Site.Services
                 Email = dto.Email,
                 Password = hashPassword,
                 Gender = 0,
-                ProfileImage = dto.ProfileImage,
+                ProfileImage = "profilePic2.PNG",
                 Intro = dto.Intro,
                 Phone = dto.Phone,
                 CreatedDate = DateTime.Now,
@@ -70,7 +70,7 @@ namespace Chimo.WebAPI.Site.Services
             return emailRegex.IsMatch(email);
         }
 
-        public bool UpdateMember(int userId, RegisterDto dto)
+        public bool UpdateMember(int userId, RegisterDto dto,string avatar)
         {
             var member = _memberRepository.FindById(userId);
             if (member == null) return false;
@@ -78,6 +78,8 @@ namespace Chimo.WebAPI.Site.Services
             member.Phone = dto.Phone ?? null; // 預設值
             member.Gender = dto.Gender; // 如果為 null，則設為 0
             member.Intro = dto.Intro ?? null; // 預設值
+
+            member.ProfileImage = avatar;
 
             _memberRepository.Update(member);
             return true;
