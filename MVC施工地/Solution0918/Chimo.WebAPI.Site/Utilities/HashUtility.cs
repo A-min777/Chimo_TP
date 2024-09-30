@@ -28,7 +28,7 @@ namespace Chimo.WebAPI.Site.Utilities
 
                 foreach (var b in hash)
                 {
-                    sb.Append(b.ToString("X2")); //把byte轉成16進位字串,字母是大許
+                    sb.Append(b.ToString("X2")); //把byte轉成16進位字串,字母是大寫
                 }
                 return sb.ToString(); //回傳加密後的字串
             }

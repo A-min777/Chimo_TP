@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using System.Web.Configuration;
 
 namespace Chimo.WebAPI.Site.Repositories
 {
@@ -19,12 +20,13 @@ namespace Chimo.WebAPI.Site.Repositories
             _db = new AppDbContext();
         }
 
-        /// <summary>
-        /// 取得課程購買人數
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public int GetBuyerCountById(int CourseId)
+
+		/// <summary>
+		/// 取得課程購買人數
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public int GetBuyerCountById(int CourseId)
         {
             int purchaseCount = _db.OrderItems
             .Where(oi => oi.CourseId == CourseId && oi.Status == 1)
@@ -179,6 +181,27 @@ namespace Chimo.WebAPI.Site.Repositories
                 .Map<List<CourseDto>>(OtherCoursesQuery);
 
             return OtherCourses;
+        }
+
+        /// <summary>
+        /// 根據會員Id抓取該會員所購買的課程
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public List<CourseDto> GetPurchasedCourseById(int memberId)
+        {
+            var purchasedCoursesQuery = _db.Courses
+             .AsNoTracking() 
+             .Include(c => c.Teacher) 
+             .Include(c => c.OrderItems.Select(oi => oi.Order)) 
+             .Include(c => c.OrderItems.Select(oi => oi.Order.Member)) 
+             .Where(c => c.OrderItems.Any(oi => oi.Status == 1 && oi.Order.Member.Id == memberId))
+             .ToList();
+
+            // Course 轉 CourseDto
+            var purchasedCourses = WebApiApplication._mapper.Map<List<CourseDto>>(purchasedCoursesQuery);
+
+            return purchasedCourses;
         }
 
         /// <summary>

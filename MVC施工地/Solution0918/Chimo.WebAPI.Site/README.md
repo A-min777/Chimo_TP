@@ -116,3 +116,31 @@ ReadMe For Chimo.WebApi.Site
 		若token是null就直接回傳，如此可支援不登入檢視ProductInfo
 			
 		
+	------------------------------2024/9/25----------------------------------
+
+	[V] 實做 CourseApiController 的 GetPurchasedCourses, 完成顯示首頁會員已購買課程的web api
+
+	[V] 在 CourseService 新增 GetPurchasedCourseById 函式，用來抓取會員已購買課程資訊
+		在 MemberRespository 新增 MemberRepository 函式， 用來根據Id判斷是否存在會員
+		在 ICourseRepository 新增 GetPurchasedCourseById 函式定義，並在 CourseRepository 實做，
+
+	[V] 修改 Home/Index.cshtml 呼叫 GetPurchasedCourses api, 可以在登入會員首頁顯示已購買課程
+
+	[V] 新增 ICollectionRepository 介面
+		新增 CollectionRepository
+		新增 CollectionService
+		在 ICollectionRepository 及 CollectionService 新增兩個函式
+		在 CollectionRepository 實作介面函式
+
+	[V] 新增 CollectionsApiController, 完成新增跟取消收藏的api
+
+	[working on] 修改 Course.cshtml, 呼叫收藏api
+
+
+	------------------------------2024/9/29----------------------------------
+
+	[V] 為了在新增及取消收藏時能抓到課程id,在 CollectionDto 新增 CourseId 屬性
+
+	[V] 修改 Course.cshtml 及 ProductInfo.cshtml, 呼叫處理收藏的api, 完成新增及取消收藏功能
+
+	[working on] 尚未處理在 ProductInfo.cshtml 使用者未登入時點擊收藏的情形，目前程式會死掉

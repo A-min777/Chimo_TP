@@ -9,7 +9,7 @@ namespace Chimo.WebAPI.Site.Interfaces
 {
 	internal interface ICourseRepository
 	{
-        int GetBuyerCountById(int id);
+		int GetBuyerCountById(int id);
         CourseChapterDto GetChapterById(int courseId, int chapterId);
         int GetChapterCountById(int id);
         CourseContentDto GetCourseContentById(int id);
@@ -17,6 +17,7 @@ namespace Chimo.WebAPI.Site.Interfaces
         int GetFirstChapterId(int courseId);
         string GetFirstVideoById(int id);
         List<CourseDto> GetOtherCoursesById(int id);
+        List<CourseDto> GetPurchasedCourseById(int memberId);
         List<CourseDto> GetRecommendedCourses();
 	}
 }
