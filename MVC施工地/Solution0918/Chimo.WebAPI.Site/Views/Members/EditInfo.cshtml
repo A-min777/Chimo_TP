@@ -167,7 +167,8 @@
                         <p>
                             會員點數：<span class="specialCount">{{member.point}}</span>
                             pt
-                            <a href="/Members/TopUp" class="chargeTag btn btn-warning p-1 ms-2">
+                            <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("EditInfo", "Members")`" 
+                               class="chargeTag btn btn-warning p-1 ms-2">
                                 儲值
                             </a>
                         </p>
@@ -243,161 +244,146 @@
     <script src="~/Scripts/vue.global.js"></script>
     <script src="~/Scripts/myheader.js"></script>
     <script>
-            @using Chimo.WebAPI.Site.Models
-                const { createApp, ref, onMounted } = Vue;
+    @using Chimo.WebAPI.Site.Models
+    const { createApp, ref, onMounted } = Vue;
 
-             const config = {
-                 setup() {
-                                          const modal = ref({
-                         message: "",
-                         img: "",
-                         isChange: false,
-                         isModalVisible: false,
-                         showModal() {
-                             this.isModalVisible = true;
-                         },
-                         hideModal() {
-                             this.isModalVisible = false;
-                         },
-                     });
+    const config = {
+        setup() {
+            const modal = ref({
+                message: "",
+                img: "",
+                isChange: false,
+                isModalVisible: false,
+                showModal() {
+                    this.isModalVisible = true;
+                },
+                hideModal() {
+                    this.isModalVisible = false;
+                },
+            });
 
-                    const member = ref({
-                        id: 0,
-                        name: "",
-                        avatar: "",
-                        point: 0,
-                        gender: 0,
-                        phone: "",
-                        email: "",
-                        intro: "",
-                        updatedDate: "",
+            const member = ref({
+                id: 0,
+                name: "",
+                avatar: "",
+                point: 0,
+                gender: 0,
+                phone: "",
+                email: "",
+                intro: "",
+                updatedDate: "",
+            });
+
+            const originalMember = ref({ ...member.value });
+
+            const fetchMemberProfile = async () => {
+                try {
+                    const token = '@AuthHelper.GetTokenFromCookie()';
+                    const decodedMember = decodeToken(token);
+
+                    // 確保這裡的屬性名稱正確
+                    member.value.id = decodedMember.Id;
+                    member.value.name = decodedMember.unique_name;
+                    member.value.email = decodedMember.Email;
+                    member.value.point = decodedMember.Point;
+                    member.value.avatar = `../images/` + decodedMember.ProfileImage;
+                    member.value.intro = decodedMember.Intro;
+                    member.value.gender = decodedMember.Gender;
+                    member.value.updatedDate = formatDate(decodedMember.updatedDate);
+
+                    originalMember.value = { ...member.value };
+
+                    const response = await fetch(`/api/profile/${member.value.id}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
                     });
 
-                     const originalMember = ref({ ...member.value });
-
-
-
-                const fetchMemberProfile = async () => {
-            try {
-                const token = '@AuthHelper.GetTokenFromCookie()';
-        // 使用 decodeToken 解碼會員資料
-        const decodedMember = decodeToken(token);
-        member.value.id = decodedMember.Id; // 確認這裡的屬性名稱正確
-        member.value.name = decodedMember.unique_name;
-        member.value.email = decodedMember.Email;
-        member.value.point = decodedMember.Point;
-        member.value.avatar = `../images/` + decodedMember.ProfileImage;
-        member.value.intro = decodedMember.Intro;
-        member.value.gender = decodedMember.Gender;
-        member.value.updatedDate = formatDate(decodedMember.updatedDate); // 格式化日期
-
-        originalMember.value = { ...member.value }; // 獲取後儲存原始值
-
-        // 接下來可以用 decodedMember.id 來獲取更詳細的會員資料
-        const response = await fetch(`/api/profile/${member.value.id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('網路請求失敗');
-
-        }
-
-        const data = await response.json();
-        Object.assign(member.value, data);
-        member.value.updatedDate = formatDate(data.updatedDate); // 格式化日期
-        originalMember.value = { ...member.value }; // 更新原始值
-    } catch (error) {
-        console.error("獲取會員資料失敗:", error);
-    }
-};
-
-
-                    const triggerFileInput = () => {
-                        const fileInput = document.getElementById('fileInput');
-                        fileInput.click(); // 模擬點擊事件
+                    if (!response.ok) {
+                        throw new Error('網路請求失敗');
                     }
 
+                    const data = await response.json();
+                    Object.assign(member.value, data);
+                    member.value.updatedDate = formatDate(data.updatedDate);
+                    originalMember.value = { ...member.value };
+                } catch (error) {
+                    console.error("獲取會員資料失敗:", error);
+                }
+            };
 
-                    const updateAvatar = async (event) => {
-                        const file = event.target.files[0];
-                        if (!file) {
-                            alert("請選擇檔案！");
-                            return;
-                        }
+            const triggerFileInput = () => {
+                const fileInput = document.getElementById('fileInput');
+                fileInput.click();
+            };
 
-                        const formData = new FormData();
-                        formData.append("file", file);
+            const updateAvatar = async (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    alert("請選擇檔案！");
+                    return;
+                }
 
-                        try {
-                            const response = await fetch(`/api/uploadProfileImage/${member.value.id}`, {
-                                method: "POST",
-                                body: formData,
-                            });
+                const formData = new FormData();
+                formData.append("file", file);
 
+                try {
+                    const response = await fetch(`/api/uploadProfileImage/${member.value.id}`, {
+                        method: "POST",
+                        body: formData,
+                    });
 
-                            if (!response.ok) {
-                                const errorData = await response.json();
-                                throw new Error(errorData.message || "上傳失敗，請稍後再試"); // 確保取出正確的錯誤訊息
-                            }
-                            const result = await response.json();
-
-                            // 更新 JWT token
-                            document.cookie = `jwtToken=${result.token}; path=/; secure`;
-
-                            // 更新頭像顯示
-                            member.value.avatar = `${result.profileImage}`; // 使用新的圖片路徑
-                            window.location.reload();
-
-
-                            alert('頭像更新成功');
-                        } catch (error) {
-                            alert(`上傳失敗: ${error.message}`);
-                        }
-                    };
-
-
-
-                    function decodeToken(token) {
-                        const base64Url = token.split('.')[1];
-                        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-                            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-                        return JSON.parse(jsonPayload);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "上傳失敗，請稍後再試");
                     }
 
+                    const result = await response.json();
+                    document.cookie = `jwtToken=${result.token}; path=/; secure`;
+                    member.value.avatar = `${result.profileImage}`;
+                    window.location.reload();
+
+                    alert('頭像更新成功');
+                } catch (error) {
+                    alert(`上傳失敗: ${error.message}`);
+                }
+            };
+
+            const decodeToken = (token) => {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                return JSON.parse(jsonPayload);
+            };
 
             const formatDate = (dateString) => {
                 const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
                 const date = new Date(dateString);
-                return date.toLocaleDateString('zh-TW', options).replace(/\//g, '/'); // 格式化為 YYYY/MM/DD
+                return date.toLocaleDateString('zh-TW', options).replace(/\//g, '/');
             };
 
             const confirmUpdate = () => {
-                // 比較變更的欄位
                 const changedFields = [];
                 for (let key in member.value) {
                     if (member.value[key] !== originalMember.value[key]) {
                         if (key === 'name') changedFields.push('姓名');
                         if (key === 'phone') changedFields.push('電話');
                         if (key === 'gender') changedFields.push('性別');
-                        if (key === 'intro') changedFields.push('個人簡介')
+                        if (key === 'intro') changedFields.push('個人簡介');
                     }
                 }
 
                 if (changedFields.length > 0) {
                     modal.value.message = `以下欄位已更改：\n${changedFields.join(', ')}\n確定要提交變更嗎？`;
                     modal.value.isChange = true;
-                    modal.value.img = "../images/alert.gif"
+                    modal.value.img = "../images/alert.gif";
                     modal.value.showModal();
                 } else {
                     modal.value.message = "沒有欄位被更改";
                     modal.value.isChange = false;
-                    modal.value.img = "../images/alert.gif"
+                    modal.value.img = "../images/alert.gif";
                     modal.value.showModal();
                 }
             };
@@ -413,14 +399,14 @@
                         },
                         body: JSON.stringify(member.value)
                     });
+
                     if (!response.ok) {
                         throw new Error('更新資料失敗');
                     } else {
                         modal.value.message = "更新成功";
-                        modal.value.img = "../images/ok.gif"
-                        originalMember.value = { ...member.value }; // 更新成功後，將新值設為原始值
+                        modal.value.img = "../images/ok.gif";
+                        originalMember.value = { ...member.value };
                         modal.value.isChange = false;
-
                     }
                 } catch (error) {
                     console.error("更新會員資料失敗:", error);
@@ -431,21 +417,14 @@
                 console.log("重設密碼功能尚未實作");
             };
 
-            function decodeToken(token) {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-                return JSON.parse(jsonPayload);
-            }
+            onMounted(fetchMemberProfile);
 
-            onMounted(fetchMemberProfile); // 組件掛載時自動獲取會員資料
-
-            return { member,  confirmUpdate, updateProfile, resetPassword, modal, updateAvatar, triggerFileInput };
+            return { member, confirmUpdate, updateProfile, resetPassword, modal, updateAvatar, triggerFileInput };
         }
-    }
-        const app = createApp(config);
-        app.mount("#app")
+    };
+
+    const app = createApp(config);
+    app.mount("#app");
     </script>
 }
 

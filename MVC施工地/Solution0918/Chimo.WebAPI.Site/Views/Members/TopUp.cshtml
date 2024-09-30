@@ -136,11 +136,10 @@
                     </div>
                 </div>
                 <div class="text-center mb-4">
-                    <a :href="`@Url.Action("index", "Home")`"
-                       class="confirmBtn btn btn-md"
-                       v-on:click="updateProfile">
+                    <button class="confirmBtn btn btn-md"
+                            v-on:click="BackToLastPage">
                         確認
-                    </a>
+                    </button>
                 </div>
                
             </div>
@@ -363,6 +362,13 @@
                     },
                 });
 
+                const urlParams = new URLSearchParams(window.location.search);
+                const returnUrl = urlParams.get('returnUrl') || '/Home/Index';   
+
+                const BackToLastPage = () => {
+                    window.location.href = returnUrl;
+                }
+
                 const member = ref({
                     id: 1,
                     point: 1200,
@@ -460,6 +466,7 @@
                     selectedSolution,
                     member,
                     modal,
+                    BackToLastPage,
                 };
             },
         };
