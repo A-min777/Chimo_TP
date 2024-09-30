@@ -20,12 +20,13 @@ namespace Chimo.WebAPI.Site.Repositories
             _db = new AppDbContext();
         }
 
-        /// <summary>
-        /// 取得課程購買人數
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public int GetBuyerCountById(int CourseId)
+
+		/// <summary>
+		/// 取得課程購買人數
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public int GetBuyerCountById(int CourseId)
         {
             int purchaseCount = _db.OrderItems
             .Where(oi => oi.CourseId == CourseId && oi.Status == 1)

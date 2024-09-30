@@ -100,6 +100,10 @@
         align-items: center;
         z-index: 1050;
     }
+
+    .modal-content{
+        width:300px;
+    }
 </style>
 
 <div id="app">
@@ -111,18 +115,22 @@
                     <button type="button"
                             class="btn-close"
                             data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                            aria-label="Close"
+                            v-on:click="hideModal"></button>
                 </div>
                 <div class="text-center">
-                    <img src="~/images/point.png"
+                    <img src="~/images/alert.gif"
                          alt="point"
-                         class="alertImg img-fluid mt-4"
+                         class="alertImg mt-4"
                          style="max-width: 100px" />
-                    <div class="modal-body">確定要執行此操作嗎？</div>
+                    <div class="modal-body">請先完成登入後再進行操作</div>
                 </div>
 
                 <div class="text-center mb-4">
-                    <button type="button" class="confirmBtn btn btn-md">確認</button>
+                    <a :href="`@Url.Action("Login", "Login")`"
+                       class="confirmBtn btn btn-md ">
+                        登入
+                    </a>
                 </div>
             </div>
         </div>
@@ -149,9 +157,18 @@
                     <h1 class="fw-bolder text-light">{{courseDetail.title}}</h1>
                     <div class="d-lg-flex">
                         <p class="fs-1 fw-bolder text-light">NT${{courseDetail.price}}</p>
-                        <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3" v-on:click="showModal">
-                            立即購買
-                        </button>
+                        @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+                        {
+                            <a :href="`@Url.Action("Checkout", "Members")`" 
+                               class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3">
+                                立即購買
+                            </a>}
+                        else
+                        {
+                            <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3" v-on:click="showModal">
+                                立即購買
+                            </button>
+                        }
                     </div>
                 </div>
                 <div class="col-xs-12 col-md-6 col-lg-4">
@@ -235,9 +252,18 @@
                     <h2>{{courseDetail.title}}</h2>
                     <h2>NT${{courseDetail.price}}</h2>
                     <div class="d-flex justify-content-between">
-                        <button class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
-                            立即購買
-                        </button>
+                        @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+                        {
+                            <a :href="`@Url.Action("Checkout", "Members")`"
+                               class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
+                                立即購買
+                            </a>}
+                        else
+                        {
+                            <button class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap" v-on:click="showModal">
+                                立即購買
+                            </button>
+                        }
                         <button class="rounded btn border mb-3">
                             <img src="~/images/cart.png"
                                  alt="cart"
@@ -260,12 +286,7 @@
     <script src="~/Scripts/bootstrap.bundle.min.js"></script>
     <script src="~/Scripts/vue.global.js"></script>
     <script src="~/Scripts/myheader.js"></script>
-    <script>
-            var isLoggedIn = @Html.Raw(Json.Encode(ViewData["IsLoggedIn"]));
-
-        // 输出到控制台
-        console.log("User is logged in:", isLoggedIn);
-    </script>
+   
     <script>
 
             const { createApp, ref, onMounted } = Vue;
@@ -290,22 +311,48 @@
                         },
                     });
 
-                    function toggleBookmark() {
-                        Bookmark.value.isBooked = !Bookmark.value.isBooked;
-                    }
-
-
-                    //這裡呼叫查看收藏的api
-                    /*const getBookedStatus = async () => {
+                    const checkIsCollection = async () => { // 判斷會員是否有收藏課程
                         try {
-                            // 假設這是你的 API 端點
-                            const response = await fetch('/api/checkBookmark');
+                            const response = await fetch(`/api/collections/${memberId}`);
                             const data = await response.json();
-                            Bookmark.value.isBooked = data.isBookmarked; // 根據 API 回應設定
+
+                            Bookmark.value.isBooked = data.some((collection) => collection.courseId === courseId);
                         } catch (error) {
-                            console.error('獲取收藏狀態時出錯:', error);
+                            console.error("fetch 收藏課程失敗", error);
                         }
-                    };*/
+                    };
+
+                    const toggleBookmark = async () => {
+                        try {
+                            if (Bookmark.value.isBooked) {
+                                // 移除收藏
+                                await fetch(`/api/updateCollections/${courseId}/${memberId}`, {
+                                    method: 'DELETE',
+                                });
+                                Bookmark.value.isBooked = false;
+                            } else {
+                                // 新增收藏
+                                const response = await fetch(`/api/updateCollections`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        memberId: memberId,
+                                        courseId: courseId,
+                                    }),
+                                });
+                                if (response.ok) {
+                                    Bookmark.value.isBooked = true;
+                                } else {
+                                    console.error("新增收藏失敗");
+                                }
+                            }
+                        } catch (error) {
+                            console.error("切換收藏狀態失敗", error);
+                        }
+                    };
+
 
                     const videoPlayer = ref(null);
                     function checkVideoTime() {
@@ -318,8 +365,8 @@
                             videoPlayer.value.addEventListener('timeupdate', checkVideoTime);
                         }
 
-                        fetchCourseInfo(id);
-
+                        fetchCourseInfo(courseId);
+                        checkIsCollection();
                     });
 
 
@@ -355,11 +402,11 @@
                     };
 
                     const courseContents = ref([]);
-                    const  id = @Html.Raw(ViewBag.ProductId);
-                    const fetchCourseInfo = async (id) => {
+                    const  courseId = @Html.Raw(ViewBag.ProductId);
+                    const fetchCourseInfo = async (courseId) => {
                         try {
 
-                            const response = await fetch(`/api/products/productinfo/${id}`, {
+                            const response = await fetch(`/api/products/productinfo/${courseId}`, {
                                 method: 'GET',
                                 headers: {
                                     'Content-Type': 'application/json'
