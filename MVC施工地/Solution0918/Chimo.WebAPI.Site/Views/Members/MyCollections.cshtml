@@ -87,48 +87,49 @@
 <body>
     <div id="app">
 
-        <div class="container">
-            <div class="row">
-                <div class="col-4 mt-3 mb-3">
-                    <div class="text-center list-group">
-                        <div class="list-group-item">
-                            <img :src="`/images/${member.avatar}`" 
-                                 alt="profile"
-                                 class="avatarA img-fluid m-3" />
-                            <h4 class="fw-bolder">{{member.name}}</h4>
-                            <p>
-                                會員點數：<span class="specialCount">{{member.point}}</span>
-                                pt
-                                <a href="/Members/TopUp">
-                                    <button class="chargeTag btn btn-warning p-1 ms-2">
-                                        儲值
-                                    </button>
-                                </a>
-                            </p>
-                        </div>
+  
 
-                        <a href="/Members/EditInfo"
-                           class="list-group-item list-group-item-action align-content-center border-0 rounded"
-                           aria-current="true">
-                            會員資料
-                        </a>
-                        <a href="/Members/MyCourses"
-                           class="list-group-item list-group-item-action align-content-center border-0 rounded"
-                           aria-current="true">
-                            我的課程
-                        </a>
-                        <a href="#"
-                           class="list-group-item list-group-item-action active align-content-center border-0 rounded"
-                           aria-current="true">
-                            我的收藏
-                        </a>
-                        <a href="/Members/MyOrders"
-                           class="list-group-item list-group-item-action align-content-center border-0 rounded"
-                           aria-current="true">
-                            購買紀錄
-                        </a>
+    <div class="container">
+        <div class="row">
+            <div class="col-4 mt-3 mb-3">
+                <div class="text-center list-group">
+                    <div class="list-group-item">
+                        <img :src="member.avatar"
+                             alt="profile"
+                             class="avatarA img-fluid m-3" />
+                        <h4 class="fw-bolder">{{member.name}}</h4>
+                        <p>
+                            會員點數：<span class="specialCount">{{member.point}}</span>
+                            pt
+                            <a href="/Members/TopUp" class="chargeTag btn btn-warning p-1 ms-2">
+                                儲值
+                            </a>
+                        </p>
                     </div>
+
+                    <a href="/Members/EditInfo"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        會員資料
+                    </a>
+                    <a href="/Members/MyCourses"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        我的課程
+                    </a>
+                    <a href="#"
+                       class="list-group-item list-group-item-action active align-content-center border-0 rounded"
+                       aria-current="true">
+                        我的收藏
+                    </a>
+                    <a href="/Members/MyOrders"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        購買紀錄
+                    </a>
                 </div>
+            </div>
+         
                 <div class="content col-8 mt-3 mb-3">
                     <section class="m-4">
                         <div class="d-flex justify-content-between">

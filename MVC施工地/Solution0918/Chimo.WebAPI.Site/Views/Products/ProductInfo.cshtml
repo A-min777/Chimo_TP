@@ -3,7 +3,26 @@
     ViewBag.Title = "ProductInfo";
 }
 
+@using Chimo.WebAPI.Site.Models
+
+@{
+    bool isLoggedIn = AuthHelper.IsLoggedIn(Request);  // 檢查是否已登入
+    ViewData["IsLoggedIn"] = isLoggedIn;
+    // 從 Cookie 中獲取 JWT
+    var token = AuthHelper.GetTokenFromCookie();
+    Chimo.WebAPI.Site.Models.EFModels.Member member = null;
+
+    // 如果 token 存在，則解碼並獲取會員資料
+    if (isLoggedIn)
+    {
+        member = JwtUtility.DecodeToken(token);
+    }
+}
+
+
+
 <style>
+
     a {
         text-decoration: none;
     }
@@ -24,8 +43,9 @@
         color: #fff;
     }
 
-    .accordion {
-        background-color: #fffacc;
+
+    .accordion-body {
+        background-color: #eeebf8;
     }
 
     .accordion-button:not(.collapsed) {
@@ -33,6 +53,16 @@
         color: #fff;
         border-radius: 10px;
     }
+
+        .accordion-button:not(.collapsed)::after {
+            color: #fff;
+        }
+
+    .accordion-button:hover {
+        background-color: #5b468b;
+        color: #fff;
+    }
+
 
     .cartIcon {
         object-fit: contain;
@@ -43,10 +73,68 @@
     .avatarA {
         border-radius: 50%;
     }
-    
+
+    .confirmBtn {
+        color: #fff;
+        background-color: #5b468b;
+    }
+
+        .confirmBtn:hover {
+            color: #fff;
+            background-color: #342557 !important;
+        }
+
+    .alertImg {
+        animation: squish 0.5s ease;
+        transform-origin: bottom;
+    }
+
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+    }
+
+    .modal-content{
+        width:300px;
+    }
 </style>
 
 <div id="app">
+    <div class="modal" v-if="isModalVisible" v-on:click.self="hideModal">
+        <div class="modal-dialog"
+             :class="{'slide-in': isModalVisible, 'slide-out': !isModalVisible}">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0 mt-0">
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                            v-on:click="hideModal"></button>
+                </div>
+                <div class="text-center">
+                    <img src="~/images/alert.gif"
+                         alt="point"
+                         class="alertImg mt-4"
+                         style="max-width: 100px" />
+                    <div class="modal-body">請先完成登入後再進行操作</div>
+                </div>
+
+                <div class="text-center mb-4">
+                    <a :href="`@Url.Action("Login", "Login")`"
+                       class="confirmBtn btn btn-md ">
+                        登入
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- 頁首課程預覽 bg-->
     <div class="product mb-4 pt-3">
         <div class="container">
@@ -63,15 +151,24 @@
                 <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
             </div>
             <div class="row pb-5 justify-content-between" v-if="courseDetail && courseDetail.teacher">
-                <div class="col-xs-12 col-md-6 col-lg-7 p-3" >
+                <div class="col-xs-12 col-md-6 col-lg-7 p-3">
                     <small class="text-light">教師 | {{courseDetail.teacher.name}}</small>
                     <hr class="border" />
                     <h1 class="fw-bolder text-light">{{courseDetail.title}}</h1>
                     <div class="d-lg-flex">
                         <p class="fs-1 fw-bolder text-light">NT${{courseDetail.price}}</p>
-                        <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3">
-                            立即購買
-                        </button>
+                        @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+                        {
+                            <a :href="`@Url.Action("Checkout", "Members")`" 
+                               class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3">
+                                立即購買
+                            </a>}
+                        else
+                        {
+                            <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3" v-on:click="showModal">
+                                立即購買
+                            </button>
+                        }
                     </div>
                 </div>
                 <div class="col-xs-12 col-md-6 col-lg-4">
@@ -138,8 +235,7 @@
                          alt="taPic"
                          class="avatarA col-md-5 col-lg-3 col-sm-3 " />
                     <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
-                         style="height: 50%; align-self: center"
-                         >
+                         style="height: 50%; align-self: center">
                         <h6>{{courseDetail.teacher.name}}</h6>
                         <hr />
                         <p>{{courseDetail.teacher.intro}}</p>
@@ -156,9 +252,18 @@
                     <h2>{{courseDetail.title}}</h2>
                     <h2>NT${{courseDetail.price}}</h2>
                     <div class="d-flex justify-content-between">
-                        <button class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
-                            立即購買
-                        </button>
+                        @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+                        {
+                            <a :href="`@Url.Action("Checkout", "Members")`"
+                               class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
+                                立即購買
+                            </a>}
+                        else
+                        {
+                            <button class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap" v-on:click="showModal">
+                                立即購買
+                            </button>
+                        }
                         <button class="rounded btn border mb-3">
                             <img src="~/images/cart.png"
                                  alt="cart"
@@ -170,15 +275,32 @@
             <!-- 右側購買連結 end -->
         </div>
     </div>
- </div>
-    @section scripts{
-        <script src="~/Scripts/bootstrap.bundle.min.js"></script>
-        <script src="~/Scripts/vue.global.js"></script>
-        <script src="~/Scripts/myheader.js"></script>
-        <script>
+</div>
+
+
+
+<!-- Modal 結構 -->
+
+
+@section scripts{
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/vue.global.js"></script>
+    <script src="~/Scripts/myheader.js"></script>
+   
+    <script>
+
             const { createApp, ref, onMounted } = Vue;
             const config = {
                 setup() {
+                    const isModalVisible = ref(false) 
+
+                    function showModal() {
+                        isModalVisible.value = true;
+                    }
+
+                    function hideModal() {
+                        isModalVisible.value = false;
+                    }
 
                     const Bookmark = ref({
                         isBooked: false,
@@ -189,22 +311,48 @@
                         },
                     });
 
-                    function toggleBookmark() {
-                        Bookmark.value.isBooked = !Bookmark.value.isBooked;
-                    }
-
-
-                    //這裡呼叫查看收藏的api
-                    /*const getBookedStatus = async () => {
+                    const checkIsCollection = async () => { // 判斷會員是否有收藏課程
                         try {
-                            // 假設這是你的 API 端點
-                            const response = await fetch('/api/checkBookmark');
+                            const response = await fetch(`/api/collections/${memberId}`);
                             const data = await response.json();
-                            Bookmark.value.isBooked = data.isBookmarked; // 根據 API 回應設定
+
+                            Bookmark.value.isBooked = data.some((collection) => collection.courseId === courseId);
                         } catch (error) {
-                            console.error('獲取收藏狀態時出錯:', error);
+                            console.error("fetch 收藏課程失敗", error);
                         }
-                    };*/
+                    };
+
+                    const toggleBookmark = async () => {
+                        try {
+                            if (Bookmark.value.isBooked) {
+                                // 移除收藏
+                                await fetch(`/api/updateCollections/${courseId}/${memberId}`, {
+                                    method: 'DELETE',
+                                });
+                                Bookmark.value.isBooked = false;
+                            } else {
+                                // 新增收藏
+                                const response = await fetch(`/api/updateCollections`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        memberId: memberId,
+                                        courseId: courseId,
+                                    }),
+                                });
+                                if (response.ok) {
+                                    Bookmark.value.isBooked = true;
+                                } else {
+                                    console.error("新增收藏失敗");
+                                }
+                            }
+                        } catch (error) {
+                            console.error("切換收藏狀態失敗", error);
+                        }
+                    };
+
 
                     const videoPlayer = ref(null);
                     function checkVideoTime() {
@@ -217,10 +365,10 @@
                             videoPlayer.value.addEventListener('timeupdate', checkVideoTime);
                         }
 
-                        fetchCourseInfo(id);
-                        
+                        fetchCourseInfo(courseId);
+                        checkIsCollection();
                     });
-                    
+
 
                     const formatThumbnailUrl = (thumbnailPath, target = "people") => {
 
@@ -254,11 +402,11 @@
                     };
 
                     const courseContents = ref([]);
-                    const  id = @Html.Raw(ViewBag.ProductId);
-                    const fetchCourseInfo = async (id) => {
+                    const  courseId = @Html.Raw(ViewBag.ProductId);
+                    const fetchCourseInfo = async (courseId) => {
                         try {
 
-                            const response = await fetch(`/api/products/productinfo/${id}`, {
+                            const response = await fetch(`/api/products/productinfo/${courseId}`, {
                                 method: 'GET',
                                 headers: {
                                     'Content-Type': 'application/json'
@@ -278,7 +426,7 @@
                         }
                     };
 
-                  
+
                     const courseDetail = ref([]);
                     const courseFirstVideo = ref();
                     const courseBuyerCount = ref();
@@ -288,12 +436,12 @@
                     return {
                         courseContents, courseDetail, videoPlayer, checkVideoTime,
                         courseFirstVideo, courseBuyerCount, courseChapterCount,
-                        formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute
+                        formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute, isModalVisible, showModal, hideModal
                     };
                 },
             };
 
             const app = createApp(config);
             app.mount("#app");
-        </script>
-    }
+    </script>
+}

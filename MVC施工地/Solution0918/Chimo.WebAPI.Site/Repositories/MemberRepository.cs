@@ -138,18 +138,19 @@ namespace Chimo.WebAPI.Site.Repositories
 
 
             var CollectionsCourses = (from mc in _db.MemberCollections
-                                      join m in _db.Members on mc.MemberId equals m.Id
-                                      join c in _db.Courses on mc.CourseId equals c.Id
-                                      join t in _db.Teachers on c.TeacherId equals t.Id
-                                      where m.Id == memberId && c.Status == 1
-                                      select new CollectionsDto
-                                      {
-                                          Id = memberId,
-                                          Price = c.Price,
-                                          TeacherName = c.Teacher.Name,
-                                          Thumbnail = c.Thumbnail,
-                                          Title = c.Title,
-                                      }).ToList();
+                                   join m in _db.Members on mc.MemberId equals m.Id
+                                   join c in _db.Courses on mc.CourseId equals c.Id
+                                   join t in _db.Teachers on c.TeacherId equals t.Id
+                                   where m.Id == memberId && c.Status == 1
+                                   select new CollectionsDto
+                                   {
+                                       Id = memberId,
+                                       CourseId = c.Id,
+                                       Price = c.Price,
+                                       TeacherName = c.Teacher.Name,
+                                       Thumbnail = c.Thumbnail,
+                                       Title = c.Title,
+                                   }).ToList();
 
             return CollectionsCourses;
 
@@ -199,7 +200,21 @@ namespace Chimo.WebAPI.Site.Repositories
             .Select(oi => oi.Cours)
             .FirstOrDefault();
 
-            return purchasedCourse != null;
+			return purchasedCourse != null;
+		}
+
+        /// <summary>
+        /// 判斷會員是否存在
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        internal bool IsExistMember(int memberId)
+        {
+            var member = _db.Members
+                .AsNoTracking()
+                .FirstOrDefault(m => m.Id == memberId);
+
+            return member != null;
         }
 
         public void UpdateProfileImage(int memberId, string imagePath)

@@ -6,23 +6,116 @@
     <title>Document</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css" />
   </head>
+  <style>
+    /* 定義從下方滑入的動畫 */
+    @keyframes slideIn {
+      0% {
+        transform: translateY(100%); /* 從下方滑入 */
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* 定義從下方滑出的動畫 */
+    @keyframes slideOut {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100%); /* 從下方滑出 */
+        opacity: 0;
+      }
+    }
+
+    /* 當 modal 顯示時使用 slideIn 動畫 */
+    .slide-in {
+      animation: slideIn 0.5s forwards; /* 動畫持續時間和效果 */
+    }
+
+    /* 當 modal 隱藏時使用 slideOut 動畫 */
+    .slide-out {
+      animation: slideOut 0.5s forwards; /* 動畫持續時間和效果 */
+    }
+
+    /* 使 Modal 的背景為透明 */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1050; /* 保證 Modal 在最上層 */
+    }
+  </style>
   <body>
     <div id="app">
-      <my-test></my-test>
+      <div>
+        <!-- 觸發 Modal 的按鈕 -->
+        <button class="btn btn-primary" @click="showModal">
+          開啟 Alert Modal
+        </button>
+
+        <!-- Modal 結構 -->
+        <div class="modal" v-if="isModalVisible" @click.self="hideModal">
+          <div
+            class="modal-dialog"
+            :class="{'slide-in': isModalVisible, 'slide-out': !isModalVisible}"
+          >
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">警告</h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  @click="hideModal"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <p>確定要執行此操作嗎？</p>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  @click="hideModal"
+                >
+                  取消
+                </button>
+                <button type="button" class="btn btn-primary">確認</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+    <script src="../js/bootstrap.bundle.min.js"></script>
     <script src="../js/vue.global.js"></script>
     <script src="Mytest.js"></script>
     <script>
-      const { createApp, ref } = Vue;
-
-      const config = {
-        setup() {
-          return {};
+      const app = Vue.createApp({
+        data() {
+          return {
+            isModalVisible: false,
+          };
         },
-      };
+        methods: {
+          showModal() {
+            this.isModalVisible = true;
+          },
+          hideModal() {
+            this.isModalVisible = false;
+          },
+        },
+      });
 
-      const app = createApp();
-      app.component("my-test", MyTest);
       app.mount("#app");
     </script>
   </body>
