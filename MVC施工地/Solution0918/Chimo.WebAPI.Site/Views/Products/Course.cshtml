@@ -222,8 +222,6 @@
                     },
                 });
 
-                const isCollection = ref(false);
-
                 const checkIsCollection = async () => { // 判斷會員是否有收藏課程
                     try {
                         const response = await fetch(`/api/collections/${memberId}`);
