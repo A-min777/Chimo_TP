@@ -1,6 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "ProductInfo";
+    
 }
 
 @using Chimo.WebAPI.Site.Models
@@ -127,7 +128,7 @@
                 </div>
 
                 <div class="text-center mb-4">
-                    <a :href="`@Url.Action("Login", "Login")`"
+                    <a :href="`@Url.Action("Login", "Login")?returnUrl=@Url.Action("ViewProduct", "Products")/${courseId}`"
                        class="confirmBtn btn btn-md ">
                         登入
                     </a>
@@ -148,7 +149,15 @@
                         </li>
                     </ol>
                 </nav>
-                <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
+                @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+                {
+                    <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
+                }
+
+                else
+                { 
+                    <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="showModal"/>
+                }
             </div>
             <div class="row pb-5 justify-content-between" v-if="courseDetail && courseDetail.teacher">
                 <div class="col-xs-12 col-md-6 col-lg-7 p-3">
@@ -292,7 +301,7 @@
             const { createApp, ref, onMounted } = Vue;
             const config = {
                 setup() {
-                    const isModalVisible = ref(false) 
+                    const isModalVisible = ref(false)
 
                     function showModal() {
                         isModalVisible.value = true;
@@ -366,7 +375,10 @@
                         }
 
                         fetchCourseInfo(courseId);
-                        checkIsCollection();
+                        if (memberId != null) {
+                            checkIsCollection();
+                        }
+                        
                     });
 
 
@@ -431,10 +443,10 @@
                     const courseFirstVideo = ref();
                     const courseBuyerCount = ref();
                     const courseChapterCount = ref();
-
+                    const memberId =  @Html.Raw(Json.Encode(member?.Id));
 
                     return {
-                        courseContents, courseDetail, videoPlayer, checkVideoTime,
+                        courseContents, courseDetail, videoPlayer, checkVideoTime, courseId,
                         courseFirstVideo, courseBuyerCount, courseChapterCount,
                         formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute, isModalVisible, showModal, hideModal
                     };

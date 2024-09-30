@@ -29,6 +29,7 @@ namespace Chimo.WebAPI.Site.Tools
 
             CreateMap<Teacher, TeacherDto>();
 
+            CreateMap<AddCartItemDto, CartItem>();
 
         }
     }

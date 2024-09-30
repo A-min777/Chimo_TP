@@ -83,10 +83,69 @@
         width: 25px;
         height: 25px;
     }
+
+    .confirmBtn {
+        color: #fff;
+        background-color: #5b468b;
+    }
+
+        .confirmBtn:hover {
+            color: #fff;
+            background-color: #342557 !important;
+        }
+
+    .alertImg {
+        animation: squish 0.5s ease;
+        transform-origin: bottom;
+    }
+
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+    }
+
+    .modal-content {
+        width: 300px;
+    }
 </style>
 
 <div id="app">
-
+    @* 警告modal *@
+    <div class="modal" v-if="modal.isModalVisible">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0 mt-0">
+                    <button type="button"
+                            class="btn-close"
+                            v-on:click="modal.hideModal()"></button>
+                </div>
+                <div class="text-center">
+                    <img :src="modal.img"
+                         alt="point"
+                         class="alertImg mt-4"
+                         style="max-width: 100px" />
+                    <div class="modal-body">
+                        <h5><pre class="mb-0" style="line-height:30px">{{modal.message}}</pre></h5>
+                    </div>
+                </div>
+                <div class="text-center mb-4">
+                    <button class="confirmBtn btn btn-md"
+                            v-on:click="BackToLastPage">
+                        確認
+                    </button>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+    @* 警告modal *@
     <!-- 顯示儲值頁面start -->
     <div class="container">
         <div class="row">
@@ -291,6 +350,26 @@
         const { createApp, ref, onMounted } = Vue;
         const config = {
             setup() {
+                const modal = ref({
+                    message: "購買完成，感謝你的購買",
+                    img: "../images/alert.gif",
+                    isChange: false,
+                    isModalVisible: false,
+                    showModal() {
+                        this.isModalVisible = true;
+                    },
+                    hideModal() {
+                        this.isModalVisible = false;
+                    },
+                });
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const returnUrl = urlParams.get('returnUrl') || '/Home/Index';   
+
+                const BackToLastPage = () => {
+                    window.location.href = returnUrl;
+                }
+
                 const member = ref({
                     id: 0,
                     name: "",
@@ -486,8 +565,10 @@
                     isSelected,
                     selectedSolution,
                     member,
-                    confirmTopUp,
+                    modal,
+                    BackToLastPage,
                     selectSolution,
+                    confirmTopUp,
                 };
             },
         };

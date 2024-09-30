@@ -101,9 +101,10 @@
                         <p>
                             會員點數：<span class="specialCount">{{member.point}}</span>
                             pt
-                            <a href="/Members/TopUp" class="chargeTag btn btn-warning p-1 ms-2">
-                                儲值
-                            </a>
+                                 <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("MyCollections", "Members")`"
+                                    class="chargeTag btn btn-warning p-1 ms-2">
+                                     儲值
+                                 </a>
                         </p>
                     </div>
 

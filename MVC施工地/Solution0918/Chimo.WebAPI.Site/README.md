@@ -144,3 +144,20 @@ ReadMe For Chimo.WebApi.Site
 	[V] 修改 Course.cshtml 及 ProductInfo.cshtml, 呼叫處理收藏的api, 完成新增及取消收藏功能
 
 	[working on] 尚未處理在 ProductInfo.cshtml 使用者未登入時點擊收藏的情形，目前程式會死掉
+
+
+	------------------------------2024/9/30----------------------------------
+
+	[V] 處理在 ProductInfo.cshtml 使用者未登入時點擊收藏會導向登入畫面
+
+	[V] 新增 AddCartItemDto, ShowCartItemDto
+
+	[V] 在 Tools/Mappings 裡新增一個mapping
+
+	[V] 新增 ICartRepository 介面，新增 CartRepository 實作介面，新增 CartService
+
+	[V] 新增 CartsApiController，新增3個api
+
+	[V] 修改 MyCart.cshtml, 呼叫api, 完成顯示使用者當前購物車內容及刪除購物車內容功能
+
+	[working on] 在ProductInfo.cshtml 呼叫api，加入購物車功能
