@@ -224,6 +224,8 @@
     </Compile>
     <Compile Include="Interfaces\ICollectionRepository.cs" />
     <Compile Include="Interfaces\ICourseRepository.cs" />
+    <Compile Include="Models\Dtos\PointHistoryDto.cs" />
+    <Compile Include="Models\Dtos\ResetPasswordDto.cs" />
     <Compile Include="Models\Dtos\UpdateCollectionDto.cs" />
     <Compile Include="Models\Dtos\CourseCategoryDto.cs" />
     <Compile Include="Models\Dtos\CourseContentDto.cs" />

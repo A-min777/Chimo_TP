@@ -213,7 +213,42 @@ namespace Chimo.WebAPI.Site.Services
                    imageName.EndsWith(".png", StringComparison.OrdinalIgnoreCase);
         }
 
-        
+        public bool UpdatePassword(int memberId ,ResetPasswordDto dto)
+        {
+            var member = _memberRepository.FindById(memberId);
+
+            if (member == null) throw new ArgumentException("用戶不存在");
+
+            var hashedOldPassword = HashUtility.ToSHA256(dto.OldPassword);
+
+            if (member.Password != hashedOldPassword) 
+            {
+                throw new ArgumentException("舊密碼錯誤");
+            }
+
+            if (dto.NewPassword != dto.ConfirmPassword)
+            {
+                throw new ArgumentException("新密碼與確認密碼不一致");
+            }
+
+            var hashedNewPassword = HashUtility.ToSHA256(dto.NewPassword);
+            member.Password = hashedNewPassword;
+            _memberRepository.Update(member);
+            return true;
+        }
+
+        public bool TopUp(int memberId, PointHistoryDto dto)
+        {
+            if (dto.Type != 1)return false;
+
+            if (dto.Amount <= 0)
+            {
+                throw new ArgumentException("儲值金額必須大於0");
+            }
+
+            return _memberRepository.TopUpMemberPoints(memberId, dto);
+        }
+
     }
 }
 

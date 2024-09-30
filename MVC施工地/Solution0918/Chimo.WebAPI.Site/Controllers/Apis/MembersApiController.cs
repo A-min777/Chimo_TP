@@ -146,9 +146,26 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
             }
         }
 
+        [HttpPost]
+        [Route("api/updatePassword/{Id}")]
+        public IHttpActionResult UpdatePassword(int Id, [FromBody] ResetPasswordDto dto)
+        {
+            try
+            {
+                var result = _memberService.UpdatePassword(Id, dto);
+                if (result)
+                {
+                    return Ok("密碼更新成功");
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                // 捕捉服務層的錯誤，返回相應的錯誤訊息
+                return BadRequest(ex.Message);
+            }
 
-       
-
+            return BadRequest("密碼更新失敗");
+        }
 
         [HttpPost]
         [Route("api/uploadProfileImage/{memberId}")]
@@ -176,11 +193,34 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
             }
             return BadRequest("未上傳檔案。");
         }
+
+
+        [HttpPost]
+        [Route("api/TopUp/{memberId}")]
+        public IHttpActionResult TopUp(int memberId, [FromBody] PointHistoryDto dto)
+        {
+            try
+            {
+                // 呼叫 TopUp Service 處理儲值邏輯
+                var isSuccess = _memberService.TopUp(memberId, dto);
+
+                if (!isSuccess)
+                {
+                    return BadRequest("儲值失敗。");
+                }
+
+                return Ok(new { message = "儲值成功", newTotalPoints = dto.Point });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message); // 返回錯誤訊息
+            }
+          
+        }
+
+
     }
-
-   
 }
-
 
 
 

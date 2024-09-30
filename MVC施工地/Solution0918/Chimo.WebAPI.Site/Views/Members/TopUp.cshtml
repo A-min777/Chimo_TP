@@ -249,7 +249,7 @@
                     </div>
                     <hr />
                     <div class="row me-3">
-                        <button class="btn btn-warning p-3 m-3 mt-2">確認付款</button>
+                        <button class="btn btn-warning p-3 m-3 mt-2" v-on:click="confirmTopUp">確認付款</button>
                     </div>
                     <div class="text-center">
                         <small class="fw-bolder">
@@ -272,7 +272,7 @@
                     </div>
                     <hr />
                     <div class="row me-3">
-                        <button class="btn btn-warning p-3 me-3 ms-3">確認付款</button>
+                        <button class="btn btn-warning p-3 me-3 ms-3" v-on:click="confirmTopUp">確認付款</button>
                     </div>
                 </div>
             </div>
@@ -287,65 +287,120 @@
     <script src="~/Scripts/vue.global.js"></script>
     <script src="~/Scripts/myheader.js"></script>
     <script>
-        const { createApp, ref } = Vue;
+        @using Chimo.WebAPI.Site.Models;
+        const { createApp, ref, onMounted } = Vue;
         const config = {
             setup() {
                 const member = ref({
-                    id: 1,
-                    point: 1200,
+                    id: 0,
+                    name: "",
+                    avatar: "",
+                    point: 0,
+                    gender: 0,
+                    phone: "",
+                    email: "",
+                    intro: "",
+                    updatedDate: "",
                 });
+                const selectedSolution = ref({});
+                const selectedPayment = ref("");
+                const selectedReceipt = ref("");
 
+
+
+                const token = '@AuthHelper.GetTokenFromCookie()';
+                const fetchMemberProfile = async () => {
+                    try {
+                        const decodedMember = decodeToken(token);
+                        member.value.id = decodedMember.Id;
+                        member.value.name = decodedMember.unique_name;
+                        member.value.email = decodedMember.Email;
+                        member.value.point = decodedMember.Point;
+                        member.value.avatar = decodedMember.ProfileImage;
+                        member.value.intro = decodedMember.Intro;
+                        member.value.gender = decodedMember.Gender;
+                    }
+                    catch (error) {
+                        console.error("獲取會員資料失敗:", error);
+                    }
+                };
+
+               
+
+                // 儲值方案
                 const solutions = ref([
                     {
                         id: 1,
                         img: "../images/point.png",
                         point: 33,
                         cash: 30,
+                        amount: 33,
+                        type: 1,
                     },
                     {
                         id: 2,
                         img: "../images/point.png",
                         point: 110,
                         cash: 100,
+                        amount: 110,
+                        type: 1,
                     },
                     {
                         id: 3,
                         img: "../images/point.png",
                         point: 275,
                         cash: 250,
+                        amount: 275,
+                        type: 1,
                     },
                     {
                         id: 4,
                         img: "../images/point.png",
                         point: 550,
                         cash: 500,
+                        amount: 550,
+                        type: 1,
                     },
                     {
                         id: 5,
                         img: "../images/point.png",
                         point: 1100,
                         cash: 1000,
+                        amount: 1100,
+                        type: 1,
                     },
                     {
                         id: 6,
                         img: "../images/point.png",
                         point: 1650,
                         cash: 1500,
+                        amount:1650,
+                        type: 1,
                     },
                     {
                         id: 7,
                         img: "../images/point.png",
                         point: 3300,
                         cash: 3000,
+                        amount:3300,
+                        type: 1,
                     },
                     {
                         id: 8,
                         img: "../images/point.png",
                         point: 5500,
                         cash: 5000,
+                        amount: 5500,
+                        type: 1,
                     },
                 ]);
 
+                // 選擇儲值方案
+                const selectSolution = (solution) => {
+                    selectedSolution.value = solution; // 設定選擇的儲值方案
+                }
+
+                // 切換選擇的儲值方案
                 const toggleSelection = (id) => {
                     const solution = solutions.value.find((s) => s.id === id);
 
@@ -357,26 +412,71 @@
                             img: "../images/point.png",
                             point: 0,
                             cash: 0,
+                            type: 1,
                         };
                     } else {
                         selectedSolution.value = solution; // 選取新的solution
                     }
                 };
 
+                // 檢查是否已選擇
                 const isSelected = (id) => {
                     return selectedSolution.value.id === id;
                 };
 
-                const selectedSolution = ref({
-                    id: -1,
-                    img: "../images/point.png",
-                    point: 0,
-                    cash: 0,
-                });
 
-                const selectedPayment = ref("");
+                const confirmTopUp = async () => {
+                    if (!selectedSolution.value.id) {
+                        alert("請選擇儲值方案！");
+                        return;
+                    }
 
-                const selectedReceipt = ref("");
+                    // 準備請求資料
+                    const data = {
+                        point: selectedSolution.value.point,
+                        cash: selectedSolution.value.cash,
+                        amount: selectedSolution.value.amount,
+                        type: selectedSolution.value.type,
+
+                    };
+
+                    try {
+                        const response = await fetch(`/api/TopUp/${member.value.id}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}` // 如果需要 token
+                            },
+                            body: JSON.stringify(data)
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            // 根據 API 回傳的結果執行相應的操作，例如顯示成功訊息或重定向
+                            alert('儲值成功！');
+
+                        } else {
+                            const error = await response.json();
+                            alert(`儲值失敗：${error.message}`);
+                        }
+                    } catch (error) {
+                        alert(`錯誤：${error.message}`);
+                    }
+                };
+
+                
+
+                
+
+                function decodeToken(token) {
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                    return JSON.parse(jsonPayload);
+                }
+                onMounted(fetchMemberProfile,); // 組件掛載時自動獲取會員資料
+
 
                 return {
                     solutions,
@@ -386,6 +486,8 @@
                     isSelected,
                     selectedSolution,
                     member,
+                    confirmTopUp,
+                    selectSolution,
                 };
             },
         };
