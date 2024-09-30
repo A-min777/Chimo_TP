@@ -1,6 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "ProductInfo";
+    
 }
 
 @using Chimo.WebAPI.Site.Models
@@ -127,7 +128,7 @@
                 </div>
 
                 <div class="text-center mb-4">
-                    <a :href="`@Url.Action("Login", "Login")`"
+                    <a :href="`@Url.Action("Login", "Login")?returnUrl=@Url.Action("ViewProduct", "Products")/${courseId}`"
                        class="confirmBtn btn btn-md ">
                         登入
                     </a>
@@ -434,7 +435,7 @@
 
 
                     return {
-                        courseContents, courseDetail, videoPlayer, checkVideoTime,
+                        courseContents, courseDetail, videoPlayer, checkVideoTime, courseId,
                         courseFirstVideo, courseBuyerCount, courseChapterCount,
                         formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute, isModalVisible, showModal, hideModal
                     };

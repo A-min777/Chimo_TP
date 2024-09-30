@@ -13,6 +13,7 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
     @RenderSection("Styles", required: false)
+
 <body>
     <div class="sticky-top">
         <div>
@@ -132,6 +133,7 @@
     </script>
 
     <script>
+
         function logout() {
             // 登出邏輯，可以透過伺服器進行登出，並清除Cookie
             document.cookie = "jwtToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
