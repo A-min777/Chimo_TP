@@ -1,11 +1,16 @@
 ﻿using Chimo.WebAPI.Site.Models.Dtos;
+using Chimo.WebAPI.Site.Models.EFModels;
 using Chimo.WebAPI.Site.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
+
 using System.Web.UI.WebControls;
 
 
@@ -57,7 +62,7 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
                     {
                         Console.WriteLine(error.ErrorMessage);
                     }
-                    return BadRequest(ModelState); 
+                    return BadRequest(ModelState);
                 }
 
                 // 檢查資料是否存在
@@ -142,5 +147,41 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
         }
 
 
+       
+
+
+        [HttpPost]
+        [Route("api/uploadProfileImage/{memberId}")]
+        public IHttpActionResult UploadProfileImage(int memberId)
+        {
+            var httpRequest = HttpContext.Current.Request;
+            if (httpRequest.Files.Count > 0)
+            {
+                var file = httpRequest.Files[0];
+
+                try
+                {
+                    var result = _memberService.UpdateProfileImage(memberId, file);
+                    // 回傳 Token 和新的 ProfileImage 路徑
+                    return Ok(new
+                    {
+                        token = result.Token,
+                        profileImage = result.ProfileImage
+                    });
+                }
+                catch (ArgumentException ex)
+                {
+                    return BadRequest(ex.Message); // 返回錯誤訊息
+                }
+            }
+            return BadRequest("未上傳檔案。");
+        }
     }
+
+   
 }
+
+
+
+
+
