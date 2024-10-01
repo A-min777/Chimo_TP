@@ -255,10 +255,39 @@ namespace Chimo.WebAPI.Site.Repositories
             return true;
         }
 
+        /// <summary>
+        /// 根據memberId找到member後轉成 ConfirmPaymentMemberDto，供新增訂單時用
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        internal ConfirmPaymentMemberDto GetMemberDtoById(int memberId)
+        {
+            Member member = _db.Members.AsNoTracking().
+                FirstOrDefault(m => m.Id == memberId);
 
+            if (member == null) return null;
 
+            // Member 轉 ConfirmPaymentMemberDto
+            return WebApiApplication._mapper.Map<ConfirmPaymentMemberDto>(member);
+        }
 
+        /// <summary>
+        ///  更新會員點數
+        /// </summary>
+        /// <param name="member"></param>
+        internal void UpdateMemberPoint(Member member)
+        {
+            var existingMember = _db.Members
+                .FirstOrDefault(m => m.Id == member.Id); // 找到現有會員
 
+            if (existingMember != null)
+            {
+                existingMember.Point = member.Point; // 更新 Point
+                _db.Entry(existingMember).Property(x => x.Point).IsModified = true; // 設置 Point 為已修改                                                                      
+            }
+
+            _db.SaveChanges();
+        }
     }
 }
 

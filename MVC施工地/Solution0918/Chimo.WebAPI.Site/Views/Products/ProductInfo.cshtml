@@ -108,6 +108,7 @@
 </style>
 
 <div id="app">
+
     <div class="modal" v-if="isModalVisible" v-on:click.self="hideModal">
         <div class="modal-dialog"
              :class="{'slide-in': isModalVisible, 'slide-out': !isModalVisible}">
@@ -276,7 +277,8 @@
                         <button class="rounded btn border mb-3">
                             <img src="~/images/cart.png"
                                  alt="cart"
-                                 class="cartIcon img-fluid" />
+                                 class="cartIcon img-fluid"
+                                 v-on:click="handleAddCartItem(courseDetail.price)"/>
                         </button>
                     </div>
                 </div>
@@ -377,10 +379,71 @@
                         fetchCourseInfo(courseId);
                         if (memberId != null) {
                             checkIsCollection();
+                            fetchCartItems(memberId);
                         }
                         
                     });
 
+                    const handleAddCartItem = async (price) => {
+                        if (isInCart(courseId))
+                        {
+                            console.log("此課程已被加入過購物車");
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch(`/api/carts/add`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    courseId: courseId,
+                                    memberId: memberId,
+                                    price: price
+                                })
+                            });
+
+                            if (response.ok) { 
+                                cartItems.push(courseId);
+                                console.log("成功加入購物車");
+                            } else {
+                                const errorMessage = await response.text();
+                                console.error('加入購物車失敗:', errorMessage);
+                            }
+                        } catch (error) {
+                            console.error('加入購物車時發生錯誤:', error);
+                        }
+                    };
+
+                    let cartItems = [];
+
+                    const fetchCartItems = async (memberId) => {
+                        try {
+                            const response = await fetch(`/api/carts/${memberId}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                }
+                            });
+
+                            // 確保請求成功後解析 JSON
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.length === 0) return;
+
+                                cartItems = data.cartItems.map(item => item.course.id);
+                            } else {
+                                console.error('fetch 購物車清單失敗:', response.statusText);
+                            }
+                        } catch (error) {
+                            console.error('fetch 購物車清單失敗:', error);
+                        }
+                    };
+
+                    const isInCart = (courseId) => {
+                        return cartItems.some(id => id === courseId);
+                    };
 
                     const formatThumbnailUrl = (thumbnailPath, target = "people") => {
 
@@ -447,7 +510,7 @@
 
                     return {
                         courseContents, courseDetail, videoPlayer, checkVideoTime, courseId,
-                        courseFirstVideo, courseBuyerCount, courseChapterCount,
+                        courseFirstVideo, courseBuyerCount, courseChapterCount, handleAddCartItem,
                         formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute, isModalVisible, showModal, hideModal
                     };
                 },
