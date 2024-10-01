@@ -117,6 +117,7 @@ namespace Chimo.WebAPI.Site.Repositories
                            where o.MemberId == memberId && oi.Status == 1
                            select new CourseDto
                            {
+                               CategoryId = c.Id,
                                Title = c.Title,
                                Thumbnail = c.Thumbnail,
                                Price = c.Price,
@@ -172,7 +173,7 @@ namespace Chimo.WebAPI.Site.Repositories
                        OrderItems = o.OrderItems
                        .Select(oi => new OrderItemDto
                        {
-                           Id = oi.Id,
+                           Id = oi.Cours.Id,
                            CourseName = oi.Cours.Title, // 課程名稱
                            Thumbnail = oi.Cours.Thumbnail, // 課程封面
                            TeacherName = oi.Cours.Teacher.Name, // 教師名稱
