@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Chimo.WebAPI.Site.Controllers.Apis;
 
 
 namespace Chimo.WebAPI.Site.Services
@@ -237,16 +238,24 @@ namespace Chimo.WebAPI.Site.Services
             return true;
         }
 
-        public bool TopUp(int memberId, PointHistoryDto dto)
+        public (bool isSuccess, string token) TopUp(int memberId, PointHistoryDto dto)
         {
-            if (dto.Type != 1)return false;
+            if (dto.Type != 1) return (false, null);
 
             if (dto.Amount <= 0)
             {
                 throw new ArgumentException("儲值金額必須大於0");
             }
 
-            return _memberRepository.TopUpMemberPoints(memberId, dto);
+            var success = _memberRepository.TopUpMemberPoints(memberId, dto);
+            if (success)
+            {
+                var member = _memberRepository.FindById(memberId);
+                var token = JwtUtility.GenerateToken(member);
+                return (true, token);
+            }
+
+            return (false, null);
         }
 
     }
