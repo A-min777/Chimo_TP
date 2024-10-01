@@ -228,5 +228,34 @@ namespace Chimo.WebAPI.Site.Repositories
 
 			return RecommendedCourses;
 		}
-	}
+
+        public List<CourseDto> SearchCoursesByTitleOrTeacher(string searchTerm)
+        {
+            var coursesQuery = (
+        from c in _db.Courses.AsNoTracking()
+        .Include(c => c.Teacher) // 載入教師資料
+        where (c.Title.Contains(searchTerm) || c.Teacher.Name.Contains(searchTerm)) // 根據標題或教師姓名搜尋
+              && c.Status == 1 // 確保課程狀態為1
+        select new CourseDto
+        {
+            Id = c.Id,
+            CategoryId = c.CategoryId,
+            TeacherId = c.TeacherId,
+            Title = c.Title,
+            Description = c.Description,
+            Price = c.Price,
+            Thumbnail = c.Thumbnail,
+            Status = c.Status,
+            Teacher = new TeacherDto
+            {
+                Id = c.Teacher.Id,
+                Name = c.Teacher.Name,
+            },
+        }
+    ).ToList();
+
+            return coursesQuery;
+        }
+
+    }
 }

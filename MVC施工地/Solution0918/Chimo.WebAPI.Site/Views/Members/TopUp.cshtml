@@ -135,13 +135,19 @@
                         <h5><pre class="mb-0" style="line-height:30px">{{modal.message}}</pre></h5>
                     </div>
                 </div>
-                <div class="text-center mb-4">
+                <div class="text-center mb-4" v-if="!modal.isTopUp">
+                    <button class="confirmBtn btn btn-md"
+                            v-on:click="modal.hideModal()">
+                        確認
+                    </button>
+                </div>
+                <div class="text-center mb-4" v-if="modal.isTopUp">
                     <button class="confirmBtn btn btn-md"
                             v-on:click="BackToLastPage">
                         確認
                     </button>
                 </div>
-               
+
             </div>
         </div>
     </div>
@@ -351,9 +357,9 @@
         const config = {
             setup() {
                 const modal = ref({
-                    message: "購買完成，感謝你的購買",
+                    message: "",
                     img: "../images/alert.gif",
-                    isChange: false,
+                    isTopUp: false,
                     isModalVisible: false,
                     showModal() {
                         this.isModalVisible = true;
@@ -506,7 +512,8 @@
 
                 const confirmTopUp = async () => {
                     if (!selectedSolution.value.id) {
-                        alert("請選擇儲值方案！");
+                        modal.value.message = "請選擇儲值方案！";
+                        modal.value.showModal()
                         return;
                     }
 
@@ -531,15 +538,21 @@
 
                         if (response.ok) {
                             const result = await response.json();
+                            document.cookie = `jwtToken=${result.token}; path=/; secure`;
+                            member.value.point = `${result.TotalPoint}`;
                             // 根據 API 回傳的結果執行相應的操作，例如顯示成功訊息或重定向
-                            alert('儲值成功！');
+                            modal.value.message = '儲值成功！';
+                            modal.value.isTopUp = true;
+                            modal.value.showModal()
 
                         } else {
                             const error = await response.json();
-                            alert(`儲值失敗：${error.message}`);
+                            modal.value.message = `儲值失敗：${error.message}`;
+                            modal.value.showModal()
                         }
                     } catch (error) {
-                        alert(`錯誤：${error.message}`);
+                        modal.value.message = `錯誤：${error.message}`;
+                        modal.value.showModal()
                     }
                 };
 
