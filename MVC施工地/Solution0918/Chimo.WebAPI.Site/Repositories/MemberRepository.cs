@@ -78,6 +78,7 @@ namespace Chimo.WebAPI.Site.Repositories
             existingMember.Intro = member.Intro;
             existingMember.Gender = member.Gender;
             existingMember.Phone = member.Phone;
+            existingMember.Password = member.Password;
             existingMember.UpdatedDate = DateTime.Now; // 設定為當前時間
 
             // 儲存更改
@@ -226,9 +227,37 @@ namespace Chimo.WebAPI.Site.Repositories
                 member.ProfileImage = imagePath;
                 _db.SaveChanges();
             }
-
-
         }
+
+        public bool TopUpMemberPoints(int memberId,PointHistoryDto dto)
+        {
+            var member=_db.Members.Find(memberId);
+            if(member == null) return false;
+
+            member.Point += dto.Amount; // 更新用戶的總金額
+
+            // 新增一筆歷史紀錄
+            var pointHistory = new PointHistory
+            {
+                MemberId = memberId,
+                Amount = dto.Amount,
+                Point = member.Point,  // 更新後的總金額
+                Cash = dto.Cash,    
+                GetPointType = dto.Type,
+                GetPointDate = DateTime.Now
+            };
+
+
+            // 儲存到歷史紀錄表
+            _db.PointHistories.Add(pointHistory);
+
+            _db.SaveChanges();
+            return true;
+        }
+
+
+
+
 
     }
 }
