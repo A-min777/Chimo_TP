@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Chimo.WebAPI.Site.Interfaces;
 using Chimo.WebAPI.Site.Models.Dtos;
+using Chimo.WebAPI.Site.Models.EFModels;
 using Chimo.WebAPI.Site.Models.ViewModels;
 using Chimo.WebAPI.Site.Repositories;
 using Chimo.WebAPI.Site.Tools;
@@ -144,6 +145,25 @@ namespace Chimo.WebAPI.Site.Services
 
 
             return MyCourses;
+        }
+
+
+
+        internal List<RecommendedCourseVm> SearchCourses(string searchTerm)
+        {
+            var result = _repo.SearchCoursesByTitleOrTeacher(searchTerm);
+
+            // 檢查結果是否為空
+            if (result == null )
+            {
+                throw new ArgumentException("搜尋不到相關課程或老師");
+            }
+
+            var SearchCourses = WebApiApplication._mapper
+            // CourseDTO 轉 CourseInfoVm
+                .Map<List<RecommendedCourseVm>>(result);
+
+            return SearchCourses;
         }
     }
 }

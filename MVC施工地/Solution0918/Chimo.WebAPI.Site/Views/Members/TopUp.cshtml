@@ -538,6 +538,8 @@
 
                         if (response.ok) {
                             const result = await response.json();
+                            document.cookie = `jwtToken=${result.token}; path=/; secure`;
+                            member.value.point = `${result.TotalPoint}`;
                             // 根據 API 回傳的結果執行相應的操作，例如顯示成功訊息或重定向
                             modal.value.message = '儲值成功！';
                             modal.value.isTopUp = true;
