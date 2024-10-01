@@ -10,6 +10,7 @@ using System.Data.Entity;
 using AutoMapper;
 using System.Threading.Tasks;
 using System.Web.Configuration;
+using Chimo.WebAPI.Site.Controllers.Apis;
 
 namespace Chimo.WebAPI.Site.Repositories
 {

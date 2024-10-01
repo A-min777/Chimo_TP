@@ -41,8 +41,9 @@
                         </ul>
                     </div>
                     <div class="searchbar d-flex justify-content-between">
-                        <form id="searchbar" class="searchbar  d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="搜尋課程" aria-label="Search" style="max-width: 800px;">
+                        <form id="searchbar" class="searchbar d-flex" role="search" action="/Home/SearchResult" method="get" onsubmit="return handleSubmit(event)">
+                            <input class="form-control me-2" type="search" placeholder="搜尋課程" aria-label="Search" name="query"
+                                   style="max-width: 800px;" required>
                         </form>
                         <a href="/Members/MyCart">
                             <img src="~/images/cart.png" alt="cart" class="btn " style="height: 45px;">
@@ -58,7 +59,7 @@
                     var token = AuthHelper.GetTokenFromCookie();
                     Chimo.WebAPI.Site.Models.EFModels.Member member = null;
 
-                    // 如果 token 存在，則解碼並獲取會員資料   
+                    // 如果 token 存在，則解碼並獲取會員資料
                     if (isLoggedIn)
                     {
                         member = JwtUtility.DecodeToken(token);
@@ -139,7 +140,25 @@
             document.cookie = "jwtToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             window.location.href = "/Login/Login";
         }
+
     </script>
+
+    <script>
+        const handleSubmit = (event) => {
+            event.preventDefault(); // 防止表單重新加載頁面
+            const searchValue = event.target.query.value; // 獲取輸入的搜尋值
+
+            if (!searchValue) {
+                alert("請輸入搜尋條件");
+                return;
+            }
+
+            // 更新 URL 顯示為 /Home/SearchResult?query=搜尋值
+            window.location.href = `/Home/SearchResult?query=${encodeURIComponent(searchValue)}`;
+        };
+    </script>
+
+
 
 </body>
 </html>

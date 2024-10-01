@@ -213,7 +213,9 @@
     <Compile Include="Controllers\Apis\CoursesApiController.cs" />
     <Compile Include="Controllers\Apis\LoginApiController.cs" />
     <Compile Include="Controllers\Apis\MembersApiController.cs" />
+    <Compile Include="Controllers\Apis\PointHistoryDto.cs" />
     <Compile Include="Controllers\Apis\RegisterApiController.cs" />
+    <Compile Include="Controllers\Apis\ResetPasswordDto.cs" />
     <Compile Include="Controllers\CoursesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
