@@ -229,6 +229,8 @@
     <Compile Include="Interfaces\ICollectionRepository.cs" />
     <Compile Include="Interfaces\ICourseRepository.cs" />
     <Compile Include="Models\Dtos\AddCartItemDto.cs" />
+    <Compile Include="Models\Dtos\PointHistoryDto.cs" />
+    <Compile Include="Models\Dtos\ResetPasswordDto.cs" />
     <Compile Include="Models\Dtos\ShowCartItemDto.cs" />
     <Compile Include="Models\Dtos\UpdateCollectionDto.cs" />
     <Compile Include="Models\Dtos\CourseCategoryDto.cs" />
