@@ -161,3 +161,24 @@ ReadMe For Chimo.WebApi.Site
 	[V] 修改 MyCart.cshtml, 呼叫api, 完成顯示使用者當前購物車內容及刪除購物車內容功能
 
 	[working on] 在ProductInfo.cshtml 呼叫api，加入購物車功能
+
+
+	------------------------------2024/10/1----------------------------------
+
+	[V] 完成在ProductInfo.cshtml呼叫api，加入購物車功能
+
+	[V] 修改 Checkout.cshtml，能夠叫出會員當前購物車內容
+
+	[V] 新增 ConfirmPaymentDto 及 ConfirmPaymentMemberDto
+
+	[V] 新增 CheckoutsApiController
+
+	[V] 在 Tools/Mappings 新增一個mapping
+
+	[V] 在 MemberRepository 新增 UpdateMemberPoint 及 GetMemberDtoById
+
+	[V] 新增 IOrderRepository 介面，在裡面新增 CreateOrder 跟 CreateOrderItem
+		新增 OrderRepository 實作介面
+		新增 CheckoutService，實作 ConfirmOrder，完成購物車結帳api
+
+	[working on] 在 Checkout.cshtml 叫用購物車結帳api
