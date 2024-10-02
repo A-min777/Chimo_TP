@@ -225,7 +225,24 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
         }
 
 
-    }
+		[HttpGet]
+		[Route("api/getMemberPoint/{memberId}")]
+		public IHttpActionResult GetMemberPoint(int memberId)
+		{
+			try
+			{
+				int memberPoint = _memberService.GetMemberPoint(memberId);
+				
+				return Ok(new { memberPoint}); 
+			}
+			catch (Exception ex)
+			{
+				return InternalServerError(ex); 
+			}
+		}
+
+
+	}
 }
 
 

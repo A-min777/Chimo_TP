@@ -290,7 +290,23 @@ namespace Chimo.WebAPI.Site.Repositories
 
             _db.SaveChanges();
         }
-    }
+
+        /// <summary>
+        /// 取得會員所持點數
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+		internal int GetMemberPoint(int memberId)
+		{
+            var member = _db.Members
+                        .AsNoTracking()
+                        .FirstOrDefault(m => m.Id == memberId);
+
+            if (member == null) return 0;
+
+            return member.Point;
+		}
+	}
 }
 
 
