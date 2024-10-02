@@ -228,7 +228,9 @@
     <Compile Include="Interfaces\IOrderRepository.cs" />
     <Compile Include="Interfaces\ICollectionRepository.cs" />
     <Compile Include="Interfaces\ICourseRepository.cs" />
+    <Compile Include="Interfaces\IPointHistoryRepository.cs" />
     <Compile Include="Models\Dtos\AddCartItemDto.cs" />
+    <Compile Include="Models\Dtos\BuyDirectlyDto.cs" />
     <Compile Include="Models\Dtos\ConfirmPaymentDto.cs" />
     <Compile Include="Models\Dtos\ConfirmPaymentMemberDto.cs" />
     <Compile Include="Models\Dtos\PointHistoryDto.cs" />
@@ -274,6 +276,7 @@
     <Compile Include="Repositories\CollectionRepository.cs" />
     <Compile Include="Repositories\CourseRepository.cs" />
     <Compile Include="Repositories\MemberRepository.cs" />
+    <Compile Include="Repositories\PointHistoryRepository.cs" />
     <Compile Include="Services\CartService.cs" />
     <Compile Include="Services\CheckoutService.cs" />
     <Compile Include="Services\CollectionService.cs" />
@@ -416,6 +419,7 @@
     <Content Include="Views\Home\SearchResult.cshtml" />
     <Content Include="Views\Login\ResetPassword.cshtml" />
     <Content Include="Views\Members\UpdatePassword.cshtml" />
+    <Content Include="Views\Members\BuyDirectly.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
