@@ -199,5 +199,63 @@ namespace Chimo.WebAPI.Site.Services
                 }
             }
         }
-    }
+
+        /// <summary>
+        /// 處理退款
+        /// </summary>
+        /// <param name="dto"></param>
+		internal void HandleRefund(RefundDto dto)
+		{
+            using (var transaction = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var orders = _orderRepo.GetOrdersByMemberId(dto.MemberId);
+                    if (orders == null) return;
+
+                    // 找出要退貨課程的訂單
+                    OrderItem orderItem = orders
+                    .SelectMany(o => o.OrderItems)
+                    .FirstOrDefault(oi => oi.CourseId == dto.CourseId && oi.Status == 1);
+
+                    if (orderItem == null) return;
+
+                    // 將對應orderItem的狀態設為退款
+                    orderItem.Status = 0;
+                    _orderRepo.UpdateOrderItemStatus(orderItem);
+
+					// 更新會員點數
+					var member = _memberRepo.FindById(dto.MemberId);
+					member.Point += orderItem.Price;
+					_memberRepo.UpdateMemberPoint(member);
+
+					// 新增一筆點數變動紀錄
+					var newHistory = new PointHistory
+					{
+						MemberId = dto.MemberId,
+						Cash = 0,
+						Amount = orderItem.Price,
+						Point = member.Point,
+						GetPointType = 0,
+						GetPointDate = DateTime.Now,
+						OrderId = orderItem.OrderId
+					};
+					_historyRepo.CreatePointHistory(newHistory);
+
+					// 儲存所有更改
+					_db.SaveChanges();
+
+					// 提交交易
+					transaction.Commit();
+				}
+
+				catch (Exception)
+				{
+					// 如果出現異常，回滾交易
+					transaction.Rollback();
+					throw;
+				}
+			}
+		}
+	}
 }

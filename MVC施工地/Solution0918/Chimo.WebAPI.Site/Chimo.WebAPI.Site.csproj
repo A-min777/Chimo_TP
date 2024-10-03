@@ -235,6 +235,7 @@
     <Compile Include="Models\Dtos\ConfirmPaymentDto.cs" />
     <Compile Include="Models\Dtos\ConfirmPaymentMemberDto.cs" />
     <Compile Include="Models\Dtos\PointHistoryDto.cs" />
+    <Compile Include="Models\Dtos\RefundDto.cs" />
     <Compile Include="Models\Dtos\ResetPasswordDto.cs" />
     <Compile Include="Models\Dtos\ShowCartItemDto.cs" />
     <Compile Include="Models\Dtos\UpdateCollectionDto.cs" />

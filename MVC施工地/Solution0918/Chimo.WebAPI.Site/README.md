@@ -215,3 +215,15 @@ ReadMe For Chimo.WebApi.Site
 				 需要手動重整網頁才會正常反映，例如在ProductInfo頁面將課程加入購物車，到購物車頁面
 				 將剛剛加入的課程移除購物車後按上一頁回到ProductInfo，仍會被視為已加入購物車，需要
 				 手動重整頁面後才能再次加入購物車
+
+
+	------------------------------2024/10/3----------------------------------
+
+	[V] 修改搜尋會員購買課程的EF語法，讓在顯示會員購買紀錄的頁面點擊已退費課程時正常導向購買前
+		的課程頁面
+
+	[V] 新增 RefundDto，在 CheckoutsApiController 新增 HandleRefund，處理會員退款的api
+		在 CheckoutService 新增 HandleRefund， 在 IOrderRepository 新增 GetOrdersByMemberId
+		及 UpdateOrderItemStatus，在 OrderRepository實作介面函式
+	
+	[V] 完成處理會員退款的api
