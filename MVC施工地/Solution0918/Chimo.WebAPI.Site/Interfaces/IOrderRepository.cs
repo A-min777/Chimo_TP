@@ -11,5 +11,7 @@ namespace Chimo.WebAPI.Site.Interfaces
     {
         void CreateOrder(Order newOrder);
         void CreateOrderItem(OrderItem orderItem);
-    }
+		List<Order> GetOrdersByMemberId(int memberId);
+		void UpdateOrderItemStatus(OrderItem orderItem);
+	}
 }
