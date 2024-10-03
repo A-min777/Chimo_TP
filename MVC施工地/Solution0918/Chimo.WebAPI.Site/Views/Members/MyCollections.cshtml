@@ -83,25 +83,38 @@
         object-fit: contain;
         max-height: 15px;
     }
-</style>
 
-<div id="app">
+    .searchBtn {
+        background-color: #5b468b;
+        color: #fff;
+    }
+        .searchBtn:hover {
+            background-color: #2b1b41;
+            color: #fff;
+        }
+
+</style>
+<body>
+    <div id="app">
+
+  
 
     <div class="container">
         <div class="row">
             <div class="col-4 mt-3 mb-3">
                 <div class="text-center list-group">
                     <div class="list-group-item">
-                        <img :src="member.avatar"
+                        <img :src="`/images/${member.avatar}`"
                              alt="profile"
                              class="avatarA img-fluid m-3" />
                         <h4 class="fw-bolder">{{member.name}}</h4>
                         <p>
                             會員點數：<span class="specialCount">{{member.point}}</span>
                             pt
-                            <a href="/Members/TopUp" class="chargeTag btn btn-warning p-1 ms-2">
-                                儲值
-                            </a>
+                                 <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("MyCollections", "Members")`"
+                                    class="chargeTag btn btn-warning p-1 ms-2">
+                                     儲值
+                                 </a>
                         </p>
                     </div>
 
@@ -127,48 +140,54 @@
                     </a>
                 </div>
             </div>
-            <div class="content col-8 mt-3 mb-3">
-                <section class="m-4">
-                    <div class="d-flex justify-content-between">
-                        <h4 class="fw-bolder">我的收藏</h4>
-                    </div>
-                    <hr />
-                    <div class="d-flex flex-wrap">
-                        <div class="cardContainer d-flex flex-wrap">
-                            <div v-for="card in collections"
-                                 :key="card.id"
-                                 class="mycard col-lg-4 col-md-6 col-sm-12 p-3 pb-5 ps-0">
-                                <a href="@Url.Action("ViewProduct", "Products")">
-                                    <img :src="`../images/${card.img}`"
-                                         alt="collections-thumbnail "
-                                         class="thumbnail pb-2 img-fluid rounded" />
-                                </a>
-                                <div class="prodct-info">
-                                    <small class="tag p-1 rounded-1 fw-bolder">課程</small>
-                                    <p class="title pt-1">{{card.title}}</p>
-                                    <small>{{card.teacherName}}</small>
+         
+                <div class="content col-8 mt-3 mb-3">
+                    <section class="m-4">
+                        <div class="d-flex justify-content-between">
+                            <h4 class="fw-bolder">我的收藏</h4>
+                        </div>
+                        <hr />
+                        <div :class="['mt-5 text-center notFound' ,{'d-none': collections.length != 0 }]">
+                            <img src="../images/notFoundImg.png" alt="notFound" class="img-fluid mb-3" style="width:20vw"/>
+                            <h5 class="fw-bolder mb-3">還沒有收藏任何課程</h5>
+                            <a href="@Url.Action("index", "Home")" class="searchBtn btn btn-lg">探索課程</a>
+                        </div>
+                        <div class="d-flex flex-wrap">
+                            <div class="cardContainer d-flex flex-wrap">
+                                <div v-for="card in collections"
+                                     :key="card.id"
+                                     class="mycard col-lg-4 col-md-6 col-sm-12 p-3 pb-5 ps-0">
+                                    <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
+                                        <img :src="`../images/${card.img}`"
+                                             alt="collections-thumbnail "
+                                             class="thumbnail pb-2 img-fluid rounded" />
+                                    </a>
+                                    <div class="prodct-info">
+                                        <small class="tag p-1 rounded-1 fw-bolder">課程</small>
+                                        <p class="title pt-1">{{card.title}}</p>
+                                        <small>{{card.teacherName}}</small>
+                                    </div>
+                                    <p class="price border-top border-bottom pt-2 pb-2">
+                                        NT${{card.price}}
+                                    </p>
                                 </div>
-                                <p class="price border-top border-bottom pt-2 pb-2">
-                                    NT${{card.price}}
-                                </p>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-@section scripts{
-    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
-    <script src="~/Scripts/vue.global.js"></script>
-    <script src="~/Scripts/myheader.js"></script>
-    <script>
+    @section scripts{
+        <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+        <script src="~/Scripts/vue.global.js"></script>
+        <script src="~/Scripts/myheader.js"></script>
+        <script>
  @using Chimo.WebAPI.Site.Models
  const { createApp, ref, onMounted } = Vue;
 
- createApp({
+            const config = {
      setup() {
          const member = ref({
              id: 0,
@@ -194,7 +213,7 @@
 
                  const data = await response.json();
                  collections.value = data.map(collection => ({
-                     id: collection.id,
+                     id: collection.courseId,
                      title: collection.title,
                      img: collection.thumbnail,
                      teacherName: collection.teacherName,
@@ -213,7 +232,7 @@
              member.value.point = decodedMember.Point;
              member.value.avatar = decodedMember.ProfileImage;
 
-             await fetchMemberCollections(); 
+             await fetchMemberCollections();
          });
 
          function decodeToken(token) {
@@ -227,6 +246,9 @@
 
          return { member, collections };
      }
- }).mount("#app");
-    </script>
-}
+            }
+            const app = createApp(config);
+            app.mount("#app")
+        </script>
+    }
+</body>

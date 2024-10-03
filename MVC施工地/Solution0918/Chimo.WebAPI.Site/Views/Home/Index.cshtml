@@ -138,14 +138,14 @@
                 member = JwtUtility.DecodeToken(token);
             }
 
-            if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+            if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"] )
             {
 
-                <div class="myPd">
+                <div :class="['myPd mt-5' ,{'d-none': purchasedChunks.length === 0 }]">
                     <div id="carouselExampleControlsMyPd"
                          class="card-container carousel slide mb-4">
-                        <h2 class="pb-3 pt-3 fw-bolder">我的課程</h2>
-                        <div class="carousel-inner" ref="carouselInner">
+                        <h2 class="pb-2 pt-3 fw-bolder">我的課程</h2>
+                        <div class="carousel-inner" ref="carouselInner1">
                             <div v-for="(chunk,index) in purchasedChunks"
                                  :key="index"
                                  class="carousel-item"
@@ -157,11 +157,11 @@
                                         <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
                                             <img :src="formatThumbnailUrl(card.thumbnail, 'course')"
                                                  alt="course-thumbnail "
-                                                 class="pb-2 col-lg-3 img-fluid rounded" />
+                                                 class="pb-2 mb-2 col-lg-3 img-fluid rounded" />
                                         </a>
                                         <div class="prodct-info border-bottom">
                                             <small class="tag p-1 rounded-1 fw-bolder">課程</small>
-                                            <p class="title pt-1">{{card.title}}</p>
+                                            <h5 class="title pt-2 fw-bolder">{{card.title}}</h5>
                                             <small>{{card.teacher.name}}</small>
                                         </div>
                                         <p class="price mt-2">NT${{card.price}}</p>
@@ -198,8 +198,8 @@
         <div class="hotPd">
             <div id="carouselExampleControls"
                  class="card-container carousel slide mb-4">
-                <h2 class="pb-3 pt-3 fw-bolder">熱門推薦</h2>
-                <div class="carousel-inner" ref="carouselInner">
+                <h2 class="pb-2 pt-3 fw-bolder">熱門推薦</h2>
+                <div class="carousel-inner" ref="carouselInner2">
                     <div v-for="(chunk,index) in recommendedChunks"
                          :key="index"
                          class="carousel-item"
@@ -254,7 +254,8 @@
 
             const config = {
                 setup() {
-                    const carouselInner = ref(null);
+                    const carouselInner1 = ref(null);
+                    const carouselInner2 = ref(null);
                     const currentIndex = ref(0);
                     const purchasedCourses = ref([]);
                     const recommendedCourses = ref([]);
@@ -311,19 +312,22 @@
                     const updateChunkSize = () => {
                         if (window.innerWidth < 700) {
                             chunkSize.value = 1;
-                        } else if (window.innerWidth < 900) {
+                        } else if (window.innerWidth < 1000) {
                             chunkSize.value = 2;
                         } else {
                             chunkSize.value = 4;
                         }
 
-                        const carousel = carouselInner.value;
-                        if (carousel) {
-                            const bsCarousel = new bootstrap.Carousel(carousel, {
-                                interval: false,
-                            });
-                            bsCarousel.to(currentIndex.value); // 將 carousel 移動到當前索引
-                        }
+                        const carousels = [carouselInner1.value, carouselInner2.value];
+                        carousels.forEach((carousel, index) => {
+                            if (carousel) {
+                                const bsCarousel = new bootstrap.Carousel(carousel, {
+                                    interval: false,
+                                });
+                                bsCarousel.to(currentIndex.value); // 將 carousel 移動到當前索引
+                            }
+                        });
+                        
                     };
 
                     const purchasedChunks = computed(() => {
@@ -362,7 +366,8 @@
                         purchasedChunks,
                         recommendedChunks,
                         currentIndex,
-                        carouselInner,
+                        carouselInner1,
+                        carouselInner2,
                         formatThumbnailUrl
                     };
                 },

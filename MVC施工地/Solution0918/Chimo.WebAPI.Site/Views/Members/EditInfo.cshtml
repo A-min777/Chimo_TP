@@ -1,19 +1,7 @@
 ﻿@{
     ViewBag.Title = "EditInfo";
 }
-@{
-    bool isLoggedIn = AuthHelper.IsLoggedIn(Request);  // 檢查是否已登入
-    ViewData["IsLoggedIn"] = isLoggedIn;
-    // 從 Cookie 中獲取 JWT
-    var token = AuthHelper.GetTokenFromCookie();
-    Chimo.WebAPI.Site.Models.EFModels.Member member = null;
 
-    // 如果 token 存在，則解碼並獲取會員資料
-    if (isLoggedIn)
-    {
-        member = JwtUtility.DecodeToken(token);
-    }
-}
 <style>
     body {
         background-color: #eee;
@@ -84,8 +72,6 @@
         transition: opacity 0.3s;
     }
 
-
-
     .readonly-field {
         background-color: #e9ecef; /* 灰色背景 */
         color: #6c757d; /* 淡灰色文字 */
@@ -124,9 +110,10 @@
     }
 </style>
 
+<body>
 <div id="app">
     @* 警告modal *@
-    <div class="modal" v-if="modal.isModalVisible" >
+    <div class="modal" v-if="modal.isModalVisible">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0 mt-0">
@@ -140,7 +127,7 @@
                          class="alertImg mt-4"
                          style="max-width: 100px" />
                     <div class="modal-body">
-                    <h5><pre class="mb-0" style="line-height:30px">{{modal.message}}</pre></h5>
+                        <h5><pre class="mb-0" style="line-height:30px">{{modal.message}}</pre></h5>
                     </div>
                 </div>
 
@@ -164,24 +151,28 @@
                 <div class="text-center list-group align-middle">
                     <div class="list-group-item">
                         <div class="profile btn border-0">
-                            <input type="file" accept="image/*" v-on:change="updateAvatar" style="display: none;" id="fileInput" />
-                            <img :src="member.avatar"
-                                 alt="profilePic"
-                                 class="avatarA img-fluid m-3"
-                                 v-on:click="document.getElementById('fileInput').click()" />
-                            <img src="~/images/camera.png"
-                                 alt="editProfile"
-                                 class="camera img-fluid " />
+                            <form id="imageForm" method=post enctype="multipart/form-data">
+                                <input type="file" accept="image/*" v-on:change="updateAvatar" style="display: none;" id="fileInput" />
+                                <img :src="`/images/${member.avatar}`"
+                                     alt="profilePic"
+                                     class="avatarA img-fluid m-3" />
+                                <img src="~/images/camera.png"
+                                     alt="editProfile"
+                                     class="camera img-fluid "
+                                     v-on:click="triggerFileInput" />
+                            </form>
                         </div>
 
                         <h4 class="fw-bolder">{{member.name}}</h4>
                         <p>
                             會員點數：<span class="specialCount">{{member.point}}</span>
                             pt
-                            <a href="/Members/TopUp" class="chargeTag btn btn-warning p-1 ms-2">
+                            <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("EditInfo", "Members")`" 
+                               class="chargeTag btn btn-warning p-1 ms-2">
                                 儲值
                             </a>
                         </p>
+
                     </div>
                     <a href="#" class="list-group-item list-group-item-action active align-content-center border-0 rounded" aria-current="true">
                         會員資料
@@ -236,86 +227,41 @@
 
                     @*<div v-if="message" class="alert" :class="messageType">{{ message }}</div>*@
 
-                    <section class="m-4">
-                        <div class="text-end">
-                            <a href="@Url.Action("UpdatePassword", "Members")" class="changePwd btn btn-outline-danger me-2" v-on:click="resetPassword">重設密碼</a>
 
-                            <button class="updateBtn btn" v-on:click="confirmUpdate">修改</button>
-                        </div>
-                    </section>
+                    <div class="text-end">
+                        <a href="@Url.Action("UpdatePassword", "Members")" class="changePwd btn btn-outline-danger me-2" v-on:click="resetPassword">重設密碼</a>
+
+                        <button class="updateBtn btn" v-on:click="confirmUpdate">修改</button>
+
+                    </div>
                 </section>
             </div>
         </div>
     </div>
 </div>
-@section scripts{
+@section scripts {
     <script src="~/Scripts/bootstrap.bundle.min.js"></script>
     <script src="~/Scripts/vue.global.js"></script>
     <script src="~/Scripts/myheader.js"></script>
     <script>
     @using Chimo.WebAPI.Site.Models
     const { createApp, ref, onMounted } = Vue;
-        createApp({
-            setup() {
-                const modal = ref({
-                    message: "",
-                    img: "",
-                    isChange: false,
-                    isModalVisible: false,
-                    showModal() {
-                        this.isModalVisible = true;
-                    },
-                    hideModal() {
-                        this.isModalVisible = false;
-                    },
-                });
 
-            //function showModal() {
-            //    isModalVisible.value = true;
-            //}
+    const config = {
+        setup() {
+            const modal = ref({
+                message: "",
+                img: "",
+                isChange: false,
+                isModalVisible: false,
+                showModal() {
+                    this.isModalVisible = true;
+                },
+                hideModal() {
+                    this.isModalVisible = false;
+                },
+            });
 
-            //function hideModal() {
-            //    isModalVisible.value = false;
-            //}
-            //更新頭像用的程式構想
-            /*
-            const updateAvatar = async (event) => {
-                const file = event.target.files[0];
-
-                if (file) {
-                    if (file.size > maxSize) {
-                        showToast('檔案大小不能超過 2MB', 'text-danger');
-                        return;
-                    }
-
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        member.value.avatar = e.target.result; // 即時預覽
-                    };
-                    reader.readAsDataURL(file);
-
-                    const formData = new FormData();
-                    formData.append('avatar', file);
-
-                    try {
-                        const response = await fetch('/api/upload-avatar', {
-                            method: 'POST',
-                            body: formData,
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            member.value.avatar = data.avatarUrl; // 更新圖片 URL
-                            showToast('上傳成功！', 'text-success'); // 成功提示
-                        } else {
-                            showToast('上傳失敗: ' + data.message, 'text-danger');
-                        }
-                    } catch (error) {
-                        console.error('錯誤:', error);
-                        showToast('上傳時發生錯誤', 'text-danger');
-                    }
-                }
-            };
-            */
             const member = ref({
                 id: 0,
                 name: "",
@@ -329,27 +275,24 @@
             });
 
             const originalMember = ref({ ...member.value });
-           
 
             const fetchMemberProfile = async () => {
                 try {
                     const token = '@AuthHelper.GetTokenFromCookie()';
-                    console.log("獲取的Token:", token);
-
-                    // 使用 decodeToken 解碼會員資料
                     const decodedMember = decodeToken(token);
-                    member.value.id = decodedMember.Id; // 確認這裡的屬性名稱正確
+
+                    // 確保這裡的屬性名稱正確
+                    member.value.id = decodedMember.Id;
                     member.value.name = decodedMember.unique_name;
                     member.value.email = decodedMember.Email;
                     member.value.point = decodedMember.Point;
                     member.value.avatar = `../images/` + decodedMember.ProfileImage;
                     member.value.intro = decodedMember.Intro;
                     member.value.gender = decodedMember.Gender;
-                    member.value.updatedDate = formatDate(decodedMember.updatedDate); // 格式化日期
+                    member.value.updatedDate = formatDate(decodedMember.updatedDate);
 
-                    originalMember.value = { ...member.value }; // 獲取後儲存原始值
+                    originalMember.value = { ...member.value };
 
-                    // 接下來可以用 decodedMember.id 來獲取更詳細的會員資料
                     const response = await fetch(`/api/profile/${member.value.id}`, {
                         method: 'GET',
                         headers: {
@@ -363,21 +306,65 @@
 
                     const data = await response.json();
                     Object.assign(member.value, data);
-                    member.value.updatedDate = formatDate(data.updatedDate); // 格式化日期
-                    originalMember.value = { ...member.value }; // 更新原始值
+                    member.value.updatedDate = formatDate(data.updatedDate);
+                    originalMember.value = { ...member.value };
                 } catch (error) {
                     console.error("獲取會員資料失敗:", error);
                 }
             };
 
+            const triggerFileInput = () => {
+                const fileInput = document.getElementById('fileInput');
+                fileInput.click();
+            };
+
+            const updateAvatar = async (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    alert("請選擇檔案！");
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("file", file);
+
+                try {
+                    const response = await fetch(`/api/uploadProfileImage/${member.value.id}`, {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "上傳失敗，請稍後再試");
+                    }
+
+                    const result = await response.json();
+                    document.cookie = `jwtToken=${result.token}; path=/; secure`;
+                    member.value.avatar = `${result.profileImage}`;
+                    window.location.reload();
+
+                    alert('頭像更新成功');
+                } catch (error) {
+                    alert(`上傳失敗: ${error.message}`);
+                }
+            };
+
+            const decodeToken = (token) => {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                return JSON.parse(jsonPayload);
+            };
+
             const formatDate = (dateString) => {
                 const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
                 const date = new Date(dateString);
-                return date.toLocaleDateString('zh-TW', options).replace(/\//g, '/'); // 格式化為 YYYY/MM/DD
+                return date.toLocaleDateString('zh-TW', options).replace(/\//g, '/');
             };
 
             const confirmUpdate = () => {
-                // 比較變更的欄位
                 const changedFields = [];
                 for (let key in member.value) {
                     if (member.value[key] !== originalMember.value[key]) {
@@ -385,19 +372,18 @@
                         if (key === 'phone') changedFields.push('電話');
                         if (key === 'gender') changedFields.push('性別');
                         if (key === 'intro') changedFields.push('個人簡介');
-
                     }
                 }
 
                 if (changedFields.length > 0) {
                     modal.value.message = `以下欄位已更改：\n${changedFields.join(', ')}\n確定要提交變更嗎？`;
                     modal.value.isChange = true;
-                    modal.value.img = "../images/alert.gif"
+                    modal.value.img = "../images/alert.gif";
                     modal.value.showModal();
                 } else {
                     modal.value.message = "沒有欄位被更改";
                     modal.value.isChange = false;
-                    modal.value.img = "../images/alert.gif"
+                    modal.value.img = "../images/alert.gif";
                     modal.value.showModal();
                 }
             };
@@ -413,17 +399,18 @@
                         },
                         body: JSON.stringify(member.value)
                     });
+
                     if (!response.ok) {
                         throw new Error('更新資料失敗');
                     } else {
                         modal.value.message = "更新成功";
-                        modal.value.img = "../images/ok.gif"
-                        originalMember.value = { ...member.value }; // 更新成功後，將新值設為原始值
+                        modal.value.img = "../images/ok.gif";
+                        originalMember.value = { ...member.value };
                         modal.value.isChange = false;
-
                     }
                 } catch (error) {
-                    console.error("更新會員資料失敗:", error);
+                    console.error("更新會員資料失敗:", error); 
+            
                 }
             };
 
@@ -431,20 +418,15 @@
                 console.log("重設密碼功能尚未實作");
             };
 
-            function decodeToken(token) {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-                return JSON.parse(jsonPayload);
-            }
+            onMounted(fetchMemberProfile);
 
-            onMounted(fetchMemberProfile); // 組件掛載時自動獲取會員資料
-
-            return { member,  confirmUpdate, updateProfile, resetPassword, modal };
+            return { member, confirmUpdate, updateProfile, resetPassword, modal, updateAvatar, triggerFileInput };
         }
-    }).mount("#app");
+    };
+
+    const app = createApp(config);
+    app.mount("#app");
     </script>
 }
 
-
+</body>

@@ -3,151 +3,155 @@
     ViewBag.Title = "Login";
 }
 <link href="~/Content/myLogin.css" rel="stylesheet" />
-
-<div id="app">
-    <div class="row">
-        <div class="loginPic col-sm-12 col-md-8">
-            <img src="../images/loginPic.jpg" alt="loginPic" class="img-fluid" />
-        </div>
-        <div class="loginForm col-md-4 p-5">
-            <div class="d-flex justify-content-between">
-                <h2 class="mb-3">登入</h2>
-                <a href="/Login/Register">
-                    <small class="btn btn-sm btn-link fw-bolder pt-2" style="text-decoration:none; color:#5b468b">快速註冊</small>
-                </a>
+<body>
+    <div id="app">
+        <div class="row">
+            <div class="loginPic col-sm-12 col-md-8">
+                <img src="../images/loginPic.jpg" alt="loginPic" class="img-fluid" />
             </div>
-            <div v-if="errorMessage" class="alert alert-danger fw-bolder" role="alert">{{ errorMessage }}</div>
+            <div class="loginForm col-md-4 p-5">
+                <div class="d-flex justify-content-between">
+                    <h2 class="mb-3">登入</h2>
+                    <a href="/Login/Register">
+                        <small class="btn btn-sm btn-link fw-bolder pt-2" style="text-decoration:none; color:#5b468b">快速註冊</small>
+                    </a>
+                </div>
+                <div v-if="errorMessage" class="alert alert-danger fw-bolder" role="alert">{{ errorMessage }}</div>
 
-        <form v-on:submit.prevent="submitForm" novalidate>
-            <input type="email"
-                   v-model="email"
-                   placeholder="電子信箱"
-                   class="form-control mb-3"
-                   style="min-width: 200px"
-                   required />
+                <form v-on:submit.prevent="submitForm" novalidate>
+                    <input type="email"
+                           v-model="email"
+                           placeholder="電子信箱"
+                           class="form-control mb-3"
+                           style="min-width: 200px"
+                           required />
 
 
-            <input type="password"
-                   v-model="password"
-                   placeholder="密碼"
-                   class="form-control mb-3"
-                   style="min-width: 200px; color: #5b468b"
-                   required />
+                    <input type="password"
+                           v-model="password"
+                           placeholder="密碼"
+                           class="form-control mb-3"
+                           style="min-width: 200px; color: #5b468b"
+                           required />
 
-            
 
-            <input type="submit" name="login" value="登入" style="height: 65px"
-                   v-on:click="login"
-                   class="loginBtn btn align-center col-12 mb-1 p-3" />
 
-        </form>
-            
-            <a href="ForgotPassword" class="btn col-12 mb-3 p-3">忘記密碼</a>
+                    <input type="submit" name="login" value="登入" style="height: 65px"
+                           v-on:click="login"
+                           class="loginBtn btn align-center col-12 mb-1 p-3" />
 
-            
+                </form>
+
+                <a href="ForgotPassword" class="btn col-12 mb-3 p-3">忘記密碼</a>
+
+
+            </div>
         </div>
     </div>
-</div>
 
-@section scripts {
-    <script src="~/Scripts/vue.global.js"></script>
-    <script src="~/Scripts/myheaderx`x.js"></script>
-    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    @section scripts {
+        <script src="~/Scripts/vue.global.js"></script>
+        <script src="~/Scripts/myheaderx`x.js"></script>
+        <script src="~/Scripts/bootstrap.bundle.min.js"></script>
 
-    <script>
-        const { createApp, ref } = Vue;
+        <script>
+            const { createApp, ref } = Vue;
 
-        const app = createApp({
-            setup() {
-                const email = ref('');
-                const password = ref('');                
-                const errorMessage = ref('');
-                const submitForm = () => {
-                    const emailInput = document.querySelector('input[type="email"]');
-                    const passwordInput = document.querySelector('input[type="password"]');
+            const config = {
+                setup() {
+                    const email = ref('');
+                    const password = ref('');
+                    const errorMessage = ref('');
+                    const submitForm = () => {
+                        const emailInput = document.querySelector('input[type="email"]');
+                        const passwordInput = document.querySelector('input[type="password"]');
 
-                    emailInput.setCustomValidity(email.value ? '' : '請輸入信箱');
-                    passwordInput.setCustomValidity(password.value ? '' : '請輸入密碼');
+                        emailInput.setCustomValidity(email.value ? '' : '請輸入信箱');
+                        passwordInput.setCustomValidity(password.value ? '' : '請輸入密碼');
 
-                    if (!email.value ) {
-                        emailInput.reportValidity();                        
-                        return; 
-                    }
-                    else if (!password.value) {                        
-                        passwordInput.reportValidity();
-                        return; 
-                    }
-
-                    login(); // 如果驗證通過，執行登入
-                };
-
-                // 儲存 JWT 到 Cookie
-                const saveTokenToCookie = (token) => {
-                    document.cookie = `jwtToken=${token}; path=/; secure; samesite=strict`;
-                };
-
-                // 從 Cookie 中取得 JWT
-                const getTokenFromCookie = () => {
-                    const name = "jwtToken=";
-                    const decodedCookie = decodeURIComponent(document.cookie);
-                    const cookies = decodedCookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        let cookie = cookies[i].trim();
-                        if (cookie.indexOf(name) === 0) {
-                            return cookie.substring(name.length, cookie.length);
+                        if (!email.value) {
+                            emailInput.reportValidity();
+                            return;
+                        }
+                        else if (!password.value) {
+                            passwordInput.reportValidity();
+                            return;
                         }
                     }
-                    return null;
-                };
 
-              
 
-                // 登入邏輯
-                const login = async () => {
-                    try {
-                        const response = await fetch('/api/login', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                Account: email.value,
-                                Password: password.value
-                            })
-                        });
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const returnUrl = urlParams.get('returnUrl') || '/Home/Index';   
+                
 
-                        if (response.ok) {
-                            const data = await response.json();
-                            const token = data.token;
+                    // 儲存 JWT 到 Cookie
+                    const saveTokenToCookie = (token) => {
+                        document.cookie = `jwtToken=${token}; path=/; secure; samesite=strict`;
+                    };
 
-                            if (token) {
-                                saveTokenToCookie(token);  // 儲存 token 到 cookie
-                                window.location.href = "/Home/Index"; // 導向主頁
-                            } else {
-                                errorMessage.value = "未收到有效的 Token";
+                    // 從 Cookie 中取得 JWT
+                    const getTokenFromCookie = () => {
+                        const name = "jwtToken=";
+                        const decodedCookie = decodeURIComponent(document.cookie);
+                        const cookies = decodedCookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            let cookie = cookies[i].trim();
+                            if (cookie.indexOf(name) === 0) {
+                                return cookie.substring(name.length, cookie.length);
                             }
-                        } else {
-                            const errorData = await response.json(); // 獲取錯誤物件
-                            errorMessage.value = errorData.message; // 只取出 message 部分
                         }
-                    } catch (error) {
-                        console.error(error);
-                        errorMessage.value = "無法連接伺服器";
-                    }
-                };
+                        return null;
+                    };
 
-                return {
-                    email,
-                    password,
-                    login,
-                    errorMessage,
-                    submitForm,
-                };
-            },
-        });
 
-        app.mount("#app");
-    </script>
 
-    @Scripts.Render("~/bundles/jqueryval")
-}
+                    // 登入邏輯
+                    const login = async () => {
+                        try {
+                            const response = await fetch('/api/login', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    Account: email.value,
+                                    Password: password.value
+                                })
+                            });
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                const token = data.token;
+
+                                if (token) {
+                                    saveTokenToCookie(token);  // 儲存 token 到 cookie
+                                    window.location.href = returnUrl;
+                                } else {
+                                    errorMessage.value = "未收到有效的 Token";
+                                }
+                            } else {
+                                const errorData = await response.json(); // 獲取錯誤物件
+                                errorMessage.value = errorData.message; // 只取出 message 部分
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            errorMessage.value = "無法連接伺服器";
+                        }
+                    };
+
+                    return {
+                        email,
+                        password,
+                        login,
+                        errorMessage,
+                        submitForm,
+                    };
+                },
+            };
+            const app = createApp(config);
+            app.mount("#app")
+        </script>
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+</body>

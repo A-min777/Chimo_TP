@@ -124,11 +124,11 @@
 	--1.顯示(購物車內容(課程名稱、課程封面、課程價格、教師名稱)、總金額) 僅包含上架課程
 	SELECT C.Title ID9的購物車課程名稱, C.Thumbnail 課程封面, C.Price 課程價格, T.Name 教師名稱, CT.TotalAmount 總金額
 	FROM Members M
-	JOIN Carts CT ON CT.MemberId = M.Id
+	JOIN Carts CT ON CT.MemberId = M.Id AND CT.Status = 0
 	JOIN CartItems CI ON CI.CartId = CT.Id
 	JOIN Courses C ON CI.CourseId = C.Id AND C.Status = 1
 	JOIN Teachers T ON C.TeacherId = T.Id
-	WHERE M.Id = 9
+	WHERE M.Id = 10
 
 
 

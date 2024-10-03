@@ -51,6 +51,18 @@
     .avatarA {
         border-radius: 50%;
     }
+
+
+    .searchBtn {
+        background-color: #5b468b;
+        color: #fff;
+    }
+
+        .searchBtn:hover {
+            background-color: #2b1b41;
+            color: #fff;
+        }
+
 </style>
 
 <div id="app">
@@ -59,16 +71,17 @@
             <div class="col-4 mt-3 mb-3">
                 <div class="text-center list-group">
                     <div class="list-group-item">
-                        <img :src="member.avatar"
+                        <img :src="`/images/${member.avatar}`" 
                              alt="profile"
                              class="avatarA img-fluid m-3" />
                         <h4 class="fw-bolder">{{member.name}}</h4>
                         <p>
                             會員點數：<span class="specialCount">{{member.point}}</span>
                             pt
-                            <a href="/Members/TopUp" class="chargeTag btn btn-warning p-1 ms-2">
-                                儲值
-                            </a>
+                                 <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("MyOrders", "Members")`"
+                                    class="chargeTag btn btn-warning p-1 ms-2">
+                                     儲值
+                                 </a>
                         </p>
                     </div>
 
@@ -100,6 +113,11 @@
                         <h4 class="fw-bolder">購買紀錄</h4>
                     </div>
                     <hr />
+                    <div :class="['mt-5 text-center notFound' ,{'d-none': orders.length != 0 }]">
+                        <img src="../images/notFoundImg.png" alt="notFound" class="img-fluid mb-3" style="width:20vw" />
+                        <h5 class="fw-bolder mb-3">還沒有任何購買紀錄</h5>
+                        <a href="@Url.Action("index", "Home")" class="searchBtn btn btn-lg">探索課程</a>
+                    </div>
                     <div v-for="order in orders" :key="order.id">
                         <div class="d-flex justify-content-between">
                             <h6>{{ new Date(order.createdDate).toLocaleDateString() }}</h6>
@@ -114,7 +132,7 @@
 
                         <div v-for="item in order.orderItems" :key="item.id" class="row align-items-center">
                             <div class="col-md-5 col-sm-12 mt-1">
-                                <a href="course.html">
+                                <a :href="`@Url.Action("ViewProduct", "Products")/${item.id}`">
                                     <img :src="`../images/${item.thumbnail}`" alt="order-thumbnail" class="thumbnail img-fluid rounded mt-2" />
                                 </a>
                             </div>
@@ -128,7 +146,7 @@
                             </div>
                         </div>
 
-                        <h5 class="text-end mt-3 fw-bolder">總金額 NT${{ order.totalAmount }}</h5>
+                   
 
                         <hr />
                     </div>

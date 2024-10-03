@@ -1,6 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "ProductInfo";
+
 }
 
 @using Chimo.WebAPI.Site.Models
@@ -101,12 +102,13 @@
         z-index: 1050;
     }
 
-    .modal-content{
-        width:300px;
+    .modal-content {
+        width: 300px;
     }
 </style>
 
 <div id="app">
+
     <div class="modal" v-if="isModalVisible" v-on:click.self="hideModal">
         <div class="modal-dialog"
              :class="{'slide-in': isModalVisible, 'slide-out': !isModalVisible}">
@@ -127,7 +129,7 @@
                 </div>
 
                 <div class="text-center mb-4">
-                    <a :href="`@Url.Action("Login", "Login")`"
+                    <a :href="`@Url.Action("Login", "Login")?returnUrl=@Url.Action("ViewProduct", "Products")/${courseId}`"
                        class="confirmBtn btn btn-md ">
                         登入
                     </a>
@@ -148,7 +150,15 @@
                         </li>
                     </ol>
                 </nav>
-                <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
+                @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+                {
+                    <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="toggleBookmark" />
+                }
+
+                else
+                {
+                    <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="showModal" />
+                }
             </div>
             <div class="row pb-5 justify-content-between" v-if="courseDetail && courseDetail.teacher">
                 <div class="col-xs-12 col-md-6 col-lg-7 p-3">
@@ -159,7 +169,7 @@
                         <p class="fs-1 fw-bolder text-light">NT${{courseDetail.price}}</p>
                         @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
                         {
-                            <a :href="`@Url.Action("Checkout", "Members")`" 
+                            <a :href="`@Url.Action("Checkout", "Members")`"
                                class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3">
                                 立即購買
                             </a>}
@@ -254,7 +264,7 @@
                     <div class="d-flex justify-content-between">
                         @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
                         {
-                            <a :href="`@Url.Action("Checkout", "Members")`"
+                            <a :href="`@Url.Action("BuyDirectly", "Members")/${courseId}`"
                                class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
                                 立即購買
                             </a>}
@@ -267,7 +277,8 @@
                         <button class="rounded btn border mb-3">
                             <img src="~/images/cart.png"
                                  alt="cart"
-                                 class="cartIcon img-fluid" />
+                                 class="cartIcon img-fluid"
+                                 v-on:click="handleAddCartItem(courseDetail.price)" />
                         </button>
                     </div>
                 </div>
@@ -286,13 +297,13 @@
     <script src="~/Scripts/bootstrap.bundle.min.js"></script>
     <script src="~/Scripts/vue.global.js"></script>
     <script src="~/Scripts/myheader.js"></script>
-   
+
     <script>
 
             const { createApp, ref, onMounted } = Vue;
             const config = {
                 setup() {
-                    const isModalVisible = ref(false) 
+                    const isModalVisible = ref(false)
 
                     function showModal() {
                         isModalVisible.value = true;
@@ -360,15 +371,85 @@
                             videoPlayer.value.currentTime = 0;
                         }
                     }
-                    onMounted(() => {
+                    onMounted(async () => {
                         if (videoPlayer.value) {
                             videoPlayer.value.addEventListener('timeupdate', checkVideoTime);
                         }
 
-                        fetchCourseInfo(courseId);
-                        checkIsCollection();
+                        await fetchCourseInfo();
+                        if (memberId != null) {
+                            await checkIsCollection();
+                            await fetchCartItems();
+                            //isInCart = checkIsInCart(courseId);
+                        }
+
                     });
 
+                    let isInCart = false;
+                    const handleAddCartItem = async (price) => {
+                        //isInCart = checkIsInCart(courseId);
+                        console.log("IsINCartBefore:", isInCart);
+                        if (isInCart)
+                        {
+                            console.log("此課程已被加入過購物車");
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch(`/api/carts/add`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    courseId: courseId,
+                                    memberId: memberId,
+                                    price: price
+                                })
+                            });
+
+                            if (response.ok) {
+                                cartItems.push(courseId);
+                                isInCart = true;
+                                console.log("成功加入購物車");
+                            } else {
+                                const errorMessage = await response.text();
+                                console.error('加入購物車失敗:', errorMessage);
+                            }
+                        } catch (error) {
+                            console.error('加入購物車時發生錯誤:', error);
+                        }
+                    };
+
+                    let cartItems = [];
+
+                    const fetchCartItems = async () => {
+                        try {
+                            const response = await fetch(`/api/carts/${memberId}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                }
+                            });
+
+                            // 確保請求成功後解析 JSON
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.length === 0) return;
+
+                                cartItems = data.cartItems.map(item => item.course.id);
+                                isInCart = checkIsInCart();
+                            } else {
+                                console.error('fetch 購物車清單失敗:', response.statusText);
+                            }
+                        } catch (error) {
+                            console.error('fetch 購物車清單失敗:', error);
+                        }
+                    };
+
+                    const checkIsInCart = () => { 
+                        return cartItems.includes(courseId);
+                    };
 
                     const formatThumbnailUrl = (thumbnailPath, target = "people") => {
 
@@ -402,8 +483,9 @@
                     };
 
                     const courseContents = ref([]);
-                    const  courseId = @Html.Raw(ViewBag.ProductId);
-                    const fetchCourseInfo = async (courseId) => {
+                    const courseId = @Html.Raw(ViewBag.ProductId);
+
+                    const fetchCourseInfo = async () => {
                         try {
 
                             const response = await fetch(`/api/products/productinfo/${courseId}`, {
@@ -431,12 +513,13 @@
                     const courseFirstVideo = ref();
                     const courseBuyerCount = ref();
                     const courseChapterCount = ref();
-
+                    const memberId =  @Html.Raw(Json.Encode(member?.Id));
 
                     return {
-                        courseContents, courseDetail, videoPlayer, checkVideoTime,
-                        courseFirstVideo, courseBuyerCount, courseChapterCount,
-                        formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute, isModalVisible, showModal, hideModal
+                        courseContents, courseDetail, videoPlayer, checkVideoTime, courseId,
+                        courseFirstVideo, courseBuyerCount, courseChapterCount, handleAddCartItem,
+                        formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute, isModalVisible,
+                        showModal, hideModal
                     };
                 },
             };

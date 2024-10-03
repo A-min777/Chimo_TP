@@ -13,23 +13,29 @@ using System.Linq;
 using System.Web;
 using AutoMapper;
 using Chimo.WebAPI.Site.Models;
+using System.Threading.Tasks;
+using System.IO;
+using System.Drawing;
+using System.Drawing.Imaging;
+using Chimo.WebAPI.Site.Controllers.Apis;
+
 
 namespace Chimo.WebAPI.Site.Services
 {
     public class MemberService
     {
         private MemberRepository _memberRepository;
-        private readonly IMapper _mapper; 
+        private readonly IMapper _mapper;
 
 
         public MemberService()
         {
             _memberRepository = new MemberRepository();
         }
-        public MemberService(MemberRepository memberRepository ,IMapper mapper)
+        public MemberService(MemberRepository memberRepository, IMapper mapper)
         {
             _memberRepository = memberRepository;
-            _mapper = mapper; 
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -132,7 +138,7 @@ namespace Chimo.WebAPI.Site.Services
         internal string GetUserIdFromToken()
         {
             var token = AuthHelper.GetTokenFromCookie();
-            if(token == null) return null;
+            if (token == null) return null;
 
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
@@ -150,14 +156,112 @@ namespace Chimo.WebAPI.Site.Services
             return userIdClaim;
         }
 
+     
+
         internal bool HasPurchasedProduct(int userId, int id)
         {
             var member = _memberRepository.FindById(userId);
             if (member == null) return false;
 
-			bool hasPurchased = _memberRepository.HasPurchased(userId, id);
+            bool hasPurchased = _memberRepository.HasPurchased(userId, id);
 
-			return hasPurchased;
+            return hasPurchased;
         }
-    }
+
+
+
+        public ProfileImageDto UpdateProfileImage(int memberId, HttpPostedFile file)
+        {
+            if (file == null || file.ContentLength == 0 || !IsValidImageName(file.FileName))
+            {
+                throw new ArgumentException("檔案無效或格式不正確！僅支援 JPG 和 PNG 格式。");
+            }
+
+            var hashedFileName = HashUtility.ToSHA256(file.FileName);
+            var fileExtension = Path.GetExtension(file.FileName);
+            var newProfileImage = hashedFileName + fileExtension;
+
+            // 獲取現有會員資料
+            var member = _memberRepository.FindById(memberId);
+
+            // 檢查是否上傳的圖片與現有圖片相同
+            if (member.ProfileImage == newProfileImage)
+            {
+                throw new ArgumentException("新上傳的照片與現有照片相同，請上傳不同的圖片。");
+            }
+
+            var path = Path.Combine(HttpContext.Current.Server.MapPath("~/images"), newProfileImage);
+
+            file.SaveAs(path);
+
+            _memberRepository.UpdateProfileImage(memberId, newProfileImage);
+
+            var Updatedmember = _memberRepository.FindById(memberId);
+            var token = JwtUtility.GenerateToken(Updatedmember);
+
+            return new ProfileImageDto
+            {
+                Token = token,
+                ProfileImage = newProfileImage
+            };
+        }
+
+        private bool IsValidImageName(string imageName)
+        {
+            // 檢查檔名格式是否符合 JPEG 或 PNG
+            return imageName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                   imageName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                   imageName.EndsWith(".png", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public bool UpdatePassword(int memberId ,ResetPasswordDto dto)
+        {
+            var member = _memberRepository.FindById(memberId);
+
+            if (member == null) throw new ArgumentException("用戶不存在");
+
+            var hashedOldPassword = HashUtility.ToSHA256(dto.OldPassword);
+
+            if (member.Password != hashedOldPassword) 
+            {
+                throw new ArgumentException("舊密碼錯誤");
+            }
+
+            if (dto.NewPassword != dto.ConfirmPassword)
+            {
+                throw new ArgumentException("新密碼與確認密碼不一致");
+            }
+
+            var hashedNewPassword = HashUtility.ToSHA256(dto.NewPassword);
+            member.Password = hashedNewPassword;
+            _memberRepository.Update(member);
+            return true;
+        }
+
+        public (bool isSuccess, string token) TopUp(int memberId, PointHistoryDto dto)
+        {
+            if (dto.Type != 1) return (false, null);
+
+            if (dto.Amount <= 0)
+            {
+                throw new ArgumentException("儲值金額必須大於0");
+            }
+
+            var success = _memberRepository.TopUpMemberPoints(memberId, dto);
+            if (success)
+            {
+                var member = _memberRepository.FindById(memberId);
+                var token = JwtUtility.GenerateToken(member);
+                return (true, token);
+            }
+
+            return (false, null);
+        }
+
+		internal int GetMemberPoint(int memberId)
+		{
+			return _memberRepository.GetMemberPoint(memberId);
+		}
+	}
 }
+

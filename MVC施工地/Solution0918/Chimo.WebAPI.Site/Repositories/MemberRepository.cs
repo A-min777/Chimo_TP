@@ -8,6 +8,9 @@ using System.Web;
 using Chimo.WebAPI.Site.Utilities;
 using System.Data.Entity;
 using AutoMapper;
+using System.Threading.Tasks;
+using System.Web.Configuration;
+using Chimo.WebAPI.Site.Controllers.Apis;
 
 namespace Chimo.WebAPI.Site.Repositories
 {
@@ -76,6 +79,7 @@ namespace Chimo.WebAPI.Site.Repositories
             existingMember.Intro = member.Intro;
             existingMember.Gender = member.Gender;
             existingMember.Phone = member.Phone;
+            existingMember.Password = member.Password;
             existingMember.UpdatedDate = DateTime.Now; // 設定為當前時間
 
             // 儲存更改
@@ -114,6 +118,7 @@ namespace Chimo.WebAPI.Site.Repositories
                            where o.MemberId == memberId && oi.Status == 1
                            select new CourseDto
                            {
+                               CategoryId = c.Id,
                                Title = c.Title,
                                Thumbnail = c.Thumbnail,
                                Price = c.Price,
@@ -169,7 +174,7 @@ namespace Chimo.WebAPI.Site.Repositories
                        OrderItems = o.OrderItems
                        .Select(oi => new OrderItemDto
                        {
-                           Id = oi.Id,
+                           Id = oi.Cours.Id,
                            CourseName = oi.Cours.Title, // 課程名稱
                            Thumbnail = oi.Cours.Thumbnail, // 課程封面
                            TeacherName = oi.Cours.Teacher.Name, // 教師名稱
@@ -181,22 +186,22 @@ namespace Chimo.WebAPI.Site.Repositories
             return orders; // 返回 List<OrderDto>
         }
 
-		/// <summary>
-		/// 根據使用者Id跟課程Id判斷使用者是否已購買該課程
-		/// </summary>
-		/// <param name="userId"></param>
-		/// <param name="courseId"></param>
-		/// <returns></returns>
-		internal bool HasPurchased(int userId, int courseId)
-		{
-			var purchasedCourse = _db.Orders
-			.AsNoTracking()
-			.Include(o => o.OrderItems.Select(oi => oi.Cours))
-			.Where(o => o.MemberId == userId)
-			.SelectMany(o => o.OrderItems)
-			.Where(oi => oi.CourseId == courseId)
-			.Select(oi => oi.Cours)
-			.FirstOrDefault();
+        /// <summary>
+        /// 根據使用者Id跟課程Id判斷使用者是否已購買該課程
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="courseId"></param>
+        /// <returns></returns>
+        internal bool HasPurchased(int userId, int courseId)
+        {
+            var purchasedCourse = _db.Orders
+            .AsNoTracking()
+            .Include(o => o.OrderItems.Select(oi => oi.Cours))
+            .Where(o => o.MemberId == userId)
+            .SelectMany(o => o.OrderItems)
+            .Where(oi => oi.CourseId == courseId)
+            .Select(oi => oi.Cours)
+            .FirstOrDefault();
 
 			return purchasedCourse != null;
 		}
@@ -214,7 +219,94 @@ namespace Chimo.WebAPI.Site.Repositories
 
             return member != null;
         }
-    }
+
+        public void UpdateProfileImage(int memberId, string imagePath)
+        {
+            var member = _db.Members.Find(memberId);
+
+            if (member != null)
+            {
+                member.ProfileImage = imagePath;
+                _db.SaveChanges();
+            }
+        }
+
+        public bool TopUpMemberPoints(int memberId,PointHistoryDto dto)
+        {
+            var member=_db.Members.Find(memberId);
+            if(member == null) return false;
+
+            member.Point += dto.Amount; // 更新用戶的總金額
+
+            // 新增一筆歷史紀錄
+            var pointHistory = new PointHistory
+            {
+                MemberId = memberId,
+                Amount = dto.Amount,
+                Point = member.Point,  // 更新後的總金額
+                Cash = dto.Cash,    
+                GetPointType = dto.Type,
+                GetPointDate = DateTime.Now
+            };
+
+
+            // 儲存到歷史紀錄表
+            _db.PointHistories.Add(pointHistory);
+
+            _db.SaveChanges();
+            return true;
+        }
+
+        /// <summary>
+        /// 根據memberId找到member後轉成 ConfirmPaymentMemberDto，供新增訂單時用
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        internal ConfirmPaymentMemberDto GetMemberDtoById(int memberId)
+        {
+            Member member = _db.Members.AsNoTracking().
+                FirstOrDefault(m => m.Id == memberId);
+
+            if (member == null) return null;
+
+            // Member 轉 ConfirmPaymentMemberDto
+            return WebApiApplication._mapper.Map<ConfirmPaymentMemberDto>(member);
+        }
+
+        /// <summary>
+        ///  更新會員點數
+        /// </summary>
+        /// <param name="member"></param>
+        internal void UpdateMemberPoint(Member member)
+        {
+            var existingMember = _db.Members
+                .FirstOrDefault(m => m.Id == member.Id); // 找到現有會員
+
+            if (existingMember != null)
+            {
+                existingMember.Point = member.Point; // 更新 Point
+                _db.Entry(existingMember).Property(x => x.Point).IsModified = true; // 設置 Point 為已修改                                                                      
+            }
+
+            _db.SaveChanges();
+        }
+
+        /// <summary>
+        /// 取得會員所持點數
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+		internal int GetMemberPoint(int memberId)
+		{
+            var member = _db.Members
+                        .AsNoTracking()
+                        .FirstOrDefault(m => m.Id == memberId);
+
+            if (member == null) return 0;
+
+            return member.Point;
+		}
+	}
 }
 
 
