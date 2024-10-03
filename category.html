@@ -7,12 +7,64 @@
   </head>
   <link rel="stylesheet" href="css/bootstrap.min.css" />
   <link rel="stylesheet" href="css/myheader.css" />
-  <style></style>
+  <style>
+    span{
+      color: #5b468b;
+    }
+  </style>
   <body>
     <div id="app">
       <div class="sticky-top">
         <my-header></my-header>
       </div>
+    <div class="container">
+      <nav aria-label="breadcrumb " class="root pt-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">首頁</a></li>
+          <li class="breadcrumb-item"><a href="category.html">分類</a></li>
+        </ol>
+      </nav>
+      <h3 class="mb-3">所有類別</h3>
+      <div class="d-flex align-items-baseline mb-5 ">
+        
+        <button class="btn btn-light border me-3">語言學習</button>
+        <button class="btn btn-light border me-3">設計創作</button>        
+        <button class="btn btn-light border me-3">程式語言</button>
+        <button class="btn btn-light border me-3">職場技能</button>
+        <button class="btn btn-light border me-3">健康生活</button>      
+      </div>
+      
+      <div>
+        <h6>共  <span class="fw-bolder">00</span>  項結果</h6>
+
+        <div class="searchResult"></div>
+          <div class="cardContainer d-flex flex-wrap">
+            <div
+              v-for="card in cards"
+              :key="card.id"
+              class="mycard col-md-3 col-sm-12 p-3 pb-5 ps-0"
+            >
+              <a href="product.html">
+                <img
+                  :src="card.img"
+                  alt="course-thumbnail "
+                  class="thumbnail pb-2 img-fluid rounded"
+                />
+              </a>
+              <div class="prodct-info">
+                <small class="tag p-1 rounded-1 fw-bolder">課程</small>
+                <p class="title pt-1">{{card.title}}</p>
+                <small>{{card.teacher}}</small>
+                <hr />
+              </div>
+              <p class="price mt-2">NT${{card.price}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      
+
 
       <footer
         style="
