@@ -220,6 +220,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MembersController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
+    <Compile Include="Controllers\TeacherController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -420,6 +421,7 @@
     <Content Include="Views\Login\ResetPassword.cshtml" />
     <Content Include="Views\Members\UpdatePassword.cshtml" />
     <Content Include="Views\Members\BuyDirectly.cshtml" />
+    <Content Include="Views\Teacher\TeacherInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
