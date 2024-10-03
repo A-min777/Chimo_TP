@@ -199,7 +199,7 @@ namespace Chimo.WebAPI.Site.Repositories
             .Include(o => o.OrderItems.Select(oi => oi.Cours))
             .Where(o => o.MemberId == userId)
             .SelectMany(o => o.OrderItems)
-            .Where(oi => oi.CourseId == courseId)
+            .Where(oi => oi.CourseId == courseId && oi.Status == 1)
             .Select(oi => oi.Cours)
             .FirstOrDefault();
 
