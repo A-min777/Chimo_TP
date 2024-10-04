@@ -24,5 +24,10 @@ namespace Chimo.WebAPI.Site.Controllers
         {
             return View();
         }
+
+        public ActionResult Categories()
+        {
+            return View();
+        }
     }
 }
