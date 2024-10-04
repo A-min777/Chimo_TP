@@ -163,13 +163,7 @@
 
         const config = {
         setup() {
-            const member = ref({
-                id: 0,
-                name: "",
-                avatar: "",
-                point: 0,
-            });
-
+           
             const getTeacherId = () => {
                 // 取得當前的 URL 路徑
                 const pathname = window.location.pathname;
@@ -237,29 +231,13 @@
             }
 
             onMounted(async () => {
-          
-                const token = '@AuthHelper.GetTokenFromCookie()';
-                const decodedMember = decodeToken(token);
-                member.value.id = decodedMember.Id;
-                member.value.name = decodedMember.unique_name;
-                member.value.point = decodedMember.Point;
-                member.value.avatar = decodedMember.ProfileImage;
-            
-
                 const teacherId = getTeacherId();
                 await fetchTeacherProfile(teacherId);
             });
 
-            function decodeToken(token) {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+            
 
-                return JSON.parse(jsonPayload);
-            }
-
-            return { member,courses, teacher, courseCount, studentCount, formatThumbnailRoute };
+            return { courses, teacher, courseCount, studentCount, formatThumbnailRoute };
         }
     }
         const app = createApp(config);
