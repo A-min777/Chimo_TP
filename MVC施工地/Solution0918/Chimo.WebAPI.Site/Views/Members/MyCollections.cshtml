@@ -195,11 +195,23 @@
              avatar: "",
              point: 0,
          });
+                    const decodeToken = (token) => {
+                        const base64Url = token.split('.')[1];
+                        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                        return JSON.parse(jsonPayload);
+                    };
+
+                    const token = '@AuthHelper.GetTokenFromCookie()';
+                    const decodedMember = decodeToken(token);
+                    member.value.id = decodedMember.Id;
+                    member.value.name = decodedMember.unique_name;
+                    member.value.avatar = decodedMember.ProfileImage;
 
          const collections = ref([]); // 存放會員課程資料
          const fetchMemberCollections = async () => {
              try {
-                 const token = '@AuthHelper.GetTokenFromCookie()';
                  const response = await fetch(`/api/collections/${member.value.id}`, {
                      method: 'GET',
                      headers: {
@@ -222,29 +234,58 @@
              } catch (error) {
                  console.error("獲取收藏紀錄資料失敗:", error);
              }
-         };
+                    };
+
+        const fetchMemberPoint = async () => {
+                        try {
+                            member.value.id = decodedMember.Id;
+                            const response = await fetch(`/api/getMemberPoint/${member.value.id}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('網路請求失敗');
+                            }
+
+                            const data = await response.json();
+                            member.value.point = data.memberPoint; // 將回傳的點數值儲存在 member 的 point 屬性中
+                        } catch (error) {
+                            console.error("獲取會員資料失敗:", error);
+                        }
+                    };
+                    const fetchMemberImage = async () => {
+                        try {
+
+                            member.value.id = decodedMember.Id;
+                            const response = await fetch(`/api/getMemberImage/${member.value.id}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('網路請求失敗');
+                            }
+
+                            const data = await response.json();
+                            member.value.avatar = data.memberImage;
+                        } catch (error) {
+                            console.error("獲取會員資料失敗:", error);
+                        }
+                    };
 
          onMounted(async () => {
-             const token = '@AuthHelper.GetTokenFromCookie()';
-             const decodedMember = decodeToken(token);
-             member.value.id = decodedMember.Id;
-             member.value.name = decodedMember.unique_name;
-             member.value.point = decodedMember.Point;
-             member.value.avatar = decodedMember.ProfileImage;
 
              await fetchMemberCollections();
+             await fetchMemberPoint();
+             await fetchMemberImage();
          });
 
-         function decodeToken(token) {
-             const base64Url = token.split('.')[1];
-             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-             const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-                 '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-
-             return JSON.parse(jsonPayload);
-         }
-
-         return { member, collections };
+                    return { member, collections, fetchMemberPoint };
      }
             }
             const app = createApp(config);

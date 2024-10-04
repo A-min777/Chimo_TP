@@ -238,9 +238,13 @@ namespace Chimo.WebAPI.Site.Services
             return true;
         }
 
-        public (bool isSuccess, string token) TopUp(int memberId, PointHistoryDto dto)
+        public bool  TopUp(int memberId, PointHistoryDto dto)
         {
-            if (dto.Type != 1) return (false, null);
+            if (dto.Type != 1)
+            { 
+                throw new ArgumentException("此筆狀態不是購買狀態");
+            }
+            ;
 
             if (dto.Amount <= 0)
             {
@@ -251,17 +255,21 @@ namespace Chimo.WebAPI.Site.Services
             if (success)
             {
                 var member = _memberRepository.FindById(memberId);
-                var token = JwtUtility.GenerateToken(member);
-                return (true, token);
+                return true;
             }
 
-            return (false, null);
+            return false;
         }
 
 		internal int GetMemberPoint(int memberId)
 		{
 			return _memberRepository.GetMemberPoint(memberId);
 		}
-	}
+
+        internal string GetMemberImage(int memberId)
+        {
+            return _memberRepository.GetMemberImage(memberId);
+        }
+    }
 }
 
