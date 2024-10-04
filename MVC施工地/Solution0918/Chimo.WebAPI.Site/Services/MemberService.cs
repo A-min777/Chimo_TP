@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Chimo.WebAPI.Site.Controllers.Apis;
 
 
 namespace Chimo.WebAPI.Site.Services
@@ -237,53 +238,30 @@ namespace Chimo.WebAPI.Site.Services
             return true;
         }
 
-        public bool TopUp(int memberId, PointHistoryDto dto)
+        public (bool isSuccess, string token) TopUp(int memberId, PointHistoryDto dto)
         {
-            if (dto.Type != 1)return false;
+            if (dto.Type != 1) return (false, null);
 
             if (dto.Amount <= 0)
             {
                 throw new ArgumentException("儲值金額必須大於0");
             }
 
-            return _memberRepository.TopUpMemberPoints(memberId, dto);
-        }
-
-
-        public CourseDto RefundOrder(int memberId, CourseDto dto)
-        {
-            // 一次性查找會員、訂單項目和訂單
-            var (member, orderItem, order) = _memberRepository.GetOrderDetails(memberId, dto.Id);
-            if (member == null || orderItem == null || order == null) return null;
-
-            // 檢查訂單狀態是否允許退貨
-            if (orderItem.Status != 1) return null;
-
-            //  更新訂單項目狀態為退貨
-            orderItem.Status = 0;
-
-            //  記錄退貨歷史
-            var refundHistory = new PointHistory
+            var success = _memberRepository.TopUpMemberPoints(memberId, dto);
+            if (success)
             {
-                MemberId = memberId,
-                OrderId = orderItem.OrderId,
-                GetPointDate = DateTime.Now,
-                Amount = orderItem.Price,
-                Point = member.Point + orderItem.Price,
-                Cash = 0,
-                GetPointType = 0,
-            };
-            _memberRepository.AddPointHistory(refundHistory);
+                var member = _memberRepository.FindById(memberId);
+                var token = JwtUtility.GenerateToken(member);
+                return (true, token);
+            }
 
-            // 更新會員點數
-            member.Point += orderItem.Price;
-
-            _memberRepository.Update();
-
-           
-            return dto;
+            return (false, null);
         }
-    }
 
-    }
+		internal int GetMemberPoint(int memberId)
+		{
+			return _memberRepository.GetMemberPoint(memberId);
+		}
+	}
+}
 

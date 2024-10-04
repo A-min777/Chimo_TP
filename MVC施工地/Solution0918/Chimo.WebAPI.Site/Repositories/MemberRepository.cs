@@ -10,6 +10,7 @@ using System.Data.Entity;
 using AutoMapper;
 using System.Threading.Tasks;
 using System.Web.Configuration;
+using Chimo.WebAPI.Site.Controllers.Apis;
 
 namespace Chimo.WebAPI.Site.Repositories
 {
@@ -199,7 +200,7 @@ namespace Chimo.WebAPI.Site.Repositories
             .Include(o => o.OrderItems.Select(oi => oi.Cours))
             .Where(o => o.MemberId == userId)
             .SelectMany(o => o.OrderItems)
-            .Where(oi => oi.CourseId == courseId)
+            .Where(oi => oi.CourseId == courseId && oi.Status == 1)
             .Select(oi => oi.Cours)
             .FirstOrDefault();
 
@@ -257,28 +258,56 @@ namespace Chimo.WebAPI.Site.Repositories
             return true;
         }
 
-        public (Member member, OrderItem orderItem, Order order) GetOrderDetails(int memberId, int coursesId)
+        /// <summary>
+        /// 根據memberId找到member後轉成 ConfirmPaymentMemberDto，供新增訂單時用
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        internal ConfirmPaymentMemberDto GetMemberDtoById(int memberId)
         {
-            var orderItem = _db.OrderItems.FirstOrDefault(oi => oi.CourseId == coursesId);
-            if (orderItem == null||orderItem.CourseId != coursesId) return (null, null, null);
+            Member member = _db.Members.AsNoTracking().
+                FirstOrDefault(m => m.Id == memberId);
 
-            var order = _db.Orders.Find(orderItem.OrderId);
-            if (order == null || order.MemberId != memberId) return (null, null, null);
+            if (member == null) return null;
 
-            var member = _db.Members.Find(memberId);
-            return (member, orderItem, order);
+            // Member 轉 ConfirmPaymentMemberDto
+            return WebApiApplication._mapper.Map<ConfirmPaymentMemberDto>(member);
         }
 
-        public void AddPointHistory(PointHistory pointHistory)
+        /// <summary>
+        ///  更新會員點數
+        /// </summary>
+        /// <param name="member"></param>
+        internal void UpdateMemberPoint(Member member)
         {
-            _db.PointHistories.Add(pointHistory);
-        }
+            var existingMember = _db.Members
+                .FirstOrDefault(m => m.Id == member.Id); // 找到現有會員
 
-        public void Update()
-        {
+            if (existingMember != null)
+            {
+                existingMember.Point = member.Point; // 更新 Point
+                _db.Entry(existingMember).Property(x => x.Point).IsModified = true; // 設置 Point 為已修改                                                                      
+            }
+
             _db.SaveChanges();
         }
-    }
+
+        /// <summary>
+        /// 取得會員所持點數
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+		internal int GetMemberPoint(int memberId)
+		{
+            var member = _db.Members
+                        .AsNoTracking()
+                        .FirstOrDefault(m => m.Id == memberId);
+
+            if (member == null) return 0;
+
+            return member.Point;
+		}
+	}
 }
 
 

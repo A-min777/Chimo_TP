@@ -92,5 +92,31 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
             
 			return Ok(courseInfo);
         }
+
+
+
+        [HttpGet]
+        [Route("api/search/course/{searchValue}")]
+        public IHttpActionResult SearchCourses (string searchValue)
+        {
+            if (string.IsNullOrWhiteSpace(searchValue))
+            {
+                return BadRequest("搜尋條件不得為空。");
+            }
+            try
+            {
+                var courses = _service.SearchCourses(searchValue);
+                if (courses == null || courses.Count == 0)
+                {
+                    return NotFound(); 
+                }
+
+                return Ok(courses); 
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message); 
+            }
+        }
     }
 }

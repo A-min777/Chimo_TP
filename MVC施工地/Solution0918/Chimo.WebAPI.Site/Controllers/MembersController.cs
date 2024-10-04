@@ -45,7 +45,12 @@ namespace Chimo.WebAPI.Site.Controllers
             return View();
         }
 
-        public ActionResult UpdatePassword()
+		public ActionResult BuyDirectly()
+		{
+			return View();
+		}
+
+		public ActionResult UpdatePassword()
         {
             return View();
         }

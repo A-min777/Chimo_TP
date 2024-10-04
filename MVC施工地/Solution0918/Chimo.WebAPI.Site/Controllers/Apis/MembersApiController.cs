@@ -201,15 +201,21 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
         {
             try
             {
-                // 呼叫 TopUp Service 處理儲值邏輯
-                var isSuccess = _memberService.TopUp(memberId, dto);
+                // 呼叫 TopUp Service 處理儲值邏輯，並取得儲值結果與新 token
+                var result = _memberService.TopUp(memberId, dto);
 
-                if (!isSuccess)
+                if (!result.isSuccess)
                 {
                     return BadRequest("儲值失敗。");
                 }
 
-                return Ok(new { message = "儲值成功", newTotalPoints = dto.Point });
+                // 成功的情況下，回傳新的 token
+                return Ok(new
+                {
+                    message = "儲值成功",
+                    TotalPoint = dto.Point,
+                    token = result.token
+                });
             }
             catch (ArgumentException ex)
             {
@@ -219,28 +225,24 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
         }
 
 
-        [HttpPost]
-        [Route("api/Refund/{memberId}")]
-        public IHttpActionResult Refund(int memberId,  [FromBody]CourseDto dto)
-        {
+		[HttpGet]
+		[Route("api/getMemberPoint/{memberId}")]
+		public IHttpActionResult GetMemberPoint(int memberId)
+		{
+			try
+			{
+				int memberPoint = _memberService.GetMemberPoint(memberId);
+				
+				return Ok(new { memberPoint}); 
+			}
+			catch (Exception ex)
+			{
+				return InternalServerError(ex); 
+			}
+		}
 
-            // 呼叫 service 的退款邏輯
-            var result = _memberService.RefundOrder(memberId, dto);
 
-            // 檢查結果，如果是 null 表示退貨失敗
-            if (result == null)
-            {
-                return BadRequest("退貨失敗" );
-            }
-
-            // 成功退貨，返回更新後的訂單項目
-            return Ok(new
-            {
-                message = "退貨成功",
-                updatedOrderItem = result
-            });
-        }
-    }
+	}
 }
 
 
