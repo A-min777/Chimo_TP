@@ -39,6 +39,45 @@
         background: white;
         z-index: 1;
     }
+    .searchBtn {
+        background-color: #5b468b;
+        color: #fff;
+    }
+
+        .searchBtn:hover {
+            background-color: #2b1b41;
+            color: #fff;
+        }
+
+    .confirmBtn {
+        color: #fff;
+        background-color: #5b468b;
+    }
+
+        .confirmBtn:hover {
+            color: #fff;
+            background-color: #342557 !important;
+        }
+
+    .alertImg {
+        animation: squish 0.5s ease;
+        transform-origin: bottom;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+    }
+
+    .modal-content {
+        width: 300px;
+    }
 </style>
 
 
@@ -55,18 +94,51 @@
         {
             member = JwtUtility.DecodeToken(token);
         }
+        @* 警告modal *@
+        <div class="modal" v-if="modal.isModalVisible" v-on:click.self="modal.hideModal()">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0 mt-0">
+                        <button type="button"
+                                class="btn-close"
+                                v-on:click="modal.hideModal()"></button>
+                    </div>
+                    <div class="text-center">
+                        <img :src="modal.img"
+                             alt="point"
+                             class="alertImg mt-4"
+                             style="max-width: 100px" />
+                        <div class="modal-body">
+                            <h5><pre class="mb-0" style="line-height:30px">{{modal.message}}</pre></h5>
+                        </div>
+                    </div>
+                    <div class="text-center mb-4" >
+                        <button class="confirmBtn btn btn-md"
+                                v-on:click="modal.hideModal()">
+                            確認
+                        </button>
+                    </div>
 
+                </div>
+            </div>
+        </div>
+        @* 警告modal *@
         <div class="container">
             <h2 class="mt-4 fw-bolder mb-4">購物車</h2>
             <div class="row">
                 <div class="cart col-sm-12 col-md-7 col-lg-8">
+                    <div class="pb-3 pe-5 mt-3 mb-4 text-center notFound" v-if="cartItems.length==0">
+                        <img src="../images/notFoundImg.png" alt="notFound" class="img-fluid mb-3" style="width:20vw" />
+                        <h5 class="fw-bolder mb-3">購物車沒有任何課程</h5>
+                        <a href="@Url.Action("index", "Home")" class="searchBtn btn btn-lg">探索課程</a>
+                    </div>
                     <div v-for="card in cartItems"
                          :key="card.id"
                          class="d-lg-flex align-items-start mb-4 p-4 ps-0 border-bottom">
                         <img :src="formatThumbnailRoute(card.course.thumbnail,'course')"
                              alt="thumbnail"
                              class="img-fluid rounded thumbnail col-md-12 col-lg-6 mb-3" />
-                        <div class="col-md-12 col-lg-5 ms-lg-3 cartContent" >
+                        <div class="col-md-12 col-lg-5 ms-lg-3 cartContent">
                             <h4 class="mb-3 me-4 title fw-bolder">{{card.course.title}}</h4>
                             <p href="#" class="teacher mt-3 mb-3">教師 | {{card.course.teacher.name}}</p>
                             <h2 class="mt-3">NT${{card.course.price}}</h2>
@@ -88,7 +160,7 @@
                             <summary class="fw-bolder pointer-event">查看詳細訂單明細</summary>
                             <div class="container mt-4 d-flex fw-bolder justify-content-around"
                                  v-for="card in cartItems">
-                                <h5 class="col-8">{{card.course.title}}</h5>
+                                <h6 class="col-8">{{card.course.title}}</h6>
                                 <p class="col-4 text-end">NT${{card.course.price}}</p>
                             </div>
                         </details>
@@ -126,7 +198,7 @@
                     </button>
                     <button class="btn btn-lg btn-warning mt-5"
                             v-if="totalPrice===0"
-                             v-on:click="handleNothingInCart">
+                            v-on:click="handleNothingInCart">
                         前往結帳
                     </button>
                 </div>
@@ -146,6 +218,18 @@
 
                 const memberId =  @Html.Raw(Json.Encode(member?.Id));
                 const cartItems = ref([]);
+                const modal = ref({
+                    message: "",
+                    img: "",
+                    isTopUp: false,
+                    isModalVisible: false,
+                    showModal() {
+                        this.isModalVisible = true;
+                    },
+                    hideModal() {
+                        this.isModalVisible = false;
+                    },
+                });
 
                 const fetchCartItems = async () => {
                     try {
@@ -222,7 +306,9 @@
                 }
 
                 const handleNothingInCart = () => {
-                    alert("目前購物車裡沒有內容");
+                    modal.value.message = "目前購物車裡沒有內容";
+                    modal.value.img = "../images/alert.gif";
+                    modal.value.showModal();
                 }
 
                 const totalPrice = ref(0);
@@ -233,7 +319,7 @@
 
                 return {
                     cartItems, handleDelete, totalPrice, formatThumbnailRoute,
-                    handleNothingInCart};
+                    handleNothingInCart, modal };
             },
         };
         const app = createApp(config);

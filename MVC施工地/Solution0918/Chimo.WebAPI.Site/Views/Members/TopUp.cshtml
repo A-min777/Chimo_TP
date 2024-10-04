@@ -358,7 +358,7 @@
             setup() {
                 const modal = ref({
                     message: "",
-                    img: "../images/alert.gif",
+                    img: "",
                     isTopUp: false,
                     isModalVisible: false,
                     showModal() {
@@ -496,6 +496,7 @@
                 const confirmTopUp = async () => {
                     if (!selectedSolution.value.id) {
                         modal.value.message = "請選擇儲值方案！";
+                        modal.value.img = "../images/alert.gif";
                         modal.value.showModal()
                         return;
                     }
@@ -523,16 +524,19 @@
                             const result = await response.json();
                             // 根據 API 回傳的結果執行相應的操作，例如顯示成功訊息或重定向
                             modal.value.message = '儲值成功！';
+                            modal.value.img = "../images/Topup.gif",
                             modal.value.isTopUp = true;
                             modal.value.showModal()
 
                         } else {
                             const error = await response.json();
                             modal.value.message = `儲值失敗：${error.message}`;
+                            modal.value.img = "../images/alert.gif";
                             modal.value.showModal()
                         }
                     } catch (error) {
                         modal.value.message = `錯誤：${error.message}`;
+                        modal.value.img = "../images/alert.gif";
                         modal.value.showModal()
                     }
                 };
