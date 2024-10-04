@@ -249,6 +249,41 @@ namespace Chimo.WebAPI.Site.Services
             return _memberRepository.TopUpMemberPoints(memberId, dto);
         }
 
+
+        public CourseDto RefundOrder(int memberId, CourseDto dto)
+        {
+            // 一次性查找會員、訂單項目和訂單
+            var (member, orderItem, order) = _memberRepository.GetOrderDetails(memberId, dto.Id);
+            if (member == null || orderItem == null || order == null) return null;
+
+            // 檢查訂單狀態是否允許退貨
+            if (orderItem.Status != 1) return null;
+
+            //  更新訂單項目狀態為退貨
+            orderItem.Status = 0;
+
+            //  記錄退貨歷史
+            var refundHistory = new PointHistory
+            {
+                MemberId = memberId,
+                OrderId = orderItem.OrderId,
+                GetPointDate = DateTime.Now,
+                Amount = orderItem.Price,
+                Point = member.Point + orderItem.Price,
+                Cash = 0,
+                GetPointType = 0,
+            };
+            _memberRepository.AddPointHistory(refundHistory);
+
+            // 更新會員點數
+            member.Point += orderItem.Price;
+
+            _memberRepository.Update();
+
+           
+            return dto;
+        }
     }
-}
+
+    }
 

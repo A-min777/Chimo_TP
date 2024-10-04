@@ -219,6 +219,27 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
         }
 
 
+        [HttpPost]
+        [Route("api/Refund/{memberId}")]
+        public IHttpActionResult Refund(int memberId,  [FromBody]CourseDto dto)
+        {
+
+            // 呼叫 service 的退款邏輯
+            var result = _memberService.RefundOrder(memberId, dto);
+
+            // 檢查結果，如果是 null 表示退貨失敗
+            if (result == null)
+            {
+                return BadRequest("退貨失敗" );
+            }
+
+            // 成功退貨，返回更新後的訂單項目
+            return Ok(new
+            {
+                message = "退貨成功",
+                updatedOrderItem = result
+            });
+        }
     }
 }
 

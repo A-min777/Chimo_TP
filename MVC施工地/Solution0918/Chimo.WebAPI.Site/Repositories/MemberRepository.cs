@@ -117,6 +117,7 @@ namespace Chimo.WebAPI.Site.Repositories
                            where o.MemberId == memberId && oi.Status == 1
                            select new CourseDto
                            {
+                               Id= c.Id,
                                CategoryId = c.Id,
                                Title = c.Title,
                                Thumbnail = c.Thumbnail,
@@ -256,10 +257,27 @@ namespace Chimo.WebAPI.Site.Repositories
             return true;
         }
 
+        public (Member member, OrderItem orderItem, Order order) GetOrderDetails(int memberId, int coursesId)
+        {
+            var orderItem = _db.OrderItems.FirstOrDefault(oi => oi.CourseId == coursesId);
+            if (orderItem == null||orderItem.CourseId != coursesId) return (null, null, null);
 
+            var order = _db.Orders.Find(orderItem.OrderId);
+            if (order == null || order.MemberId != memberId) return (null, null, null);
 
+            var member = _db.Members.Find(memberId);
+            return (member, orderItem, order);
+        }
 
+        public void AddPointHistory(PointHistory pointHistory)
+        {
+            _db.PointHistories.Add(pointHistory);
+        }
 
+        public void Update()
+        {
+            _db.SaveChanges();
+        }
     }
 }
 
