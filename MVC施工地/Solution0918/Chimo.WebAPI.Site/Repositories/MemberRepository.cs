@@ -223,13 +223,14 @@ namespace Chimo.WebAPI.Site.Repositories
 
         public void UpdateProfileImage(int memberId, string imagePath)
         {
-            var member = _db.Members.Find(memberId);
-
-            if (member != null)
+            var existingMember = _db.Members
+                          .FirstOrDefault(m => m.Id == memberId); // 找到現有會員
+            if (existingMember != null)
             {
-                member.ProfileImage = imagePath;
-                _db.SaveChanges();
+                existingMember.ProfileImage = imagePath;
+                _db.Entry(existingMember).Property(x => x.ProfileImage).IsModified = true; // 設置 Point 為已修改                                                                     
             }
+            _db.SaveChanges();
         }
 
         public bool TopUpMemberPoints(int memberId,PointHistoryDto dto)
@@ -307,7 +308,18 @@ namespace Chimo.WebAPI.Site.Repositories
 
             return member.Point;
 		}
-	}
+
+        internal string GetMemberImage(int memberId)
+        {
+            var member = _db.Members
+                                 .AsNoTracking()
+                                 .FirstOrDefault(m => m.Id == memberId);
+
+            if (member == null) return null;
+
+            return member.ProfileImage;
+        }
+    }
 }
 
 

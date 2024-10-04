@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chimo.WebAPI.Site.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -24,5 +25,7 @@ namespace Chimo.WebAPI.Site.Controllers
         {
             return View();
         }
+
+     
     }
 }

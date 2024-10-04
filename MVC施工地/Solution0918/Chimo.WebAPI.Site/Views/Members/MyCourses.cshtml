@@ -196,6 +196,20 @@
                 avatar: "",
                 point: 0,
             });
+             const decodeToken = (token) => {
+             const base64Url = token.split('.')[1];
+             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+             const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(jsonPayload);
+    };
+
+                const token = '@AuthHelper.GetTokenFromCookie()';
+                const decodedMember = decodeToken(token);
+                member.value.id = decodedMember.Id;
+                member.value.name = decodedMember.unique_name;
+                member.value.point = decodedMember.Point;
+                member.value.avatar = decodedMember.ProfileImage;
 
             const courses = ref([]); // 存放會員課程資料
             const fetchMemberCourses = async () => {
@@ -237,78 +251,59 @@
                     console.error("獲取課程資料失敗:", error);
                 }
                 };
-
-                const refundCourse = async (courseId) => {
+                const fetchMemberPoint = async () => {
                     try {
-                        // 根據 courseId 找到對應的 courseDto
-                        const course = courses.value.find(c => c.id === courseId);
-
-                        if (!course) {
-                            throw new Error('找不到對應的課程');
-                        }
-                        const token = '@AuthHelper.GetTokenFromCookie()';
-                        const response = await fetch(`/api/Refund/${member.value.id}`, {
-                            method: 'POST',
+                        member.value.id = decodedMember.Id;
+                        const response = await fetch(`/api/getMemberPoint/${member.value.id}`, {
+                            method: 'GET',
                             headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                memberId: member.value.id, // 傳入 memberId
-                                id: course.id, // 課程唯一識別碼
-                                categoryId: course.categoryId,
-                                teacherId: course.teacherId,
-                                title: course.title,
-                                description: course.description,
-                                price: course.price,
-                                img: course.thumbnail,
-                                status: course.status,
-                                createdDate: course.createdDate,
-                                updatedDate: course.updatedDate,
-                                teacher: {
-                                    id: course.teacher.id,
-                                    name: course.teacher.name,
-                                    profileImage: course.teacher.profileImage,
-                                    intro: course.teacher.intro,
-                                    email: course.teacher.email
-                                },
-                                buyDate: new Date(course.createdDate).toLocaleDateString() // 購買日期
-                            })
+                                'Authorization': `Bearer ${token}`
+                            }
                         });
+
                         if (!response.ok) {
-                            throw new Error('退款請求失敗');
+                            throw new Error('網路請求失敗');
                         }
 
-                        const result = await response.json();
-                        console.log('退款成功:', result);
+                        const data = await response.json();
+                        member.value.point = data.memberPoint; // 將回傳的點數值儲存在 member 的 point 屬性中
                     } catch (error) {
-                        console.error("退款失敗:", error);
+                        console.error("獲取會員資料失敗:", error);
+                    }
+                };
+                const fetchMemberImage = async () => {
+                    try {
+
+                        member.value.id = decodedMember.Id;
+                        const response = await fetch(`/api/getMemberImage/${member.value.id}`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('網路請求失敗');
+                        }
+
+                        const data = await response.json();
+                        member.value.avatar = data.memberImage;
+                    } catch (error) {
+                        console.error("獲取會員資料失敗:", error);
                     }
                 };
 
 
-
             onMounted(async () => {
-                const token = '@AuthHelper.GetTokenFromCookie()';
-                const decodedMember = decodeToken(token);
-                member.value.id = decodedMember.Id;
-                member.value.name = decodedMember.unique_name;
-                member.value.point = decodedMember.Point;
-                member.value.avatar = decodedMember.ProfileImage;
 
                 await fetchMemberCourses(); // 獲取會員課程資料
+                await fetchMemberPoint();
+                await fetchMemberImage();
             });
 
-            function decodeToken(token) {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+            
 
-                return JSON.parse(jsonPayload);
-            }
-
-                return { member, courses, refundCourse };
+                return { member, courses };
         }
         }
         const app = createApp(config);
