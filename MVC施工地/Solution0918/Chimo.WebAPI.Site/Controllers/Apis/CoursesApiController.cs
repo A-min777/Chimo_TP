@@ -97,7 +97,7 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
 
         [HttpGet]
         [Route("api/search/course/{searchValue}")]
-        public IHttpActionResult SearchCourses (string searchValue)
+        public IHttpActionResult SearchCourses(string searchValue)
         {
             if (string.IsNullOrWhiteSpace(searchValue))
             {
@@ -108,14 +108,14 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
                 var courses = _service.SearchCourses(searchValue);
                 if (courses == null || courses.Count == 0)
                 {
-                    return NotFound(); 
+                    return NotFound();
                 }
 
-                return Ok(courses); 
+                return Ok(courses);
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message); 
+                return BadRequest(ex.Message);
             }
         }
     }
