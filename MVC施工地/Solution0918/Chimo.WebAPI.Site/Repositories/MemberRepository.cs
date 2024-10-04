@@ -199,7 +199,7 @@ namespace Chimo.WebAPI.Site.Repositories
             .Include(o => o.OrderItems.Select(oi => oi.Cours))
             .Where(o => o.MemberId == userId)
             .SelectMany(o => o.OrderItems)
-            .Where(oi => oi.CourseId == courseId)
+            .Where(oi => oi.CourseId == courseId && oi.Status == 1)
             .Select(oi => oi.Cours)
             .FirstOrDefault();
 
@@ -290,7 +290,23 @@ namespace Chimo.WebAPI.Site.Repositories
 
             _db.SaveChanges();
         }
-    }
+
+        /// <summary>
+        /// 取得會員所持點數
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+		internal int GetMemberPoint(int memberId)
+		{
+            var member = _db.Members
+                        .AsNoTracking()
+                        .FirstOrDefault(m => m.Id == memberId);
+
+            if (member == null) return 0;
+
+            return member.Point;
+		}
+	}
 }
 
 

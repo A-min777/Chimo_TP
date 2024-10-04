@@ -79,12 +79,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-12 col-md-5 col-lg-4">
+                <div class="col-sm-12 col-md-5 col-lg-4 mb-5">
 
                     <div class="container p-3 border rounded shadow isPc confirmBuying">
                         <h3 class="fw-bolder mt-2">訂單明細</h3>
                         <hr class="mt-3" />
-                        <details class="ms-2">
+                        <details class="ms-2" v-if="cartItems.length!=0">
                             <summary class="fw-bolder pointer-event">查看詳細訂單明細</summary>
                             <div class="container mt-4 d-flex fw-bolder justify-content-around"
                                  v-for="card in cartItems">
@@ -99,7 +99,16 @@
                         <hr />
                         <div class="row me-3">
                             <button class="btn btn-lg btn-warning p-3 m-3 mt-2"
-                                    onclick="window.location.href='@Url.Action("Checkout", "Members")'">前往結帳</button>
+                                    onclick="window.location.href='@Url.Action("Checkout", "Members")'"
+                                    v-if="totalPrice>0">
+                                前往結帳
+                            </button>
+
+                            <button class="btn btn-lg btn-warning p-3 m-3 mt-2"
+                                    v-if="totalPrice===0"
+                                    v-on:click="handleNothingInCart">
+                                前往結帳
+                            </button>
                         </div>
 
                     </div>
@@ -111,7 +120,15 @@
                 <hr />
                 <div class="row m-3">
                     <button class="btn btn-lg btn-warning"
-                            onclick="window.location.href='@Url.Action("Checkout", "Members")'">前往結帳</button>
+                            onclick="window.location.href='@Url.Action("Checkout", "Members")'"
+                            v-if="totalPrice>0">
+                        前往結帳
+                    </button>
+                    <button class="btn btn-lg btn-warning mt-5"
+                            v-if="totalPrice===0"
+                             v-on:click="handleNothingInCart">
+                        前往結帳
+                    </button>
                 </div>
             </div>
         </div>
@@ -130,7 +147,7 @@
                 const memberId =  @Html.Raw(Json.Encode(member?.Id));
                 const cartItems = ref([]);
 
-                const fetchCartItems = async (memberId) => {
+                const fetchCartItems = async () => {
                     try {
                         const response = await fetch(`/api/carts/${memberId}`, {
                             method: 'GET',
@@ -146,6 +163,7 @@
 
                             cartItems.value = data.cartItems;
                             totalPrice.value = getTotalPrice(cartItems.value);
+                            
                         } else {
                             console.error('fetch 購物車清單失敗:', response.statusText);
                         }
@@ -203,13 +221,19 @@
                     return path;
                 }
 
+                const handleNothingInCart = () => {
+                    alert("目前購物車裡沒有內容");
+                }
+
                 const totalPrice = ref(0);
 
                 onMounted(() => {
-                    fetchCartItems(memberId);
+                    fetchCartItems();
                 });
 
-                return { cartItems, handleDelete, totalPrice, formatThumbnailRoute };
+                return {
+                    cartItems, handleDelete, totalPrice, formatThumbnailRoute,
+                    handleNothingInCart};
             },
         };
         const app = createApp(config);

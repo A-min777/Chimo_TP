@@ -33,5 +33,35 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
                 return InternalServerError(ex);
             }
         }
-    }
+
+		[HttpPost]
+		[Route("buyDirectly")]
+		public IHttpActionResult BuyDirectly([FromBody] BuyDirectlyDto dto)
+		{
+			try
+			{
+				_service.BuyDirectly(dto);
+				return Ok(new { success = true });
+			}
+			catch (Exception ex)
+			{
+				return InternalServerError(ex);
+			}
+		}
+
+		[HttpPost]
+		[Route("refund")]
+		public IHttpActionResult HandleRefund([FromBody] RefundDto dto)
+		{
+			try
+			{
+				_service.HandleRefund(dto);
+				return Ok(new { success = true });
+			}
+			catch (Exception ex)
+			{
+				return InternalServerError(ex);
+			}
+		}
+	}
 }

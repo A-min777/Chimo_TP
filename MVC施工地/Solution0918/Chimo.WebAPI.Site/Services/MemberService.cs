@@ -258,6 +258,10 @@ namespace Chimo.WebAPI.Site.Services
             return (false, null);
         }
 
-    }
+		internal int GetMemberPoint(int memberId)
+		{
+			return _memberRepository.GetMemberPoint(memberId);
+		}
+	}
 }
 
