@@ -56,9 +56,29 @@ namespace Chimo.WebAPI.Site.Controllers
 
 		public ActionResult Course(int id, int chapterId)
         {
+            var service = new MemberService();
+
+            // 取得用戶 ID
+            int userId = 0;
+            var userIdStr = int.TryParse(service.GetUserIdFromToken(), out userId);
+
+            if (userId == 0)
+            {
+                return RedirectToAction("ProductInfo", new { id });
+            }
+
+            // 檢查用戶是否已購買該商品
+            bool hasPurchased = service.HasPurchasedProduct(userId, id);
+
+
+            if (!hasPurchased)
+            {
+                return RedirectToAction("ProductInfo", new { id });
+            }
+
             ViewBag.ProductId = id;
             ViewBag.ChapterId = chapterId;
-            
+
             return View();
         }
     }

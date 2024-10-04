@@ -423,6 +423,7 @@
     <Content Include="Views\Members\UpdatePassword.cshtml" />
     <Content Include="Views\Members\BuyDirectly.cshtml" />
     <Content Include="Views\Teacher\TeacherInfo.cshtml" />
+    <Content Include="Views\Home\Categories.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
