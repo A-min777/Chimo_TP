@@ -166,6 +166,7 @@ namespace Chimo.WebAPI.Site.Repositories
             if (memberOrder == null) return null; // 確保如果找不到會員，返回 null
             var orders = _db.Orders
                    .Where(o => o.MemberId == memberId)
+                   .OrderByDescending(o=>o.CreatedDate)
                    .Select(o => new OrderDto
                    {
                        Id = o.Id,

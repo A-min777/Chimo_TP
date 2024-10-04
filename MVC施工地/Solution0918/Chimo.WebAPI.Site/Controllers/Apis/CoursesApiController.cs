@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 
+
+
 namespace Chimo.WebAPI.Site.Controllers.Apis
 {
 	public class CoursesApiController : ApiController
@@ -117,6 +119,31 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
             {
                 return BadRequest(ex.Message);
             }
+        
+        
         }
+
+
+        [HttpGet]
+        [Route("api/course/category/{categoryId}")]
+        public IHttpActionResult GetCoursesByCategory(int categoryId)
+        {
+            // 根據 categoryId 取得課程邏輯
+            try
+            {
+                if (categoryId == 0)
+                {
+                    var allCourses = _service.GetAllCourses();
+                    return Ok(allCourses);
+                }
+                var coursesByCategory = _service.GetCoursesByCategory(categoryId);
+                return Ok(coursesByCategory);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

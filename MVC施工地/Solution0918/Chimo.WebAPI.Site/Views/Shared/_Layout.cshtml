@@ -32,12 +32,25 @@
                                 aria-label="Toggle navigation">
                             分類
                         </button>
-                        <ul class="dropdown-menu mt-2 ">
-                            <li class="dropdown-item p-3 text-center">語言學習</li>
-                            <li class="dropdown-item p-3 text-center">設計創作</li>
-                            <li class="dropdown-item p-3 text-center">程式語言</li>
-                            <li class="dropdown-item p-3 text-center">職場技能</li>
-                            <li class="dropdown-item p-3 text-center">健康生活</li>
+                        <ul class="dropdown-menu mt-2">
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 0 })" class="text-decoration-none text-dark w-100 h-100 d-block">所有分類</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 1 })" class="text-decoration-none text-dark w-100 h-100 d-block">編程</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 2 })" class="text-decoration-none text-dark w-100 h-100 d-block">設計</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 3 })" class="text-decoration-none text-dark w-100 h-100 d-block">數據科學</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 4 })" class="text-decoration-none text-dark w-100 h-100 d-block">id4準備中</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 5 })" class="text-decoration-none text-dark w-100 h-100 d-block">id5準備中</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="searchbar d-flex justify-content-between">
@@ -153,9 +166,10 @@
                 alert("請輸入搜尋條件");
                 return;
             }
+            const encodedSearchQuery = encodeURIComponent(searchValue);
 
             // 更新 URL 顯示為 /Home/SearchResult?query=搜尋值
-            window.location.href = `/Home/SearchResult?query=${encodeURIComponent(searchValue)}`;
+            window.location.href = `/Home/SearchResult?query=${encodedSearchQuery}`;
         };
     </script>
 

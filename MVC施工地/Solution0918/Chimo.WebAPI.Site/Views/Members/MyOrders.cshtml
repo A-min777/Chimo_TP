@@ -133,7 +133,9 @@
                         <div v-for="item in order.orderItems" :key="item.id" class="row align-items-center">
                             <div class="col-md-5 col-sm-12 mt-1">
                                 <a :href="`@Url.Action("ViewProduct", "Products")/${item.id}`">
-                                    <img :src="`../images/${item.thumbnail}`" alt="order-thumbnail" class="thumbnail img-fluid rounded mt-2" />
+                                    <img :src="item.img ? `../images/${item.img}` : '../images/thumbnail.jpg'"
+                                         alt="orders-thumbnail "
+                                         class="thumbnail pb-2 img-fluid rounded" />
                                 </a>
                             </div>
                             <div class="col-md-6 col-sm-12 mt-2">
