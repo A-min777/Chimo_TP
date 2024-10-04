@@ -7,6 +7,8 @@ namespace Chimo.WebAPI.Site.Models.Dtos
 {
     public class PointHistoryDto
     {
+        public int Id { get; set; }
+
         public int Cash {  get; set; }
         
         public int Amount { get; set; }  

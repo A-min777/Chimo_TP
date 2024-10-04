@@ -273,13 +273,20 @@
                 intro: "",
                 updatedDate: "",
             });
-
+            const decodeToken = (token) => {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                return JSON.parse(jsonPayload);
+            };
             const originalMember = ref({ ...member.value });
+
+            const token = '@AuthHelper.GetTokenFromCookie()';
+            const decodedMember = decodeToken(token);
 
             const fetchMemberProfile = async () => {
                 try {
-                    const token = '@AuthHelper.GetTokenFromCookie()';
-                    const decodedMember = decodeToken(token);
 
                     // 確保這裡的屬性名稱正確
                     member.value.id = decodedMember.Id;
@@ -308,6 +315,53 @@
                     Object.assign(member.value, data);
                     member.value.updatedDate = formatDate(data.updatedDate);
                     originalMember.value = { ...member.value };
+                } catch (error) {
+                    console.error("獲取會員資料失敗:", error);
+                }
+            };
+
+
+
+
+            const fetchMemberPoint = async () => {
+      try {
+          member.value.id = decodedMember.Id;
+          const response = await fetch(`/api/getMemberPoint/${member.value.id}`, {
+              method: 'GET',
+              headers: {
+                  'Authorization': `Bearer ${token}`
+              }
+          });
+
+          if (!response.ok) {
+              throw new Error('網路請求失敗');
+          }
+
+          const data = await response.json();
+          member.value.point = data.memberPoint; // 將回傳的點數值儲存在 member 的 point 屬性中
+      } catch (error) {
+          console.error("獲取會員資料失敗:", error);
+      }
+            };
+
+            
+            const fetchMemberImage = async () => {
+                try {
+
+                    member.value.id = decodedMember.Id;
+                    const response = await fetch(`/api/getMemberImage/${member.value.id}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('網路請求失敗');
+                    }
+
+                    const data = await response.json();
+                    member.value.avatar = data.memberImage; 
                 } catch (error) {
                     console.error("獲取會員資料失敗:", error);
                 }
@@ -342,7 +396,7 @@
                     const result = await response.json();
                     document.cookie = `jwtToken=${result.token}; path=/; secure`;
                     member.value.avatar = `${result.profileImage}`;
-                    window.location.reload();
+                    location.reload();
 
                     alert('頭像更新成功');
                 } catch (error) {
@@ -350,13 +404,7 @@
                 }
             };
 
-            const decodeToken = (token) => {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-                return JSON.parse(jsonPayload);
-            };
+            
 
             const formatDate = (dateString) => {
                 const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -409,8 +457,8 @@
                         modal.value.isChange = false;
                     }
                 } catch (error) {
-                    console.error("更新會員資料失敗:", error); 
-            
+                    console.error("更新會員資料失敗:", error);
+
                 }
             };
 
@@ -418,8 +466,11 @@
                 console.log("重設密碼功能尚未實作");
             };
 
-            onMounted(fetchMemberProfile);
-
+            onMounted(async () => {
+                await fetchMemberProfile();
+                await fetchMemberPoint();
+                await fetchMemberImage();
+            });
             return { member, confirmUpdate, updateProfile, resetPassword, modal, updateAvatar, triggerFileInput };
         }
     };
