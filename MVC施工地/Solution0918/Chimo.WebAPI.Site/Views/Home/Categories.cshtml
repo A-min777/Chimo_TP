@@ -4,13 +4,15 @@
 }
 
 <style>
-    a{
-        color:#000;
-        text-decoration:none;
+    a {
+        color: #000;
+        text-decoration: none;
     }
+
     span {
         color: #5b468b;
     }
+
     .mycard p {
         font-weight: bolder;
         font-size: large;
@@ -53,40 +55,45 @@
     <div class="container">
         <nav aria-label="breadcrumb " class="root pt-3">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">首頁</a></li>
-                <li class="breadcrumb-item"><a href="category.html">分類</a></li>
+                <li class="breadcrumb-item"> <a href="@Url.Action("Index", "Home")">首頁</a></li>
+                <li class="breadcrumb-item">  <a href="@Url.Action("Categories", "Home", new { id = 0 })"> 分類</a></li>
+                <li class="breadcrumb-item">
+                    <a href="@Url.Action("Categories", "Home", new { id = ViewBag.CategoryId })" class="text-dark text-decoration-none">
+                        {{categoryName}}
+                    </a>
             </ol>
         </nav>
-        <h3 class="mb-3">所有類別</h3>
+        <h3 class="mb-3">{{ categoryName  }}</h3>
         <div class="d-flex align-items-baseline mb-5 ">
-
-            <button class="btn btn-light border me-3">語言學習</button>
-            <button class="btn btn-light border me-3">設計創作</button>
-            <button class="btn btn-light border me-3">程式語言</button>
-            <button class="btn btn-light border me-3">職場技能</button>
-            <button class="btn btn-light border me-3">健康生活</button>
+            <a v-for="category in categories"
+               :key="category.id"
+               :href="`/Home/Categories/${category.id}`"
+               class="btn btn-light border me-3">
+                {{ category.name }}
+            </a>
         </div>
 
         <div>
-            <h6>共  <span class="fw-bolder">00</span>  項結果</h6>
+            <h6>共  <span class="fw-bolder">{{ coursesCount }}</span>  項結果</h6>
 
-            <div class="searchResult"></div>
             <div class="cardContainer d-flex flex-wrap">
                 <div v-for="card in cards"
                      :key="card.id"
                      class="mycard col-md-3 col-sm-12 p-3 pb-5 ps-0">
-                    <a href="product.html">
-                        <img :src="card.img"
-                             alt="course-thumbnail "
+                    <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
+                        <img :src="card.thumbnail ? `/images/${card.thumbnail}` : '/images/thumbnail.jpg'"
+                             alt="collections-thumbnail"
                              class="thumbnail pb-2 img-fluid rounded" />
+
+
                     </a>
                     <div class="prodct-info">
-                        <small class="tag p-1 rounded-1 fw-bolder">課程</small>
-                        <p class="title pt-1">{{card.title}}</p>
-                        <small>{{card.teacher}}</small>
+                        <small class="tag p-1 rounded-1 fw-bolder">{{ card.courseCategory.name }}</small>
+                        <p class="title pt-1">{{ card.title }}</p>
+                        <small>{{ card.teacher.name }}</small>
                         <hr />
                     </div>
-                    <p class="price mt-2">NT${{card.price}}</p>
+                    <p class="price mt-2">NT${{ card.price }}</p>
                 </div>
             </div>
         </div>
@@ -100,57 +107,49 @@
     <script>
         const { createApp, ref } = Vue;
         const config = {
-            setup() {
-                const cards = ref([
-                    {
-                        id: 1,
-                        img: "images/thumbnail.jpg",
-                        title:
-                            "1.反映女孩子只需第一個東京一本，反映女孩子只需第一個東京一本，反映女孩子只需第一個東京一本，",
-                        teacher: "Mr.C",
-                        price: 1000,
-                    },
-                    {
-                        id: 2,
-                        img: "images/thumbnail.jpg",
-                        title: "2.犯罪不說大型，本週中學，丈夫",
-                        teacher: "Mr.C",
-                        price: 1000,
-                    },
-                    {
-                        id: 3,
-                        img: "images/thumbnail.jpg",
-                        title: "3.第一個東京一本，聯絡人",
-                        teacher: "Mr.C",
-                        price: 1000,
-                    },
-                    {
-                        id: 4,
-                        img: "images/thumbnail.jpg",
-                        title: "4.看看計劃笑容每年有的",
-                        teacher: "Mr.C",
-                        price: 1000,
-                    },
-                    {
-                        id: 5,
-                        img: "images/thumbnail.jpg",
-                        title: "5.程式開發者。",
-                        teacher: "Mr.C",
-                        price: 1000,
-                    },
-                    {
-                        id: 6,
-                        img: "images/thumbnail.jpg",
-                        title: "6.計劃AI有的笑容每年",
-                        teacher: "Mr.C",
-                        price: 1000,
-                    },
+    setup() {
+                const cards = ref([]);
+                const categoryId = @Html.Raw(ViewBag.categoryId);
+                const categoryName = ref('');
+                const coursesCount = ref(0);
+                const categories = ref([
+                    { id: 0, name: '所有分類' },
+                    { id: 1, name: '編程' },
+                    { id: 2, name: '設計' },
+                    { id: 3, name: '數據科學' },
+            
                 ]);
-                return { cards };
-            },
+
+        const fetchCourseCategory = async () => {
+            try {
+                const response = await fetch(`/api/course/category/${categoryId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const courses = await response.json();
+                cards.value = courses;
+                coursesCount.value = courses.length;
+                // 根據 categoryId 判斷分類名稱
+                if (categoryId === 0) {
+                    categoryName.value = '所有分類'; // 當 categoryId 為 0 時顯示「所有分類」
+                } else if (courses.length > 0) {
+                    categoryName.value = courses[0].courseCategory.name; // 其他情況取得分類名稱
+                }
+                
+            }
+            catch (error) {
+                console.error('Error fetching', error);
+            }
         };
+
+        fetchCourseCategory();
+
+                return { cards, coursesCount, categoryName, categories };
+    },
+};
         const app = createApp(config);
-        app.component("my-header", myHeader);
         app.mount("#app");
     </script>
 

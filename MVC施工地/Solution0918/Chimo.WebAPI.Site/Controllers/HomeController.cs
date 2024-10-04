@@ -26,8 +26,9 @@ namespace Chimo.WebAPI.Site.Controllers
             return View();
         }
 
-        public ActionResult Categories()
+        public ActionResult Categories(int id)
         {
+            ViewBag.categoryId = id;
             return View();
         }
     }

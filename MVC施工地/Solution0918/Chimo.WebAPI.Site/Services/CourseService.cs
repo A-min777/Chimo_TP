@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Policy;
 using System.Web;
+using System.Web.Http.Results;
 
 namespace Chimo.WebAPI.Site.Services
 {
@@ -160,10 +161,48 @@ namespace Chimo.WebAPI.Site.Services
             }
 
             var SearchCourses = WebApiApplication._mapper
-            // CourseDTO 轉 CourseInfoVm
+            // CourseDTO 轉 RecommendedCourseVm
                 .Map<List<RecommendedCourseVm>>(result);
 
             return SearchCourses;
+        }
+
+
+        // 獲取所有課程及其分類
+        public List<CategoryCourseVm> GetAllCourses()
+        {
+            var courses = _repo.GetAllCategories();
+
+            // 檢查結果是否為空
+            if (courses == null)
+            {
+                throw new ArgumentException("搜尋不到相關課程或老師");
+            }
+            var Categorycourses = WebApiApplication._mapper
+            // CourseDTO 轉 CategoryCourseVm
+               .Map<List<CategoryCourseVm>>(courses);
+
+
+            return Categorycourses;
+        }
+
+
+        // 獲取特定課程及其分類
+        public List<CategoryCourseVm> GetCoursesByCategory(int categoryId)
+        {
+            var courses = _repo.GetCoursesByCategory(categoryId);
+
+            // 檢查結果是否為空
+            if (courses == null)
+            {
+                throw new ArgumentException("搜尋不到相關課程或老師");
+            }
+
+            var Categorycourses = WebApiApplication._mapper
+            // CourseDTO 轉 CategoryCourseVm
+               .Map<List<CategoryCourseVm>>(courses);
+
+            return Categorycourses;
         }
     }
 }

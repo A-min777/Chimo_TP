@@ -54,6 +54,7 @@ namespace Chimo.WebAPI.Site.Services
                 Gender = 0,
                 ProfileImage = "profilePic2.PNG",
                 Intro = dto.Intro,
+                Status = 1,
                 Phone = dto.Phone,
                 CreatedDate = DateTime.Now,
                 UpdatedDate = DateTime.Now,

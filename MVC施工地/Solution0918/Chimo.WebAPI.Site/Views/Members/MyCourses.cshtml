@@ -153,8 +153,8 @@
                                  :key="card.id"
                                  class="mycard col-lg-4 col-md-6 col-sm-12 p-3 pb-5 ps-0">
                                 <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
-                                    <img :src="`../images/${card.img}`"
-                                         alt="course-thumbnail "
+                                    <img :src="card.img ? `../images/${card.img}` : '../images/thumbnail.jpg'"
+                                         alt="courses-thumbnail "
                                          class="thumbnail pb-2 img-fluid rounded" />
                                 </a>
                                 <div class="prodct-info">
