@@ -147,9 +147,11 @@
                     <hr />
                     <h2 class="fw-bolder">教師資訊</h2>
                     <div class="teacher row mb-3 mt-2" v-if="courseDetail && courseDetail.teacher">
-                        <img :src="formatThumbnailUrl(courseDetail.teacher.profileImage)"
-                             alt="taPic"
-                             class="avatarA img.fluid col-md-5 col-lg-3 col-sm-3" />
+                        <a href="@Url.Action("TeacherInfo", "Teacher")" class="col-md-5 col-lg-3 col-sm-3 ">
+                            <img :src="formatThumbnailUrl(courseDetail.teacher.profileImage)"
+                                 alt="taPic"
+                                 class="avatarA img-fluid" />
+                        </a>
                         <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
                              style="height: 50%; align-self: center">
                             <h6>{{courseDetail.teacher.name}}</h6>

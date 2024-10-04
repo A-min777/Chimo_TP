@@ -161,3 +161,69 @@ ReadMe For Chimo.WebApi.Site
 	[V] 修改 MyCart.cshtml, 呼叫api, 完成顯示使用者當前購物車內容及刪除購物車內容功能
 
 	[working on] 在ProductInfo.cshtml 呼叫api，加入購物車功能
+
+
+	------------------------------2024/10/1----------------------------------
+
+	[V] 完成在ProductInfo.cshtml呼叫api，加入購物車功能
+
+	[V] 修改 Checkout.cshtml，能夠叫出會員當前購物車內容
+
+	[V] 新增 ConfirmPaymentDto 及 ConfirmPaymentMemberDto
+
+	[V] 新增 CheckoutsApiController
+
+	[V] 在 Tools/Mappings 新增一個mapping
+
+	[V] 在 MemberRepository 新增 UpdateMemberPoint 及 GetMemberDtoById
+
+	[V] 新增 IOrderRepository 介面，在裡面新增 CreateOrder 跟 CreateOrderItem
+		新增 OrderRepository 實作介面
+		新增 CheckoutService，實作 ConfirmOrder，完成購物車結帳api
+
+	[working on] 在 Checkout.cshtml 叫用購物車結帳api
+
+
+	------------------------------2024/10/2----------------------------------
+
+	[V] 新增 IPointHistoryRepository 介面，在裡面新增 CreatePointHistory定義
+		新增 PointHistoryRepository 實作介面
+
+	[V] 修改 CheckoutService 的 ConfirmOrder，讓購物車結帳時能新增一筆點數歷史紀錄
+
+	[V] 在 MemberApiController 新增 GetMemberPoint 並在 MemberService 及 MemberRepository 實作，
+		用來回傳會員所持點數
+
+	[V] 修改 Checkout.cshtml, 若付費方式選擇點數付費，顯示單位從NT$變成點數，
+		呼叫api完成購物車結帳功能，若當前訂單沒東西或者購物車結帳完又按下結帳，出現alert警示
+		若要結帳時會員點數低於訂單總金額，按下結帳出現alert警示
+
+	[V] 修改 MyCart.cshtml, 若當前購物車沒東西按下前往結帳，出現alert警示
+	
+	[V] 在 MembersController 新增 BuyDirectly action，並新增 View: BuyDirectly.cshtml
+		修改 ProductInfo.cshtml, 讓按下立即購買會跳轉到 BuyDirectly.cshtml
+
+	[V] 在 BuyDirectly.cshtml 呼叫api，可以藉由網址傳入課程Id在訂單顯示該課程資訊
+
+	[V] 在 CheckoutService 新增 BuyDirectly 及 HandleCart，處理當會員立即購買課程結帳時，
+		結帳完去確認當前購物車內有沒有該課程，如果有則將課程從購物車裡移除，完成立即購買課程的api
+
+	[V] 修改 BuyDirectly.cshtml, 呼叫api完成立即購買課程功能，若點數餘額不足出現alert警示，
+		若已購買過該課程又按下確認付款，出現alert警示防止重複購買
+
+	[working on] 發現bug: 在某些頁面進行操作後若直接按上一頁，返回的頁面並不會反映出操作後的結果，
+				 需要手動重整網頁才會正常反映，例如在ProductInfo頁面將課程加入購物車，到購物車頁面
+				 將剛剛加入的課程移除購物車後按上一頁回到ProductInfo，仍會被視為已加入購物車，需要
+				 手動重整頁面後才能再次加入購物車
+
+
+	------------------------------2024/10/3----------------------------------
+
+	[V] 修改搜尋會員購買課程的EF語法，讓在顯示會員購買紀錄的頁面點擊已退費課程時正常導向購買前
+		的課程頁面
+
+	[V] 新增 RefundDto，在 CheckoutsApiController 新增 HandleRefund，處理會員退款的api
+		在 CheckoutService 新增 HandleRefund， 在 IOrderRepository 新增 GetOrdersByMemberId
+		及 UpdateOrderItemStatus，在 OrderRepository實作介面函式
+	
+	[V] 完成處理會員退款的api

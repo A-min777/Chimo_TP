@@ -19,5 +19,6 @@ namespace Chimo.WebAPI.Site.Interfaces
         List<CourseDto> GetOtherCoursesById(int id);
         List<CourseDto> GetPurchasedCourseById(int memberId);
         List<CourseDto> GetRecommendedCourses();
-	}
+        List<CourseDto> SearchCoursesByTitleOrTeacher(string searchTerm);
+    }
 }
