@@ -118,6 +118,7 @@ namespace Chimo.WebAPI.Site.Repositories
                            where o.MemberId == memberId && oi.Status == 1
                            select new CourseDto
                            {
+                               Id= c.Id,
                                CategoryId = c.Id,
                                Title = c.Title,
                                Thumbnail = c.Thumbnail,
@@ -199,7 +200,7 @@ namespace Chimo.WebAPI.Site.Repositories
             .Include(o => o.OrderItems.Select(oi => oi.Cours))
             .Where(o => o.MemberId == userId)
             .SelectMany(o => o.OrderItems)
-            .Where(oi => oi.CourseId == courseId)
+            .Where(oi => oi.CourseId == courseId && oi.Status == 1)
             .Select(oi => oi.Cours)
             .FirstOrDefault();
 
@@ -257,11 +258,56 @@ namespace Chimo.WebAPI.Site.Repositories
             return true;
         }
 
+        /// <summary>
+        /// 根據memberId找到member後轉成 ConfirmPaymentMemberDto，供新增訂單時用
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        internal ConfirmPaymentMemberDto GetMemberDtoById(int memberId)
+        {
+            Member member = _db.Members.AsNoTracking().
+                FirstOrDefault(m => m.Id == memberId);
 
+            if (member == null) return null;
 
+            // Member 轉 ConfirmPaymentMemberDto
+            return WebApiApplication._mapper.Map<ConfirmPaymentMemberDto>(member);
+        }
 
+        /// <summary>
+        ///  更新會員點數
+        /// </summary>
+        /// <param name="member"></param>
+        internal void UpdateMemberPoint(Member member)
+        {
+            var existingMember = _db.Members
+                .FirstOrDefault(m => m.Id == member.Id); // 找到現有會員
 
-    }
+            if (existingMember != null)
+            {
+                existingMember.Point = member.Point; // 更新 Point
+                _db.Entry(existingMember).Property(x => x.Point).IsModified = true; // 設置 Point 為已修改                                                                      
+            }
+
+            _db.SaveChanges();
+        }
+
+        /// <summary>
+        /// 取得會員所持點數
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+		internal int GetMemberPoint(int memberId)
+		{
+            var member = _db.Members
+                        .AsNoTracking()
+                        .FirstOrDefault(m => m.Id == memberId);
+
+            if (member == null) return 0;
+
+            return member.Point;
+		}
+	}
 }
 
 

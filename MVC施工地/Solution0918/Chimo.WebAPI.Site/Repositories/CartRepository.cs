@@ -49,6 +49,15 @@ namespace Chimo.WebAPI.Site.Repositories
             return _db.SaveChanges() > 0;
         }
 
+        public Cart GetCartByMemberId(int memberId)
+        {
+            var cart = _db.Carts.AsNoTracking()
+                .Include(c => c.CartItems)
+                .FirstOrDefault(c => c.MemberId == memberId && c.Status == 0);
+
+            return cart;
+        }
+
 
         /// <summary>
         /// 透過會員Id找出購物車內容
@@ -99,6 +108,24 @@ namespace Chimo.WebAPI.Site.Repositories
 
             _db.CartItems.Remove(cartItem);
             return _db.SaveChanges() > 0;
+        }
+
+        /// <summary>
+        /// 確認交易後將原購物車狀態設為已結帳
+        /// </summary>
+        /// <param name="cart"></param>
+        public void UpdateCartStatus(Cart cart)
+        {
+            var existingCart = _db.Carts
+                .FirstOrDefault(c => c.Id == cart.Id); // 找到現有的購物車
+
+            if (existingCart != null)
+            {
+                existingCart.Status = cart.Status; // 更新 Status
+                _db.Entry(existingCart).Property(x => x.Status).IsModified = true; // 設置 Status 為已修改
+            }
+
+            _db.SaveChanges();
         }
     }
 }
