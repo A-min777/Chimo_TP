@@ -101,27 +101,27 @@
                 <div class="col-4 mt-3 mb-3">
                     <div class="text-center list-group">
                         <div class="list-group-item pb-3">
-                            <img :src="`/images/${member.avatar}`"
+                            <img :src="formatThumbnailRoute(teacher.profileImage)"
                                  alt="profile"
                                  class="avatarA img-fluid m-3" />
-                            <h4 class="fw-bolder mb-2">黃老師</h4>
+                            <h4 class="fw-bolder mb-2">{{teacher.name}}</h4>
                             <hr />
-                            <h6>擁有課堂數：<span>00</span> 堂</h6>
-                            <h6 class="mb-4">學生人數：<span>10</span> 人</h6>
+                            <h6>擁有課堂數：<span>{{courseCount}}</span> 堂</h6>
+                            <h6 class="mb-4">學生人數：<span>{{studentCount}}</span> 人</h6>
                             <hr />
                             <h6>[個人簡介]</h6>
-                            <small>致力於教學SSMS資料庫超過40年</small>
+                            <small>{{teacher.intro}}</small>
                         </div>
                     </div>
                 </div>
                 <div class="content col-8 mt-3 mb-3 rounded">
                     <section class="m-4">
                         <div class="d-flex justify-content-between">
-                            <h4 class="fw-bolder">黃老師的課程</h4>
+                            <h4 class="fw-bolder">{{teacher.name}}的課程</h4>
                         </div>
                         <hr />
                         <div :class="['mt-5 text-center notFound' ,{'d-none': courses.length != 0 }]">
-                            <img src="../images/notFoundImg.png" alt="notFound" class="img-fluid mb-3" style="width:20vw" />
+                            <img src="~/images/notFoundImg.png" alt="notFound" class="img-fluid mb-3" style="width:20vw" />
                             <h5 class="fw-bolder mb-3">還沒有任何課程</h5>
                             <a href="@Url.Action("index", "Home")" class="searchBtn btn btn-lg">探索其他課程</a>
                         </div>
@@ -132,14 +132,14 @@
                                      :key="card.id"
                                      class="mycard col-lg-4 col-md-6 col-sm-12 p-3 pb-5 ps-0">
                                     <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
-                                        <img :src="`../images/${card.img}`"
+                                        <img :src="formatThumbnailRoute(card.img,'course')"
                                              alt="course-thumbnail "
                                              class="thumbnail pb-2 img-fluid rounded" />
                                     </a>
                                     <div class="prodct-info">
                                         <small class="tag p-1 rounded-1 fw-bolder">課程</small>
                                         <p class="title pt-1">{{card.title}}</p>
-                                        <small>{{card.teacher}}</small>
+                                        <small>{{teacher.name}}</small>
                                     </div>
                                     <p class="price border-top border-bottom pt-2 pb-2">
                                         NT${{card.price}}
@@ -163,68 +163,86 @@
 
         const config = {
         setup() {
-            const member = ref({
-                id: 0,
-                name: "",
-                avatar: "",
-                point: 0,
-            });
+           
+            const getTeacherId = () => {
+                // 取得當前的 URL 路徑
+                const pathname = window.location.pathname;
 
-            const courses = ref([]); // 存放會員課程資料
-            const fetchMemberCourses = async () => {
+                const segments = pathname.split('/');
+                const teacherId = segments[segments.length - 1];
+
+                return Number(teacherId);
+            }
+
+            const courses = ref([]);
+            const teacher = ref({});
+            const courseCount = ref(0);
+            const studentCount = ref(0);
+            const fetchTeacherProfile = async (teacherId) => {
                 try {
                     const token = '@AuthHelper.GetTokenFromCookie()';
-                    const response = await fetch(`/api/courses/${member.value.id}`, {
+                    const response = await fetch(`/api/teacherProfile/${teacherId}`, {
                         method: 'GET',
                         headers: {
-                            'Authorization': `Bearer ${token}`
+                            'Content-Type': 'application/json',
+                             'Authorization': `Bearer ${token}`
                         }
                     });
 
                     if (!response.ok) {
-                        throw new Error('獲取課程資料失敗');
+                        throw new Error('獲取教師資訊失敗');
                     }
 
                     const data = await response.json();
-                    courses.value = data.map(course => ({
-                        id: course.categoryId,
+                    teacher.value = data.teacher;
+                    courses.value = data.courses.map(course => ({
+                        id: course.id,
                         title: course.title,
                         img: course.thumbnail,
-                        teacher: course.teacher.name,
                         price: course.price,
-                        buyDate: new Date(course.createdDate).toLocaleDateString()
                     }));
+                    courseCount.value = data.courseCount;
+                    studentCount.value = data.studentCount;
                 } catch (error) {
-                    console.error("獲取課程資料失敗:", error);
+                    console.error("獲取教師資訊失敗:", error);
                 }
+                };
+
+            const formatThumbnailRoute = (thumbnailPath, target = "people") => {
+
+                thumbnailPath = handleThumbnailNull(thumbnailPath, target);
+
+                if (thumbnailPath.startsWith("~/")) {
+                    // 將 "~/" 替換為實際的程式根目錄
+                    return thumbnailPath.replace("~", window.location.origin);
+                }
+                return thumbnailPath;
             };
 
-            onMounted(async () => {
-                const token = '@AuthHelper.GetTokenFromCookie()';
-                const decodedMember = decodeToken(token);
-                member.value.id = decodedMember.Id;
-                member.value.name = decodedMember.unique_name;
-                member.value.point = decodedMember.Point;
-                member.value.avatar = decodedMember.ProfileImage;
+            const handleThumbnailNull = (path, target) => {
+                if (path == null || path.length == 0) { // 如果thumbnail是null 或沒有內容
 
-                await fetchMemberCourses(); // 獲取會員課程資料
-            });
+                    // 判斷target是人(teacher 或 member) 或是課程，給予不同的default圖片路徑
+                    target === "people" ? path = "~/images/profilePic.PNG"
+                        : path = "~/images/thumbnail.jpg"; // 設成default thumbnail
+                }
 
-            function decodeToken(token) {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-
-                return JSON.parse(jsonPayload);
+                return path;
             }
 
-            return { member, courses };
+            onMounted(async () => {
+                const teacherId = getTeacherId();
+                await fetchTeacherProfile(teacherId);
+            });
+
+            
+
+            return { courses, teacher, courseCount, studentCount, formatThumbnailRoute };
         }
-        }
+    }
         const app = createApp(config);
         app.mount("#app")
         </script>
 
-    }
+}
 </body>
