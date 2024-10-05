@@ -246,3 +246,10 @@ ReadMe For Chimo.WebApi.Site
 		網址能帶有教師ID
 
 	[V] 修改 TeacherInfo.cshtml，呼叫api完成顯示教師頁面功能
+
+
+	------------------------------2024/10/5----------------------------------
+
+	[V] 完成呼叫所有課程Category api
+
+	[V] 重新生成資料庫script, 生成資料，最終資料表為 ChimoDemo_Final.sql
