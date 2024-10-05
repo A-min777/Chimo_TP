@@ -258,8 +258,8 @@ namespace Chimo.WebAPI.Site.Repositories
         }
 
 
-        // 查詢所有分類
-        public List<CourseDto> GetAllCategories()
+        // 查詢所有課程
+        public List<CourseDto> GetAllCourses()
         {
             var courses =  _db.Courses
          .Include(c => c.CourseCategory) // 包含 CourseCategory 資訊
@@ -286,6 +286,18 @@ namespace Chimo.WebAPI.Site.Repositories
                 .Map<List<CourseDto>>(courses); // Course 轉 CourseDto
 
             return CategoryCourses;
+        }
+
+        /// <summary>
+        /// 找出所有課程分類
+        /// </summary>
+        /// <returns></returns>
+        public List<CourseCategory> GetAllCategories()
+        {
+            return _db.CourseCategories
+                .AsNoTracking()
+                .OrderBy(c => c.DisplayOrder)
+                .ToList();
         }
     }
 }
