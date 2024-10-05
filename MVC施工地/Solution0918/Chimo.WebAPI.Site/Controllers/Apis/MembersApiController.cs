@@ -201,20 +201,17 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
         {
             try
             {
-                // 呼叫 TopUp Service 處理儲值邏輯，並取得儲值結果與新 token
                 var result = _memberService.TopUp(memberId, dto);
 
-                if (!result.isSuccess)
+                if (!result)
                 {
                     return BadRequest("儲值失敗。");
                 }
 
-                // 成功的情況下，回傳新的 token
+               
                 return Ok(new
                 {
                     message = "儲值成功",
-                    TotalPoint = dto.Point,
-                    token = result.token
                 });
             }
             catch (ArgumentException ex)
@@ -241,8 +238,24 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
 			}
 		}
 
+        [HttpGet]
+        [Route("api/getMemberImage/{memberId}")]
+        public IHttpActionResult GetMemberImage(int memberId)
+        {
+            try
+            {
+                string memberImage = _memberService.GetMemberImage(memberId);
 
-	}
+                return Ok(new { memberImage });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
+    }
 }
 
 

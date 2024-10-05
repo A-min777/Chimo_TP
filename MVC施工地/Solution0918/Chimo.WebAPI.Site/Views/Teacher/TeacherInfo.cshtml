@@ -1,0 +1,248 @@
+﻿
+@{
+    ViewBag.Title = "TeacherInfo";
+}
+
+<style>
+    body {
+        background-color: #eee;
+    }
+
+    .list-group {
+        position: sticky;
+        top: 175px;
+    }
+
+    .list-group-item img {
+        max-height: 10vw;
+    }
+
+    .list-group-item {
+        min-height: 60px;
+        font-size: 1.2rem;
+        font-weight: bolder;
+    }
+
+        .list-group-item.active {
+            background-color: #5b468b;
+        }
+
+    .chargeTag {
+        color: #fff;
+    }
+
+    .content {
+        background-color: #fff;
+    }
+
+    .cardContainer {
+        margin: 0 auto;
+    }
+
+    .mycard p {
+        font-weight: bolder;
+        font-size: large;
+    }
+
+    .title {
+        min-height: 60px;
+        max-height: 60px;
+        overflow: hidden;
+    }
+
+        .title:hover {
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #5b468b #fff;
+        }
+
+    .mycard img {
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .mycard .tag {
+        background-color: #5b468b;
+        color: #fff;
+    }
+
+    .thumbnail {
+        transition: transform 0.3s ease;
+        will-change: transform;
+    }
+
+        .thumbnail:hover {
+            transform: scale(1.1);
+        }
+
+    .refund {
+        align-items: baseline;
+    }
+
+    .avatarA {
+        border-radius: 50%;
+    }
+
+    .searchBtn {
+        background-color: #5b468b;
+        color: #fff;
+    }
+
+        .searchBtn:hover {
+            background-color: #2b1b41;
+            color: #fff;
+        }
+</style>
+<body>
+    <div id="app">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-4 mt-3 mb-3">
+                    <div class="text-center list-group">
+                        <div class="list-group-item pb-3">
+                            <img :src="formatThumbnailRoute(teacher.profileImage)"
+                                 alt="profile"
+                                 class="avatarA img-fluid m-3" />
+                            <h4 class="fw-bolder mb-2">{{teacher.name}}</h4>
+                            <hr />
+                            <h6>擁有課堂數：<span>{{courseCount}}</span> 堂</h6>
+                            <h6 class="mb-4">學生人數：<span>{{studentCount}}</span> 人</h6>
+                            <hr />
+                            <h6>[個人簡介]</h6>
+                            <small>{{teacher.intro}}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="content col-8 mt-3 mb-3 rounded">
+                    <section class="m-4">
+                        <div class="d-flex justify-content-between">
+                            <h4 class="fw-bolder">{{teacher.name}}的課程</h4>
+                        </div>
+                        <hr />
+                        <div :class="['mt-5 text-center notFound' ,{'d-none': courses.length != 0 }]">
+                            <img src="~/images/notFoundImg.png" alt="notFound" class="img-fluid mb-3" style="width:20vw" />
+                            <h5 class="fw-bolder mb-3">還沒有任何課程</h5>
+                            <a href="@Url.Action("index", "Home")" class="searchBtn btn btn-lg">探索其他課程</a>
+                        </div>
+                        <div class="d-flex flex-wrap">
+                            <div class="cardContainer d-flex flex-wrap">
+
+                                <div v-for="card in courses"
+                                     :key="card.id"
+                                     class="mycard col-lg-4 col-md-6 col-sm-12 p-3 pb-5 ps-0">
+                                    <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
+                                        <img :src="formatThumbnailRoute(card.img,'course')"
+                                             alt="course-thumbnail "
+                                             class="thumbnail pb-2 img-fluid rounded" />
+                                    </a>
+                                    <div class="prodct-info">
+                                        <small class="tag p-1 rounded-1 fw-bolder">課程</small>
+                                        <p class="title pt-1">{{card.title}}</p>
+                                        <small>{{teacher.name}}</small>
+                                    </div>
+                                    <p class="price border-top border-bottom pt-2 pb-2">
+                                        NT${{card.price}}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts{
+        <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+        <script src="~/Scripts/vue.global.js"></script>
+        <script src="~/Scripts/myheader.js"></script>
+        <script>
+    @using Chimo.WebAPI.Site.Models
+    const { createApp, ref, onMounted } = Vue;
+
+        const config = {
+        setup() {
+           
+            const getTeacherId = () => {
+                // 取得當前的 URL 路徑
+                const pathname = window.location.pathname;
+
+                const segments = pathname.split('/');
+                const teacherId = segments[segments.length - 1];
+
+                return Number(teacherId);
+            }
+
+            const courses = ref([]);
+            const teacher = ref({});
+            const courseCount = ref(0);
+            const studentCount = ref(0);
+            const fetchTeacherProfile = async (teacherId) => {
+                try {
+                    const token = '@AuthHelper.GetTokenFromCookie()';
+                    const response = await fetch(`/api/teacherProfile/${teacherId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                             'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('獲取教師資訊失敗');
+                    }
+
+                    const data = await response.json();
+                    teacher.value = data.teacher;
+                    courses.value = data.courses.map(course => ({
+                        id: course.id,
+                        title: course.title,
+                        img: course.thumbnail,
+                        price: course.price,
+                    }));
+                    courseCount.value = data.courseCount;
+                    studentCount.value = data.studentCount;
+                } catch (error) {
+                    console.error("獲取教師資訊失敗:", error);
+                }
+                };
+
+            const formatThumbnailRoute = (thumbnailPath, target = "people") => {
+
+                thumbnailPath = handleThumbnailNull(thumbnailPath, target);
+
+                if (thumbnailPath.startsWith("~/")) {
+                    // 將 "~/" 替換為實際的程式根目錄
+                    return thumbnailPath.replace("~", window.location.origin);
+                }
+                return thumbnailPath;
+            };
+
+            const handleThumbnailNull = (path, target) => {
+                if (path == null || path.length == 0) { // 如果thumbnail是null 或沒有內容
+
+                    // 判斷target是人(teacher 或 member) 或是課程，給予不同的default圖片路徑
+                    target === "people" ? path = "~/images/profilePic.PNG"
+                        : path = "~/images/thumbnail.jpg"; // 設成default thumbnail
+                }
+
+                return path;
+            }
+
+            onMounted(async () => {
+                const teacherId = getTeacherId();
+                await fetchTeacherProfile(teacherId);
+            });
+
+            
+
+            return { courses, teacher, courseCount, studentCount, formatThumbnailRoute };
+        }
+    }
+        const app = createApp(config);
+        app.mount("#app")
+        </script>
+
+}
+</body>

@@ -227,3 +227,29 @@ ReadMe For Chimo.WebApi.Site
 		及 UpdateOrderItemStatus，在 OrderRepository實作介面函式
 	
 	[V] 完成處理會員退款的api
+
+
+	------------------------------2024/10/3----------------------------------
+
+	[V] 修改 MyCourses.cshtml, 在前端設定購買課程時間超過三天則不會顯示退款按鈕
+		叫用api，完成課程退貨功能
+
+	[V] 新增 TeacherProfileVm，用來呈現教師頁面，新增 TeachersApiController，
+		在裡面新增 GetTeacherProfile api
+	
+	[V] 新增 ITeacherRepository 介面，在裡面新增三支函式，新增 TeacherRepository 實作介面
+		新增 TeacherService
+
+	[V] 完成顯示教師頁面的api
+
+	[V] 修改 Course.cshtml 及 ProductInfo.cshtml, 讓點擊教師icon後跳轉到 TeacherInfo.cshtml
+		網址能帶有教師ID
+
+	[V] 修改 TeacherInfo.cshtml，呼叫api完成顯示教師頁面功能
+
+
+	------------------------------2024/10/5----------------------------------
+
+	[V] 完成呼叫所有課程Category api
+
+	[V] 重新生成資料庫script, 生成資料，最終資料表為 ChimoDemo_Final.sql

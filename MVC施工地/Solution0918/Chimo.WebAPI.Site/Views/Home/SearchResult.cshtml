@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "SearchResult";
     var searchQuery = Request.QueryString["query"];
+    var decodedSearchQuery = HttpUtility.UrlDecode(searchQuery); // 解碼查詢字串
+
 }
 
 <style>
@@ -66,7 +68,7 @@
                 <div v-for="card in cards"
                      :key="card.id"
                      class="mycard col-md-3 col-sm-12 p-3 pb-5 ps-0">
-                    <a href="product.html">
+                    <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
                         <img :src="`/images/${card.thumbnail}`"
                              alt="course-thumbnail "
                              class="thumbnail pb-2 img-fluid rounded" />
@@ -93,9 +95,9 @@
         const { createApp, ref, onMounted } = Vue;
 
        const config = {
-    setup() {
-        const cards = ref([]);
-        const searchValue = ref("@searchQuery"); // 使用 Razor 語法將搜尋關鍵字注入
+           setup() {
+               const cards = ref([]);
+               const searchValue = ref("@decodedSearchQuery"); // 使用 Razor 語法將搜尋關鍵字注入
                const totalCount = ref(0); // 新增總數變數
 
         const searchCourses = async () => {

@@ -32,12 +32,37 @@
                                 aria-label="Toggle navigation">
                             分類
                         </button>
-                        <ul class="dropdown-menu mt-2 ">
-                            <li class="dropdown-item p-3 text-center">語言學習</li>
-                            <li class="dropdown-item p-3 text-center">設計創作</li>
-                            <li class="dropdown-item p-3 text-center">程式語言</li>
-                            <li class="dropdown-item p-3 text-center">職場技能</li>
-                            <li class="dropdown-item p-3 text-center">健康生活</li>
+                        <ul class="dropdown-menu mt-2">
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 0 })" class="text-decoration-none text-dark w-100 h-100 d-block">所有分類</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 1 })" class="text-decoration-none text-dark w-100 h-100 d-block">程式語言</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 2 })" class="text-decoration-none text-dark w-100 h-100 d-block">美術設計</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 3 })" class="text-decoration-none text-dark w-100 h-100 d-block">數據科學</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 4 })" class="text-decoration-none text-dark w-100 h-100 d-block">語文學習</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 5 })" class="text-decoration-none text-dark w-100 h-100 d-block">體育相關</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 6 })" class="text-decoration-none text-dark w-100 h-100 d-block">數學</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 7 })" class="text-decoration-none text-dark w-100 h-100 d-block">自然科學</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 8 })" class="text-decoration-none text-dark w-100 h-100 d-block">資料庫設計</a>
+                            </li>
+                            <li class="dropdown-item p-3 text-center">
+                                <a href="@Url.Action("Categories", "Home", new { id = 10 })" class="text-decoration-none text-dark w-100 h-100 d-block">演算法</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="searchbar d-flex justify-content-between">
@@ -51,8 +76,8 @@
                     </div>
                 </div>
                 @using Chimo.WebAPI.Site.Models
-
                 @{
+
                     bool isLoggedIn = AuthHelper.IsLoggedIn(Request);  // 檢查是否已登入
                     ViewData["IsLoggedIn"] = isLoggedIn;
                     // 從 Cookie 中獲取 JWT
@@ -65,40 +90,41 @@
                         member = JwtUtility.DecodeToken(token);
                     }
 
-
-                    if (!isLoggedIn)
+                    if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
                     {
-                        <div class="flex-nowrap">
-                            <a class="headerLogin btn btn-md fw-bolder " href="/login/Login">登入</a>
-                            |
-                            <a class="headerLogin btn btn-md fw-bolder me-3" href="/login/Register">註冊</a>
+                        <div id="app2">
+                            <div class="dropdown">
+                                                <button class="dropdown-toggle border-0 btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Toggle navigation">
+                                                    <img class="profile-image avatarA" src="" alt="Profile Image">
+                                                </button>
+                                <ul class="dropdown-menu mt-2 me-4">
+                                    <a href="@Url.Action("EditInfo", "Members")">
+                                    <li class="dropdown-item p-3 text-center">會員資料</li></a>
+                                    <a href="/Members/TopUp">
+                                    <li class="dropdown-item p-3 text-center">儲值點數</li></a>
+                                    <a href="/Members/MyCourses">
+                                    <li class="dropdown-item p-3 text-center">我的課程</li></a>
+                                    <a href="/Members/MyCollections">
+                                    <li class="dropdown-item p-3 text-center">我的收藏</li></a>
+                                    <a href="/Members/MyOrders">
+                                    <li class="dropdown-item p-3 text-center">購買紀錄</li></a>
+                                    <li class="dropdown-item p-3 text-center" onclick="logout()">登出</li>
+                                </ul>
+                            </div>
                         </div>
                     }
                     else
-
-                    {<div class="dropdown">
-                            <button class="dropdown-toggle border-0 btn"
-                                    type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                    aria-label="Toggle navigation">
-                                <img src="~/images/@member.ProfileImage" alt="avatar" class="img-fluid avatar avatarA">
-                            </button>
-                            <ul class="dropdown-menu mt-2 me-4">
-                                <a href="@Url.Action("EditInfo", "Members")">
-                                <li class="dropdown-item p-3 text-center">會員資料</li></a>
-                                <a href="/Members/TopUp">
-                                <li class="dropdown-item p-3 text-center">儲值點數</li></a>
-                                <a href="/Members/MyCourses">
-                                <li class="dropdown-item p-3 text-center">我的課程</li></a>
-                                <a href="/Members/MyCollections">
-                                <li class="dropdown-item p-3 text-center">我的收藏</li></a>
-                                <a href="/Members/MyOrders">
-                                <li class="dropdown-item p-3 text-center">購買紀錄</li></a>
-                                <li class="dropdown-item p-3 text-center" onclick="logout()">登出</li>
-                            </ul>
-                        </div> }
+                    {
+                        <div class="flex-nowrap">
+                            <a class="headerLogin btn btn-md fw-bolder" href="/login/Login">登入</a> |
+                            <a class="headerLogin btn btn-md fw-bolder me-3" href="/login/Register">註冊</a>
+                        </div>
+                    }
                 }
+
+
+
+
 
             </header>
         </div>
@@ -152,13 +178,79 @@
                 alert("請輸入搜尋條件");
                 return;
             }
+            const encodedSearchQuery = encodeURIComponent(searchValue);
 
             // 更新 URL 顯示為 /Home/SearchResult?query=搜尋值
-            window.location.href = `/Home/SearchResult?query=${encodeURIComponent(searchValue)}`;
+            window.location.href = `/Home/SearchResult?query=${encodedSearchQuery}`;
         };
     </script>
 
+    <script>
+    const member = {
+        id: 0,
+        ProfileImage: "",
+    };
 
+    const decodeToken = (token) => {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(jsonPayload);
+    };
+
+        const token = '@AuthHelper.GetTokenFromCookie()';
+        let decodedMember = null; // 初始化為 null
+
+        // 檢查 token 是否存在再進行解碼
+        if (token)
+        {
+            decodedMember = decodeToken(token);
+        }
+
+        // 檢查 decodedMember 是否存在，並設定 member 的屬性
+        if (decodedMember)
+        {
+            member.id = decodedMember.Id;
+            member.ProfileImage = decodedMember.ProfileImage;
+        }
+
+
+ 
+        const fetchMemberData = async () => {
+            // 檢查 token 是否存在
+            if (!token) {
+                return; // 直接返回，不進行 fetch
+            }
+
+        try {
+            const response = await fetch(`/api/getMemberImage/${member.id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('網路請求失敗');
+            }
+
+            const memberData = await response.json(); // 獲取資料並賦值給 memberData
+            member.ProfileImage = memberData.memberImage; // 更新 ProfileImage
+
+            // 使用 querySelector 更新圖片的 src
+            const profileImageElement = document.querySelector('.profile-image');
+            profileImageElement.src = `/images/${member.ProfileImage}`; // 設置圖片來源
+            } catch (error) {
+            console.error("獲取會員資料失敗:", error);
+        }
+        };
+
+        
+
+
+    fetchMemberData(); // 調用 fetchMemberData 函式
+    </script>
 
 </body>
 </html>

@@ -133,7 +133,9 @@
                         <div v-for="item in order.orderItems" :key="item.id" class="row align-items-center">
                             <div class="col-md-5 col-sm-12 mt-1">
                                 <a :href="`@Url.Action("ViewProduct", "Products")/${item.id}`">
-                                    <img :src="`../images/${item.thumbnail}`" alt="order-thumbnail" class="thumbnail img-fluid rounded mt-2" />
+                                    <img :src="item.img ? `../images/${item.img}` : '../images/thumbnail.jpg'"
+                                         alt="orders-thumbnail "
+                                         class="thumbnail pb-2 img-fluid rounded" />
                                 </a>
                             </div>
                             <div class="col-md-6 col-sm-12 mt-2">
@@ -174,6 +176,19 @@ createApp({
             avatar: "",
             point: 0,
         });
+        const decodeToken = (token) => {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+            return JSON.parse(jsonPayload);
+        };
+        const token = '@AuthHelper.GetTokenFromCookie()';
+        const decodedMember = decodeToken(token);
+        member.value.id = decodedMember.Id;
+        member.value.name = decodedMember.unique_name;
+        member.value.point = decodedMember.Point;
+        member.value.avatar = decodedMember.ProfileImage;
 
 
                 const orders = ref([]);
@@ -195,28 +210,57 @@ createApp({
                     } catch (error) {
                         console.error("獲取訂單資料失敗:", error);
                     }
-                };
+        };
+        const fetchMemberPoint = async () => {
+            try {
+                member.value.id = decodedMember.Id;
+                const response = await fetch(`/api/getMemberPoint/${member.value.id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
+                if (!response.ok) {
+                    throw new Error('網路請求失敗');
+                }
+
+                const data = await response.json();
+                member.value.point = data.memberPoint; // 將回傳的點數值儲存在 member 的 point 屬性中
+            } catch (error) {
+                console.error("獲取會員資料失敗:", error);
+            }
+        };
+
+
+        const fetchMemberImage = async () => {
+            try {
+
+                member.value.id = decodedMember.Id;
+                const response = await fetch(`/api/getMemberImage/${member.value.id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('網路請求失敗');
+                }
+
+                const data = await response.json();
+                member.value.avatar = data.memberImage;
+            } catch (error) {
+                console.error("獲取會員資料失敗:", error);
+            }
+        };
         onMounted(async () => {
-            const token = '@AuthHelper.GetTokenFromCookie()';
-            const decodedMember = decodeToken(token);
-            member.value.id = decodedMember.Id;
-            member.value.name = decodedMember.unique_name;
-            member.value.point = decodedMember.Point;
-            member.value.avatar = decodedMember.ProfileImage;
-
-            await fetchMemberOrder(); //
+            await fetchMemberOrder(); 
+            await fetchMemberPoint();
+            await fetchMemberImage();
         });
 
-        function decodeToken(token) {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-                '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-
-            return JSON.parse(jsonPayload);
-        }
-
+       
         return { member, orders };
     }
 }).mount("#app");

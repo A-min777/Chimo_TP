@@ -358,7 +358,7 @@
             setup() {
                 const modal = ref({
                     message: "",
-                    img: "../images/alert.gif",
+                    img: "",
                     isTopUp: false,
                     isModalVisible: false,
                     showModal() {
@@ -370,7 +370,7 @@
                 });
 
                 const urlParams = new URLSearchParams(window.location.search);
-                const returnUrl = urlParams.get('returnUrl') || '/Home/Index';   
+                const returnUrl = urlParams.get('returnUrl') || '/Home/Index';
 
                 const BackToLastPage = () => {
                     window.location.href = returnUrl;
@@ -378,40 +378,23 @@
 
                 const member = ref({
                     id: 0,
-                    name: "",
-                    avatar: "",
                     point: 0,
-                    gender: 0,
-                    phone: "",
-                    email: "",
-                    intro: "",
-                    updatedDate: "",
                 });
+                const decodeToken = (token) => {
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                    return JSON.parse(jsonPayload);
+                };
+                const token = '@AuthHelper.GetTokenFromCookie()';
+                const decodedMember = decodeToken(token);
+                member.value.id = decodedMember.Id;
+                member.value.point = decodedMember.Point;
+
                 const selectedSolution = ref({});
                 const selectedPayment = ref("");
                 const selectedReceipt = ref("");
-
-
-
-                const token = '@AuthHelper.GetTokenFromCookie()';
-                const fetchMemberProfile = async () => {
-                    try {
-                        const decodedMember = decodeToken(token);
-                        member.value.id = decodedMember.Id;
-                        member.value.name = decodedMember.unique_name;
-                        member.value.email = decodedMember.Email;
-                        member.value.point = decodedMember.Point;
-                        member.value.avatar = decodedMember.ProfileImage;
-                        member.value.intro = decodedMember.Intro;
-                        member.value.gender = decodedMember.Gender;
-                    }
-                    catch (error) {
-                        console.error("獲取會員資料失敗:", error);
-                    }
-                };
-
-               
-
                 // 儲值方案
                 const solutions = ref([
                     {
@@ -513,6 +496,7 @@
                 const confirmTopUp = async () => {
                     if (!selectedSolution.value.id) {
                         modal.value.message = "請選擇儲值方案！";
+                        modal.value.img = "../images/alert.gif";
                         modal.value.showModal()
                         return;
                     }
@@ -538,36 +522,48 @@
 
                         if (response.ok) {
                             const result = await response.json();
-                            document.cookie = `jwtToken=${result.token}; path=/; secure`;
-                            member.value.point = `${result.TotalPoint}`;
                             // 根據 API 回傳的結果執行相應的操作，例如顯示成功訊息或重定向
                             modal.value.message = '儲值成功！';
+                            modal.value.img = "../images/Topup.gif",
                             modal.value.isTopUp = true;
                             modal.value.showModal()
 
                         } else {
                             const error = await response.json();
                             modal.value.message = `儲值失敗：${error.message}`;
+                            modal.value.img = "../images/alert.gif";
                             modal.value.showModal()
                         }
                     } catch (error) {
                         modal.value.message = `錯誤：${error.message}`;
+                        modal.value.img = "../images/alert.gif";
                         modal.value.showModal()
                     }
                 };
 
-                
+                const fetchMemberPoint = async () => {
+                    try {
+                        member.value.id = decodedMember.Id;
+                        const response = await fetch(`/api/getMemberPoint/${member.value.id}`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
 
-                
+                        if (!response.ok) {
+                            throw new Error('網路請求失敗');
+                        }
 
-                function decodeToken(token) {
-                    const base64Url = token.split('.')[1];
-                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-                        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-                    return JSON.parse(jsonPayload);
-                }
-                onMounted(fetchMemberProfile,); // 組件掛載時自動獲取會員資料
+                        const data = await response.json();
+                        member.value.point = data.memberPoint; // 將回傳的點數值儲存在 member 的 point 屬性中
+                    } catch (error) {
+                        console.error("獲取會員資料失敗:", error);
+                    }
+                };
+
+
+                onMounted(fetchMemberPoint); 
 
 
                 return {

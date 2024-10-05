@@ -1,4 +1,5 @@
 ﻿using Chimo.WebAPI.Site.Models.Dtos;
+using Chimo.WebAPI.Site.Models.EFModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,9 @@ namespace Chimo.WebAPI.Site.Interfaces
         List<CourseDto> GetPurchasedCourseById(int memberId);
         List<CourseDto> GetRecommendedCourses();
         List<CourseDto> SearchCoursesByTitleOrTeacher(string searchTerm);
+
+        List<CourseDto> GetAllCourses();
+        List<CourseDto> GetCoursesByCategory(int categoryId);
+        List<CourseCategory> GetAllCategories();
     }
 }
