@@ -70,6 +70,16 @@
         max-height: 20px;
     }
 
+    .addtoCartBtn {
+       
+    }
+        .addtoCartBtn:hover {
+            background-color: #ccc;
+        }
+
+    .CartBtn {
+        background-color: #ccc;
+    }        
 
     .avatarA {
         border-radius: 50%;
@@ -106,39 +116,78 @@
         width: 300px;
     }
 
+    .toastMessage {
+        position: fixed;
+        right: 50px;
+        bottom: 30px;
+        background-color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+    }
+
+    .slideIn {
+        animation: slideIn 0.5s ease;
+    }
+
+    .slideOut {
+        animation: slideOut 0.5s ease;
+    }
+    
+
     
 </style>
 
 <div id="app">
-
-    <div class="modal" v-if="isModalVisible" v-on:click.self="hideModal">
-        <div class="modal-dialog"
-             :class="{'slide-in': isModalVisible, 'slide-out': !isModalVisible}">
+    @* 警告modal *@
+    <div class="modal" v-if="modal.isModalVisible" v-on:click.self="modal.hideModal()">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0 mt-0">
                     <button type="button"
                             class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"
-                            v-on:click="hideModal"></button>
+                            v-on:click="modal.hideModal()"></button>
                 </div>
                 <div class="text-center">
-                    <img src="~/images/alert.gif"
+                    <img :src="modal.img"
                          alt="point"
                          class="alertImg mt-4"
                          style="max-width: 100px" />
-                    <div class="modal-body">請先完成登入後再進行操作</div>
+                    <div class="modal-body">
+                        <h5><pre class="mb-0" style="line-height:30px">{{modal.message}}</pre></h5>
+                    </div>
                 </div>
-
                 <div class="text-center mb-4">
                     <a :href="`@Url.Action("Login", "Login")?returnUrl=@Url.Action("ViewProduct", "Products")/${courseId}`"
                        class="confirmBtn btn btn-md ">
                         登入
                     </a>
                 </div>
+
             </div>
         </div>
     </div>
+    @* 警告modal *@
+    @* 通知modal *@
+    <div :class="['toastMessage shadow',{'slideIn':toast.isToastVisible,'slideOut':toast.slideOutToast}]" 
+         v-if="toast.isToastVisible">
+        
+            <div class="Message-content rounded">                
+                <div class="d-flex text-center align-items-center">
+                    
+                    <img :src="toast.img"
+                         alt="point"
+                         class="alertImg "
+                         style="max-width: 80px" />
+                    <div class="Message-body">
+                        <h5 class="fw-bold me-4">{{toast.message}}</h5>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+    @* 通知modal *@
     <!-- 頁首課程預覽 bg-->
     <div class="product mb-4 pt-3">
         <div class="container">
@@ -159,7 +208,7 @@
 
                 else
                 {
-                    <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="showModal" />
+                    <img :src="formatThumbnailUrl(Bookmark.currentImage())" alt="bookIcon" class="btn btn-sm img-fluid mb-3 mt-1 me-0" style="max-height:38px" v-on:click="LoginAlert" />
                 }
             </div>
             <div class="row pb-5 justify-content-between" v-if="courseDetail && courseDetail.teacher">
@@ -171,13 +220,14 @@
                         <p class="fs-1 fw-bolder text-light">NT${{courseDetail.price}}</p>
                         @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
                         {
-                            <a :href="`@Url.Action("BuyDirectly", "Members")/${courseId}`"
+                            <a :href="`@Url.Action("BuyDirectly", "Members")/${courseId}?returnUrl=@Url.Action("ViewProduct", "Products")/${courseId}`"
+                               
                                class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3">
                                 立即購買
                             </a>}
                         else
                         {
-                            <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3" v-on:click="showModal">
+                            <button class="buyBtn btn btn-xxl btn-warning fs-1 fw-bolder text-dark ms-lg-3" v-on:click="LoginAlert">
                                 立即購買
                             </button>
                         }
@@ -243,12 +293,12 @@
                 <h2 class="fw-bolder">教師資訊</h2>
                 <div class="teacher row mb-3 mt-2"
                      v-if="courseDetail && courseDetail.teacher">
-                    <a :href="`@Url.Action("TeacherInfo", "Teacher")/${courseDetail.teacher.id}`"  class="col-md-5 col-lg-3 col-sm-3 ">
+                    <a :href="`@Url.Action("TeacherInfo", "Teacher")/${courseDetail.teacher.id}`" class="col-md-5 col-lg-3 col-sm-3 ">
                         <img :src="formatThumbnailUrl(courseDetail.teacher.profileImage)"
                              alt="taPic"
                              class="avatarA img-fluid" />
                     </a>
-                    
+
                     <div class="teacherInfo m-2 col-md-6 col-sm-6 text-center text-sm-start"
                          style="height: 50%; align-self: center">
                         <h6>{{courseDetail.teacher.name}}</h6>
@@ -269,22 +319,36 @@
                     <div class="d-flex justify-content-between">
                         @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
                         {
-                            <a :href="`@Url.Action("BuyDirectly", "Members")/${courseId}`"
+                            <a :href="`@Url.Action("BuyDirectly", "Members")/${courseId}?returnUrl=@Url.Action("ViewProduct", "Products")/${courseId}`"
                                class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
                                 立即購買
                             </a>}
                         else
                         {
-                            <button class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap" v-on:click="showModal">
+                            <button class="buyBtn btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap" v-on:click="LoginAlert">
                                 立即購買
                             </button>
                         }
-                        <button class="rounded btn border mb-3">
-                            <img src="~/images/cart.png"
-                                 alt="cart"
-                                 class="cartIcon img-fluid"
-                                 v-on:click="handleAddCartItem(courseDetail.price)" />
-                        </button>
+                        @if (ViewData["IsLoggedIn"] != null && (bool)ViewData["IsLoggedIn"])
+                        {
+                            <button :class="['rounded btn border mb-3 addtoCartBtn',{ 'CartBtn disabled':isInCart}]" 
+                                    v-on:click="handleAddCartItem(courseDetail.price)">
+                                <img src="~/images/cart.png"
+                                     alt="cart"
+                                     class="cartIcon img-fluid"
+                                      />
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="rounded btn border mb-3 cartBtn" v-on:click="LoginAlert" >
+                                <img src="~/images/cart.png"
+                                     alt="cart"
+                                     class="cartIcon img-fluid"
+                                     />
+                            </button>
+                        }
+
                     </div>
                 </div>
             </div>
@@ -308,14 +372,44 @@
             const { createApp, ref, onMounted } = Vue;
             const config = {
                 setup() {
-                    const isModalVisible = ref(false)
+                    const modal = ref({
+                        message: "",
+                        img: "",
+                        isModalVisible: false,
+                        showModal() {
+                            this.isModalVisible = true;
+                        },
+                        hideModal() {
+                            this.isModalVisible = false;
+                        },
+                    });
 
-                    function showModal() {
-                        isModalVisible.value = true;
-                    }
+                    const toast = ref({
+                        message: "",
+                        img: "",
+                        isToastVisible: false,
+                        slideOutToast: false,
 
-                    function hideModal() {
-                        isModalVisible.value = false;
+                        showToast() {
+                            this.slideOutToast= false,
+                            this.isToastVisible = true;
+
+                            setTimeout(() => {
+                                this.hideToast();
+                            },2000)
+                        },
+                        hideToast() {
+                            this.slideOutToast = true;
+                            setTimeout(() => {
+                                this.isToastVisible = false;
+                            }, 500)
+                        },
+                    });
+
+                    const LoginAlert = () => {
+                        modal.value.message = "請先完成登入後再操作!";
+                        modal.value.img = "/images/alert.gif";
+                        modal.value.showModal()
                     }
 
                     const Bookmark = ref({
@@ -390,11 +484,11 @@
 
                     });
 
-                    let isInCart = false;
+                    let isInCart = ref(false) ;
                     const handleAddCartItem = async (price) => {
                         //isInCart = checkIsInCart(courseId);
-                        console.log("IsINCartBefore:", isInCart);
-                        if (isInCart)
+                        console.log("IsINCartBefore:", isInCart.value);
+                        if (isInCart.value)
                         {
                             console.log("此課程已被加入過購物車");
                             return;
@@ -415,8 +509,10 @@
 
                             if (response.ok) {
                                 cartItems.push(courseId);
-                                isInCart = true;
-                                console.log("成功加入購物車");
+                                isInCart.value = true;
+                                toast.value.message = "成功加入購物車";
+                                toast.value.img = "/images/ok.gif";
+                                toast.value.showToast();
                             } else {
                                 const errorMessage = await response.text();
                                 console.error('加入購物車失敗:', errorMessage);
@@ -443,7 +539,7 @@
                                 if (data.length === 0) return;
 
                                 cartItems = data.cartItems.map(item => item.course.id);
-                                isInCart = checkIsInCart();
+                                isInCart.value = checkIsInCart();
                             } else {
                                 console.error('fetch 購物車清單失敗:', response.statusText);
                             }
@@ -523,8 +619,7 @@
                     return {
                         courseContents, courseDetail, videoPlayer, checkVideoTime, courseId,
                         courseFirstVideo, courseBuyerCount, courseChapterCount, handleAddCartItem,
-                        formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute, isModalVisible,
-                        showModal, hideModal
+                        formatThumbnailUrl, Bookmark, toggleBookmark, formatVideoRoute, modal, toast, LoginAlert, isInCart
                     };
                 },
             };
