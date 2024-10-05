@@ -326,6 +326,7 @@
     <Content Include="images\banner02.jpg" />
     <Content Include="images\banner03.jpg" />
     <Content Include="images\bell.png" />
+    <Content Include="images\bgimg.png" />
     <Content Include="images\book.png" />
     <Content Include="images\booked_w.png" />
     <Content Include="images\book_w.png" />
@@ -333,6 +334,7 @@
     <Content Include="images\cart.png" />
     <Content Include="images\color palette.png" />
     <Content Include="images\Delete.png" />
+    <Content Include="images\error.gif" />
     <Content Include="images\loginPic.jpg" />
     <Content Include="images\LOGO.png" />
     <Content Include="images\logo2_w.png" />
