@@ -253,3 +253,8 @@ ReadMe For Chimo.WebApi.Site
 	[V] 完成呼叫所有課程Category api
 
 	[V] 重新生成資料庫script, 生成資料，最終資料表為 ChimoDemo_Final.sql
+
+	[V] 修改 Course.cshtml, ProductInfo.cshtml, 讓左上角的麵包屑分類的部分能正確顯示
+		該課程的類別，並在按下後能導向該類別頁面
+
+	[V] 修改 MyOrders.cshtml, 修正叫出來的課程就算有圖片還是會全部變成default圖片的bug
