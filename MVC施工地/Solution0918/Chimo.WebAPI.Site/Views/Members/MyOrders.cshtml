@@ -122,18 +122,16 @@
                         <div class="d-flex justify-content-between">
                             <h6>{{ new Date(order.createdDate).toLocaleDateString() }}</h6>
                             <h6 class="status fw-bolder">
-                                <h6 class="status fw-bolder">
-                                    <span v-if="order.status === 1" style="color:lawngreen">[ 已結帳 ]</span>
-                                    <span v-else-if="order.status === 0" style="color:darkred">[ 部分退款 ]</span>
-                                    <span v-else-if="order.status === -1" style="color:red">[ 全額退款 ]</span>
-                                </h6>
+                                <span v-if="order.status === 1" style="color:lawngreen">[ 已結帳 ]</span>
+                                <span v-else-if="order.status === 0" style="color:darkred">[ 部分退款 ]</span>
+                                <span v-else-if="order.status === -1" style="color:red">[ 全額退款 ]</span>
                             </h6>
                         </div>
 
                         <div v-for="item in order.orderItems" :key="item.id" class="row align-items-center">
                             <div class="col-md-5 col-sm-12 mt-1">
                                 <a :href="`@Url.Action("ViewProduct", "Products")/${item.id}`">
-                                    <img :src="item.img ? `../images/${item.img}` : '../images/thumbnail.jpg'"
+                                    <img :src="item.thumbnail ? `../images/${item.thumbnail}` : '../images/thumbnail.jpg'"
                                          alt="orders-thumbnail "
                                          class="thumbnail pb-2 img-fluid rounded" />
                                 </a>
