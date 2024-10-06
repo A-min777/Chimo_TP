@@ -145,5 +145,21 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
             }
         }
 
+        [HttpGet]
+        [Route("api/categories")]
+        public IHttpActionResult GetAllCategories()
+        {
+
+            try
+            {
+                var Categories = _service.GetAllCategories();
+                return Ok(Categories);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

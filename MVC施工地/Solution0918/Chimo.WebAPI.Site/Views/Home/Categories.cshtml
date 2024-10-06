@@ -105,20 +105,14 @@
     <script src="~/Scripts/vue.global.js"></script>
     <script src="~/Scripts/myheader.js"></script>
     <script>
-        const { createApp, ref } = Vue;
+        const { createApp, ref, onMounted } = Vue;
         const config = {
     setup() {
                 const cards = ref([]);
                 const categoryId = @Html.Raw(ViewBag.categoryId);
                 const categoryName = ref('');
                 const coursesCount = ref(0);
-                const categories = ref([
-                    { id: 0, name: '所有分類' },
-                    { id: 1, name: '編程' },
-                    { id: 2, name: '設計' },
-                    { id: 3, name: '數據科學' },
-            
-                ]);
+                const categories = ref([]);
 
         const fetchCourseCategory = async () => {
             try {
@@ -144,9 +138,29 @@
             }
         };
 
-        fetchCourseCategory();
+            const fetchCategories = async () => {
+                try {
+                    const response = await fetch(`/api/categories`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const result = await response.json();
+                    categories.value = result;
 
-                return { cards, coursesCount, categoryName, categories };
+                }
+                catch (error) {
+                    console.error('fetch 所有課程分類失敗', error);
+                }
+            };
+
+            onMounted(async () => {
+                await fetchCourseCategory();
+                await fetchCategories();
+            });
+
+            return { cards, coursesCount, categoryName, categories };
     },
 };
         const app = createApp(config);

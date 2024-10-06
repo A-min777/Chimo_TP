@@ -171,7 +171,7 @@ namespace Chimo.WebAPI.Site.Services
         // 獲取所有課程及其分類
         public List<CategoryCourseVm> GetAllCourses()
         {
-            var courses = _repo.GetAllCategories();
+            var courses = _repo.GetAllCourses();
 
             // 檢查結果是否為空
             if (courses == null)
@@ -203,6 +203,14 @@ namespace Chimo.WebAPI.Site.Services
                .Map<List<CategoryCourseVm>>(courses);
 
             return Categorycourses;
+        }
+
+        internal List<CourseCategoryDto> GetAllCategories()
+        {
+            var CategoriesQuery = _repo.GetAllCategories();
+
+            // CourseCategory 轉 CourseCategoryDto
+            return WebApiApplication._mapper.Map<List<CourseCategoryDto>>(CategoriesQuery);
         }
     }
 }

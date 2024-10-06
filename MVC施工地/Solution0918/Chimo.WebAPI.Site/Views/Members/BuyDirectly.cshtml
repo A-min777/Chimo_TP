@@ -78,6 +78,37 @@
         width: 25px;
         height: 25px;
     }
+
+
+    .confirmBtn {
+        color: #fff;
+        background-color: #5b468b;
+    }
+
+        .confirmBtn:hover {
+            color: #fff;
+            background-color: #342557 !important;
+        }
+
+    .alertImg {
+        animation: squish 0.5s ease;
+        transform-origin: bottom;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+    }
+
+    .modal-content {
+        width: 300px;
+    }
 </style>
 <div id="app">
 
@@ -92,6 +123,43 @@
         {
             member = JwtUtility.DecodeToken(token);
         }
+
+        @* 警告modal *@
+        <div class="modal" v-if="modal.isModalVisible">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0 mt-0">
+                        <button type="button"
+                                class="btn-close"
+                                v-on:click="modal.hideModal()"></button>
+                    </div>
+                    <div class="text-center">
+                        <img :src="modal.img"
+                             alt="point"
+                             class="alertImg mt-4"
+                             style="max-width: 100px" />
+                        <div class="modal-body">
+                            <h5><pre class="mb-0" style="line-height:30px">{{modal.message}}</pre></h5>
+                        </div>
+                    </div>
+                    <div class="text-center mb-4" v-if="!isPurchased">
+                        <button class="confirmBtn btn btn-md"
+                                v-on:click="modal.hideModal()">
+                            確認
+                        </button>
+                    </div>
+                    <div class="text-center mb-4" v-if="isPurchased">
+                        <button class="confirmBtn btn btn-md"
+                                v-on:click="BackToLastPage">
+                            返回
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @* 警告modal *@
+
         <!-- 顯示立刻購買頁面start -->
         <div class="mb-4 pt-3">
             <div class="container">
@@ -298,7 +366,9 @@
                         <hr />
                         <div class="row me-3">
                             <button class="btn btn-warning p-3 m-3 mt-2"
-                                    v-on:click="handleConfirmOrder">確認付款</button>
+                                    v-on:click="handleConfirmOrder">
+                                確認付款
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -316,11 +386,33 @@
         setup() {
             const memberId = @Html.Raw(Json.Encode(member?.Id));
 
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnUrl = urlParams.get('returnUrl') || '/Home/Index';  
+            console.log("returnUrl:", returnUrl)
+            const BackToLastPage = () => {
+                window.location.href = returnUrl;
+            }
+
             const totalPrice = ref(0);
             const memberPoint = ref(0);
             const course = ref([]);
             let courseId;
-            let isPurchased;
+            const isPurchased = ref();
+
+            const modal = ref({
+                message: "",
+                img: "",
+                isTopUp: false,
+                isModalVisible: false,
+                showModal() {
+                    this.isModalVisible = true;
+                },
+                hideModal() {
+                    this.isModalVisible = false;
+                },
+            });
+
+
 
             const fetchCourseInfo = async () => {
                 try {
@@ -425,13 +517,17 @@
             }
 
             const handleConfirmOrder = async () => {
-                if (isPurchased) {
-                    alert("您已經購買過該課程");
+                if (isPurchased.value) {
+                    modal.value.message = "您已經購買過該課程";
+                    modal.value.img = "/images/alert.gif";
+                    modal.value.showModal();
                     return;
                 }
 
                 if (course.value.price > memberPoint.value) {
-                    alert("點數餘額不足");
+                    modal.value.message = "點數餘額不足";
+                    modal.value.img = "/images/alert.gif";
+                    modal.value.showModal();
                     return;
                 }
 
@@ -455,14 +551,21 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        isPurchased = true;
-                        alert("付款成功!");
+                        modal.value.message = "付款成功";
+                        isPurchased.value = true;
+                        console.log("isPurchased", isPurchased)
+                        modal.value.img = "/images/ok.gif";
+                        modal.value.showModal();
                     } else {
-                        alert("付款失敗，請稍後再試");
+                        modal.value.message = "付款失敗，請稍後再試";
+                        modal.value.img = "/images/ok.gif";
+                        modal.value.showModal();
                     }
                 } catch (error) {
                     console.error('付款時發生錯誤:', error);
-                    alert("付款時發生錯誤，請稍後再試");
+                    modal.value.message = "付款時發生錯誤，請稍後再試";
+                    modal.value.img = "/images/error.gif";
+                    modal.value.showModal();
                 }
             }
 
@@ -479,7 +582,7 @@
 
             return {
                 selectedPayment, selectedReceipt, formatThumbnailRoute, handleConfirmOrder,
-                memberPoint, course
+                memberPoint, course, modal, isPurchased, BackToLastPage
             };
         },
     };
