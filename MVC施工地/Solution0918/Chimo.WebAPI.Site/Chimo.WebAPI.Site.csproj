@@ -335,6 +335,7 @@
     <Content Include="images\color palette.png" />
     <Content Include="images\Delete.png" />
     <Content Include="images\error.gif" />
+    <Content Include="images\loading.gif" />
     <Content Include="images\loginPic.jpg" />
     <Content Include="images\LOGO.png" />
     <Content Include="images\logo2_w.png" />
@@ -398,6 +399,9 @@
     <Content Include="Scripts\myheader.js" />
     <Content Include="Scripts\popper.js" />
     <Content Include="Scripts\vue.global.js" />
+    <Content Include="video\Csharp01.mp4" />
+    <Content Include="video\Csharp02.mp4" />
+    <Content Include="video\Csharp03.mp4" />
     <Content Include="video\testVideo1.mp4" />
     <Content Include="video\testVideo2.mp4" />
     <Content Include="Web.config" />
