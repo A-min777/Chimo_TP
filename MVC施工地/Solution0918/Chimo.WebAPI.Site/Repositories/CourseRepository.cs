@@ -219,7 +219,7 @@ namespace Chimo.WebAPI.Site.Repositories
 				orderby g.Count() descending
 				select g.FirstOrDefault()
 				)
-				.Take(6)
+				.Take(10)
 				.ToList();
 
 			var RecommendedCourses = WebApiApplication._mapper

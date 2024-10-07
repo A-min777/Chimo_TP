@@ -143,10 +143,13 @@
                         </div>
                     </div>
                     <div class="text-center mb-4" v-if="!isPurchased">
-                        <button class="confirmBtn btn btn-md"
+                        <button class="confirmBtn btn btn-md ms-2 me-2"
                                 v-on:click="modal.hideModal()">
-                            確認
+                            返回
                         </button>
+                        <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("BuyDirectly", "Members")`"
+                           class="btn btn-warning btn-md "
+                           v-if="course.price > memberPoint">前往儲值</a>
                     </div>
                     <div class="text-center mb-4" v-if="isPurchased">
                         <button class="confirmBtn btn btn-md"
@@ -448,7 +451,7 @@
                         if (data.length === 0) return;
 
                         purchasedCourseIds = data.map(item => item.id);
-                        isPurchased = checkIsPurchased();
+                        isPurchased.value = checkIsPurchased();
                     }
                     else {
                         console.error('fetch會員課程失敗:', response.statusText);
@@ -553,7 +556,6 @@
                     if (result.success) {
                         modal.value.message = "付款成功";
                         isPurchased.value = true;
-                        console.log("isPurchased", isPurchased)
                         modal.value.img = "/images/ok.gif";
                         modal.value.showModal();
                     } else {

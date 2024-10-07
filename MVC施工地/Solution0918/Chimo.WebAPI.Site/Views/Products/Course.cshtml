@@ -56,7 +56,7 @@
     .cartIcon {
         object-fit: contain;
         max-height: 20px;
-    }
+    } 
 
 
     .avatarA {
@@ -187,9 +187,10 @@
                             <h2>{{course.title}}</h2>
                             <h2>NT${{course.price}}</h2>
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
+                                <a :href="`@Url.Action("BuyDirectly", "Members")/${course.id}?returnUrl=@Url.Action("ViewProduct", "Products")/${courseId}`"
+                                   class="btn btn-warning fs-2 fw-bolder text-dark mb-3 text-nowrap">
                                     立即購買
-                                </button>
+                                </a>
                                 <button class="rounded btn border mb-3">
                                     <img src="~/images/cart.png"
                                          alt="cart"
