@@ -481,15 +481,12 @@
                         if (memberId != null) {
                             await checkIsCollection();
                             await fetchCartItems();
-                            //isInCart = checkIsInCart(courseId);
                         }
 
                     });
 
                     let isInCart = ref(false) ;
                     const handleAddCartItem = async (price) => {
-                        //isInCart = checkIsInCart(courseId);
-                        console.log("IsINCartBefore:", isInCart.value);
                         if (isInCart.value)
                         {
                             console.log("此課程已被加入過購物車");
