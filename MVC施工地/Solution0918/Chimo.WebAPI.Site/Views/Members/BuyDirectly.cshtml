@@ -448,7 +448,7 @@
                         if (data.length === 0) return;
 
                         purchasedCourseIds = data.map(item => item.id);
-                        isPurchased = checkIsPurchased();
+                        isPurchased.value = checkIsPurchased();
                     }
                     else {
                         console.error('fetch會員課程失敗:', response.statusText);
@@ -553,7 +553,6 @@
                     if (result.success) {
                         modal.value.message = "付款成功";
                         isPurchased.value = true;
-                        console.log("isPurchased", isPurchased)
                         modal.value.img = "/images/ok.gif";
                         modal.value.showModal();
                     } else {
