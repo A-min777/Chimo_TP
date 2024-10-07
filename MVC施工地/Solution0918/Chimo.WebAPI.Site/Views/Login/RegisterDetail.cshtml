@@ -101,9 +101,9 @@
             const config = {
                 setup() {
                     const phone = ref('');
-                    const gender = ref('');
+                    const gender = ref('0`');
                     const introduction = ref('');
-                    const avatar = ref('../images/profilePic4.PNG'); // 預設頭像
+                    const avatar = ref('../images/profilePic2.PNG'); // 預設頭像
 
                     const params = new URLSearchParams(window.location.search);
                     const userId = params.get('userId');

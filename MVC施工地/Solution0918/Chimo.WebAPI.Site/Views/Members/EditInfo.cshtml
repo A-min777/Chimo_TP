@@ -163,7 +163,7 @@
                             </form>
                         </div>
 
-                        <h4 class="fw-bolder">{{member.name}}</h4>
+                        <h4 class="fw-bolder">{{displayName}}</h4>
                         <p>
                             會員點數：<span class="specialCount">{{member.point}}</span>
                             pt
@@ -245,7 +245,7 @@
     <script src="~/Scripts/myheader.js"></script>
     <script>
     @using Chimo.WebAPI.Site.Models
-    const { createApp, ref, onMounted } = Vue;
+        const { createApp, ref, onMounted, computed } = Vue;
 
     const config = {
         setup() {
@@ -293,7 +293,6 @@
                     member.value.name = decodedMember.unique_name;
                     member.value.email = decodedMember.Email;
                     member.value.point = decodedMember.Point;
-                    member.value.avatar = `../images/` + decodedMember.ProfileImage;
                     member.value.intro = decodedMember.Intro;
                     member.value.gender = decodedMember.Gender;
                     member.value.updatedDate = formatDate(decodedMember.updatedDate);
@@ -320,6 +319,10 @@
                 }
             };
 
+            // 計算屬性，返回原始的名稱而不是即時的輸入值
+            const displayName = computed(() => {
+                return originalMember.value.name; // 使用原始名稱
+            });
 
 
 
@@ -471,7 +474,7 @@
                 await fetchMemberPoint();
                 await fetchMemberImage();
             });
-            return { member, confirmUpdate, updateProfile, resetPassword, modal, updateAvatar, triggerFileInput };
+            return { member, confirmUpdate, updateProfile, resetPassword, modal, updateAvatar, triggerFileInput, displayName };
         }
     };
 
