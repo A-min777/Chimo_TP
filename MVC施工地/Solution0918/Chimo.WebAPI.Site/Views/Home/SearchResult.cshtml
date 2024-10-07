@@ -68,7 +68,7 @@
                 <div v-for="card in cards"
                      :key="card.id"
                      class="mycard col-md-3 col-sm-12 p-3 pb-5 ps-0">
-                    <a href="product.html">
+                    <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
                         <img :src="`/images/${card.thumbnail}`"
                              alt="course-thumbnail "
                              class="thumbnail pb-2 img-fluid rounded" />
