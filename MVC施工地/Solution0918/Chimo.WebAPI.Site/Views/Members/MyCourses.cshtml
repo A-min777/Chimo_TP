@@ -226,7 +226,7 @@
                                     <div class="refund d-flex justify-content-between align-items-center">
                                         <small>購買日期：{{card.buyDate}}</small>
                                         <button class="btn btn-danger text-nowrap me-1"
-                                                v-if="getDateDifference(card.buyDate) < 3"
+                                                v-if="getDateDifference(card.buyDate) < 4"
                                                 v-on:click="handleRefund(card.id)">
                                             退貨
                                         </button>
