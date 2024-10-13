@@ -3,22 +3,30 @@
 Team Project Chimo!
 
 名:
-[V] 首頁
-    修改_Layout.cshtml
+[V] 首頁(header/footer/分類/搜尋功能/熱門推薦)
+    修改 index.cshtml
+    修改 _Layout.cshtml
+    新增 Categories.cshtml、 新增 SearchResult.cshtml
 
-[V] 登入/註冊
-    新增 LoginController 
-      新增Login View、新增Register View、新增RegisterDetail View、新增ForgrtPassword View
+[V] 登入/註冊(登入/註冊/忘記密碼)
+    新增 LoginController  新增 Login View
+      新增 Login.cshtml、 新增 Register.cshtml、 新增 RegisterDetail.cshtml、 新增 ForgrtPassword.cshtml
 
-[V] 商品頁
-    新增 ProductsController
-      新增 Products View、新增 Courses View
+[V] 商品頁(購買課程/觀看課程)
+    新增 ProductsController 新增 Products View
+      新增 Action ViewProduct //判斷跳轉邏輯
+      新增 Products.cshtml、 新增 Courses.cshtml
       
-[W-on] 會員頁
-    新增 MembersController
+[V] 會員頁(修改個資/修改密碼/已購買課程/收藏/購買紀錄)
+    新增 MembersController 新增 Members View
+      新增 EditInfo.cshtml、 新增 UpdatePassword.cshtml、 新增 MyCourses.cshtml、 新增 MyCollections.cshtml、 新增 MyOrders.cshtml、 
+      
     
-[ ] 交易頁
+[V] 交易頁(儲值/購物車/結帳/直接購買)
+    新增 MyCart.cshtml、 新增 TopUp.cshtml、 新增 Checkout.cshtml、 BuyDirectly.cshtml
 
+[V] 自製Modal(警告/錯誤/完成/加載/儲值)   
+    
 許:
 
 [V] 在 App_Start/WebApiConfig.cs 加入一行程式，確保 webApi 傳出的 json 檔字首是小寫
