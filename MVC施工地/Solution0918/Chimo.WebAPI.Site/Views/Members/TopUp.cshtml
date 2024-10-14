@@ -541,29 +541,28 @@
                     }
                 };
 
-                const fetchMemberPoint = async () => {
-                    try {
-                        member.value.id = decodedMember.Id;
-                        const response = await fetch(`/api/getMemberPoint/${member.value.id}`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
+                const fetchMemberProfile = () => {
+        const token = '@AuthHelper.GetTokenFromCookie()';
+    member.value.id = decodedMember.Id;
+    $.ajax({
+        url: `/api/profile/${member.value.id}`,
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        success: (data) => {
+            member.value.avatar = data.profileImage.replace('~', '');
+            member.value.point = data.point
+        },
+        error: (xhr, status, error) => {
+            console.error("獲取會員圖片失敗:", error);
+            // 這裡不進行任何處理
+        }
+    });
+};
 
-                        if (!response.ok) {
-                            throw new Error('網路請求失敗');
-                        }
 
-                        const data = await response.json();
-                        member.value.point = data.memberPoint; // 將回傳的點數值儲存在 member 的 point 屬性中
-                    } catch (error) {
-                        console.error("獲取會員資料失敗:", error);
-                    }
-                };
-
-
-                onMounted(fetchMemberPoint); 
+                onMounted(fetchMemberProfile);
 
 
                 return {

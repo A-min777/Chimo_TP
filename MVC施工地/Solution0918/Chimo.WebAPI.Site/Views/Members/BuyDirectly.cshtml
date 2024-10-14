@@ -464,7 +464,7 @@
 
             const fetchMemberPoint = async () => {
                 try {
-                    const response = await fetch(`/api/getMemberPoint/${memberId}`, {
+                    const response = await fetch(`/api/profile/${memberId}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -474,7 +474,7 @@
                     if (response.ok) {
                         const result = await response.json();
 
-                       memberPoint.value = result.memberPoint;
+                       memberPoint.value = result.point;
                     } else {
                         console.error('fetch 會員點數失敗:', response.statusText);
                     }

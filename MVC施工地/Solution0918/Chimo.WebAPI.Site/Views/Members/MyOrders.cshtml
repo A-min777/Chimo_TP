@@ -50,6 +50,7 @@
 
     .avatarA {
         border-radius: 50%;
+
     }
 
 
@@ -70,21 +71,20 @@
         <div class="row">
             <div class="col-4 mt-3 mb-3">
                 <div class="text-center list-group">
-                    <div class="list-group-item">
-                        <img :src="`/images/${member.avatar}`" 
-                             alt="profile"
+                    <div class="list-group-item" v-if="member">
+                        <img :src="member.avatar"
+                             alt=""
                              class="avatarA img-fluid m-3" />
                         <h4 class="fw-bolder">{{member.name}}</h4>
                         <p>
                             會員點數：<span class="specialCount">{{member.point}}</span>
                             pt
-                                 <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("MyOrders", "Members")`"
-                                    class="chargeTag btn btn-warning p-1 ms-2">
-                                     儲值
-                                 </a>
+                            <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("MyOrders", "Members")`"
+                               class="chargeTag btn btn-warning p-1 ms-2">
+                                儲值
+                            </a>
                         </p>
                     </div>
-
                     <a href="/Members/EditInfo"
                        class="list-group-item list-group-item-action align-content-center border-0 rounded"
                        aria-current="true">
@@ -96,14 +96,19 @@
                         我的課程
                     </a>
                     <a href="/Members/MyCollections"
-                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       class="list-group-item list-group-item-action  align-content-center border-0 rounded"
                        aria-current="true">
                         我的收藏
                     </a>
-                    <a href="#"
+                    <a href=#
                        class="list-group-item list-group-item-action active align-content-center border-0 rounded"
                        aria-current="true">
                         購買紀錄
+                    </a>
+                    <a href="/Members/MyPointHistory"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        點數歷史紀錄
                     </a>
                 </div>
             </div>
@@ -113,7 +118,7 @@
                         <h4 class="fw-bolder">購買紀錄</h4>
                     </div>
                     <hr />
-                    <div :class="['mt-5 text-center notFound' ,{'d-none': orders.length != 0 }]">
+                    <div v-if="!isLoading && orders.length === 0" :class="['mt-5 text-center notFound']">
                         <img src="../images/notFoundImg.png" alt="notFound" class="img-fluid mb-3" style="width:20vw" />
                         <h5 class="fw-bolder mb-3">還沒有任何購買紀錄</h5>
                         <a href="@Url.Action("index", "Home")" class="searchBtn btn btn-lg">探索課程</a>
@@ -171,7 +176,7 @@ createApp({
         const member = ref({
             id: 0,
             name: "",
-            avatar: "",
+            avatar:"",
             point: 0,
         });
         const decodeToken = (token) => {
@@ -185,81 +190,65 @@ createApp({
         const decodedMember = decodeToken(token);
         member.value.id = decodedMember.Id;
         member.value.name = decodedMember.unique_name;
-        member.value.point = decodedMember.Point;
-        member.value.avatar = decodedMember.ProfileImage;
 
 
-                const orders = ref([]);
-                const fetchMemberOrder = async () => {
-                    try {
-                        const token = '@AuthHelper.GetTokenFromCookie()';
-                        const response = await fetch(`/api/order/${member.value.id}`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
+        const orders = ref([]);
+        const isLoading = ref(true); // 新增 loading 狀態
 
-                        if (!response.ok) {
-                            throw new Error('獲取訂單資料失敗');
-                        }
-                        const data = await response.json();
-                        orders.value = data;  // 直接將數據設置到 orders 中
-                    } catch (error) {
-                        console.error("獲取訂單資料失敗:", error);
-                    }
-        };
-        const fetchMemberPoint = async () => {
-            try {
-                member.value.id = decodedMember.Id;
-                const response = await fetch(`/api/getMemberPoint/${member.value.id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('網路請求失敗');
+        const fetchMemberProfile = () => {
+                const token = '@AuthHelper.GetTokenFromCookie()';
+            member.value.id = decodedMember.Id;
+            $.ajax({
+                url: `/api/profile/${member.value.id}`,
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                success: (data) => {
+                    member.value.avatar = data.profileImage.replace('~', ''); 
+                    member.value.point = data.point
+                },
+                error: (xhr, status, error) => {
+                    console.error("獲取會員圖片失敗:", error);
+                    // 這裡不進行任何處理
                 }
-
-                const data = await response.json();
-                member.value.point = data.memberPoint; // 將回傳的點數值儲存在 member 的 point 屬性中
-            } catch (error) {
-                console.error("獲取會員資料失敗:", error);
-            }
+            });
         };
 
+     const fetchMemberOrder = () => {
+         isLoading.value = true; // 請求開始時設置為 true
 
-        const fetchMemberImage = async () => {
-            try {
-
-                member.value.id = decodedMember.Id;
-                const response = await fetch(`/api/getMemberImage/${member.value.id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('網路請求失敗');
-                }
-
-                const data = await response.json();
-                member.value.avatar = data.memberImage;
-            } catch (error) {
-                console.error("獲取會員資料失敗:", error);
-            }
+    // 發送請求
+    fetch(`/api/order/${member.value.id}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('網絡錯誤');
+        }
+        return response.json();
+    })
+    .then(data => {
+        orders.value = data;
+   })
+        .catch(error => {
+            console.error('獲取訂單資料失敗:', error);
+        })
+        .finally(() => {
+            isLoading.value = false; 
+        });
         };
+
         onMounted(async () => {
-            await fetchMemberOrder(); 
-            await fetchMemberPoint();
-            await fetchMemberImage();
+            await fetchMemberOrder();
+            await fetchMemberProfile();
         });
 
-       
-        return { member, orders };
+
+        return { member, orders, isLoading };
     }
 }).mount("#app");
     </script>

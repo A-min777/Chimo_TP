@@ -273,6 +273,7 @@
     <Compile Include="Models\ViewModels\CategoryCourseVm.cs" />
     <Compile Include="Models\ViewModels\CourseInfoVm.cs" />
     <Compile Include="Models\ViewModels\LoginVm.cs" />
+    <Compile Include="Models\ViewModels\PointHistoryVm.cs" />
     <Compile Include="Models\ViewModels\ProductInfoVm.cs" />
     <Compile Include="Models\ViewModels\RecommendedCourseVm.cs" />
     <Compile Include="Models\ViewModels\TeacherProfileVm.cs" />
@@ -293,6 +294,7 @@
     <Compile Include="Tools\CourseDto_Ext.cs" />
     <Compile Include="Services\RegisterService.cs" />
     <Compile Include="Tools\Mappings.cs" />
+    <Compile Include="Tools\ProfileDto_Ext.cs" />
     <Compile Include="Utilities\HashUtility.cs" />
     <Compile Include="Utilities\JwtUtility.cs" />
   </ItemGroup>
@@ -439,6 +441,7 @@
     <Content Include="Views\Members\BuyDirectly.cshtml" />
     <Content Include="Views\Teacher\TeacherInfo.cshtml" />
     <Content Include="Views\Home\Categories.cshtml" />
+    <Content Include="Views\Members\MyPointHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

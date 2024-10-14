@@ -1,0 +1,443 @@
+﻿    @{
+        ViewBag.Title = "MyPointHistory";
+    }
+
+    <style>
+        body {
+            background-color: #eee;
+        }
+
+        .list-group {
+            position: sticky;
+            top: 175px;
+        }
+
+        .list-group-item img {
+            max-height: 10vw;
+        }
+
+        .list-group-item {
+            min-height: 60px;
+            font-size: 1.2rem;
+            font-weight: bolder;
+        }
+
+            .list-group-item.active {
+                background-color: #5b468b;
+            }
+
+        .chargeTag {
+            color: #fff;
+        }
+
+        .content {
+            background-color: #fff;
+        }
+
+        .status {
+            color: #5b468b;
+        }
+
+        .thumbnail {
+            transition: transform 0.3s ease;
+            will-change: transform;
+        }
+
+            .thumbnail:hover {
+                transform: scale(1.05);
+            }
+
+        .avatarA {
+            border-radius: 50%;
+        }
+
+        .searchBtn {
+            background-color: #5b468b;
+            color: #fff;
+        }
+
+            .searchBtn:hover {
+                background-color: #2b1b41;
+                color: #fff;
+            }
+
+        .pagination {
+            justify-content: flex-end; 
+
+        }
+
+            .pagination .page-link {
+                cursor: pointer; 
+            }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px 8px; /* 上下左右的內邊距 */
+            text-align: center; /* 讓文字居中 */
+
+        }
+
+        th {
+            background-color: #f8f9fa; /* 表頭背景顏色 */
+            font-weight: bold; /* 表頭字體加粗 */
+        }
+
+        .sortable {
+            cursor: pointer;
+        }
+
+        .sort-arrow {
+            margin-left: 5px;
+            font-size: 0.8rem;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        .sort-arrow.active {
+                opacity: 1;
+            }
+        .checkbox-label {
+            margin-right: 1rem;
+            font-weight: bold;
+            cursor: pointer; 
+        }
+
+
+    </style>
+    <div id="app">
+        <div class="container">
+            <div class="row">
+                <div class="col-4 mt-3 mb-3">
+                    <div class="text-center list-group">
+                        <div class="list-group-item" v-if="member">
+                            <img :src="member.avatar" alt="" class="avatarA img-fluid m-3" />
+                            <h4 class="fw-bolder">{{ member.name }}</h4>
+                            <p>
+                                會員點數：<span class="specialCount">{{ member.point }}</span> pt
+                                <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("MyOrders", "Members")`" class="chargeTag btn btn-warning p-1 ms-2">儲值</a>
+                            </p>
+                        </div>
+                        <a href="/Members/EditInfo"
+                           class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                           aria-current="true">
+                            會員資料
+                        </a>
+                        <a href="/Members/MyCourses"
+                           class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                           aria-current="true">
+                            我的課程
+                        </a>
+                        <a href="/Members/MyCollections"
+                           class="list-group-item list-group-item-action  align-content-center border-0 rounded"
+                           aria-current="true">
+                            我的收藏
+                        </a>
+                        <a href="/Members/MyOrders"
+                           class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                           aria-current="true">
+                            購買紀錄
+                        </a>
+                        <a href=#
+                           class="list-group-item list-group-item-action active align-content-center border-0 rounded"
+                           aria-current="true">
+                            點數歷史紀錄
+                        </a>
+                    </div>
+                </div>
+
+                <div class="content col-8 mt-3 mb-3">
+                    <section class="m-4">
+                        <div class="d-flex justify-content-between">
+                            <h4 class="fw-bolder">點數歷史紀錄</h4>
+                        </div>
+                        <hr />
+
+                        <!-- 篩選按鈕和每頁顯示筆數選擇 -->
+                        <div v-if="pointHistory.length > 0" class="mb-3 d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-start align-items-center">
+                                <div class="me-3">
+                                    <input type="checkbox" id="cashRecharge" v-model="filters.cashRecharge" />
+                                    <label for="cashRecharge" class="ms-1 checkbox-label">現金儲值</label>
+                                </div>
+                                <div class="me-3">
+                                    <input type="checkbox" id="refund" v-model="filters.refund" />
+                                    <label for="refund" class="ms-1 checkbox-label">退款</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="coursePurchase" v-model="filters.coursePurchase" />
+                                    <label for="coursePurchase" class="ms-1 checkbox-label">購買課程</label>
+                                </div>
+                            </div>
+
+                            <!-- 每頁顯示數量下拉選單 -->
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="pageSizeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{ pageSize }} 筆
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="pageSizeDropdown">
+                                    <li><a class="dropdown-item" href="#" v-on:click="setPageSize(5)">5 筆</a></li>
+                                    <li><a class="dropdown-item" href="#" v-on:click="setPageSize(10)">10 筆</a></li>
+                                    <li><a class="dropdown-item" href="#" v-on:click="setPageSize(20)">20 筆</a></li>
+                                    <li><a class="dropdown-item" href="#" v-on:click="setPageSize(50)">50 筆</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div v-if="!isLoading && pointHistory.length === 0" :class="['mt-5 text-center notFound']">
+                            <img src="../images/notFoundImg.png" alt="notFound" class="img-fluid mb-3" style="width:20vw" />
+                            <h5 class="fw-bolder mb-3">還沒有歷史紀錄</h5>
+                            <a href="@Url.Action("index", "Home")" class="searchBtn btn btn-lg">返回首頁</a>
+                        </div>
+
+                        <div id="pointsHistory" v-if="!isLoading && filteredPoints.length > 0">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th class="sortable" v-on:click="sortBy('cash')">
+                                                儲值金額
+                                                <span class="sort-arrow" :class="{'active': sortState.key === 'cash' && sortState.order === 'asc'}">↑</span>
+                                                <span class="sort-arrow" :class="{'active': sortState.key === 'cash' && sortState.order === 'desc'}">↓</span>
+                                            </th>
+                                            <th class="sortable" v-on:click="sortBy('amount')">
+                                                變動點數
+                                                <span class="sort-arrow" :class="{'active': sortState.key === 'amount' && sortState.order === 'asc'}">↑</span>
+                                                <span class="sort-arrow" :class="{'active': sortState.key === 'amount' && sortState.order === 'desc'}">↓</span>
+                                            </th>
+                                            <th class="sortable" v-on:click="sortBy('point')">
+                                                使用者剩餘點數
+                                                <span class="sort-arrow" :class="{'active': sortState.key === 'point' && sortState.order === 'asc'}">↑</span>
+                                                <span class="sort-arrow" :class="{'active': sortState.key === 'point' && sortState.order === 'desc'}">↓</span>
+                                            </th>
+                                            <th class="sortable" v-on:click="sortBy('type')">
+                                                點數變動原因
+                                                <span class="sort-arrow" :class="{'active': sortState.key === 'type' && sortState.order === 'asc'}">↑</span>
+                                                <span class="sort-arrow" :class="{'active': sortState.key === 'type' && sortState.order === 'desc'}">↓</span>
+                                            </th>
+                                            <th class="sortable" v-on:click="sortBy('transactionTime')">
+                                                交易時間
+                                                <span class="sort-arrow" :class="{'active': sortState.key === 'transactionTime' && sortState.order === 'asc'}">↑</span>
+                                                <span class="sort-arrow" :class="{'active': sortState.key === 'transactionTime' && sortState.order === 'desc'}">↓</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="points in paginatedPoints" :key="points.transactionTime">
+                                            <td class="fw-bold">{{ points.cash }}</td>
+                                            <td>
+                                                <span v-if="points.type === 1 || points.type === 0" class="text-success fw-bold">+{{ points.amount }}</span>
+                                                <span v-else class="text-danger fw-bold">{{ points.amount }}</span>
+                                            </td>
+                                            <td class="text-info fw-bold">{{ points.point }}</td>
+                                            <td>
+                                                <span v-if="points.type === 1" class="text-success">現金儲值</span>
+                                                <span v-else-if="points.type === -1" class="text-primary">購買課程</span>
+                                                <span v-else-if="points.type === 0" class="text-danger">退款</span>
+                                            </td>
+                                            <td>{{ new Date(points.transactionTime).toLocaleString() }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- 分頁 -->
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination">
+                                    <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                        <a class="page-link" v-on:click="currentPage--"><</a>
+                                    </li>
+                                    <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: currentPage === page }">
+                                        <a class="page-link" v-on:click="currentPage = page">{{ page }}</a>
+                                    </li>
+                                    <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                                        <a class="page-link" v-on:click="currentPage++">></a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <hr />
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @section scripts {
+        <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+        <script src="~/Scripts/vue.global.js"></script>
+        <script src="~/Scripts/myheader.js"></script>
+        <script>
+                @using Chimo.WebAPI.Site.Models
+            const { createApp, ref, onMounted, computed } = Vue;
+    createApp({
+        setup() {
+            const member = ref({
+                id: 0,
+                name: "",
+                avatar:"",
+                point: 0,
+            });
+            const filters = ref({
+                cashRecharge: false,
+                refund: false,
+                coursePurchase: false,
+            });
+            const currentPage = ref(1);
+            const pageSize = ref(5); // 每頁顯示的數量
+            const pointHistory = ref([]);
+            const isLoading = ref(true); // 新增 loading 狀態
+            // 新增排序狀態
+            const sortState = ref({
+                key: '',   // 當前排序的鍵
+                order: 'asc' // 順序，asc 為正向，desc 為反向
+            });
+
+            const decodeToken = (token) => {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                return JSON.parse(jsonPayload);
+            };
+            const token = '@AuthHelper.GetTokenFromCookie()';
+            const decodedMember = decodeToken(token);
+            member.value.id = decodedMember.Id;
+            member.value.name = decodedMember.unique_name;
+
+
+
+
+            const fetchMemberProfile = () => {
+                    const token = '@AuthHelper.GetTokenFromCookie()';
+                member.value.id = decodedMember.Id;
+                $.ajax({
+                    url: `/api/profile/${member.value.id}`,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    success: (data) => {
+                        member.value.avatar = data.profileImage.replace('~', '');
+                        member.value.point = data.point
+                    },
+                    error: (xhr, status, error) => {
+                        console.error("獲取會員圖片失敗:", error);
+                        // 這裡不進行任何處理
+                    }
+                });
+            };
+
+         const fetchMemberPointHistory = () => {
+             isLoading.value = true; // 請求開始時設置為 true
+
+        // 發送請求
+             fetch(`/api/pointHistory/${member.value.id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('網絡錯誤');
+            }
+            return response.json();
+        })
+                 .then(data => {
+            pointHistory.value = data;
+       })
+            .catch(error => {
+                console.error('獲取資料失敗:', error);
+                pointHistory.value = [];
+            })
+            .finally(() => {
+                isLoading.value = false;
+            });
+            };
+
+            const filteredPoints = computed(() => {
+                if (!pointHistory.value || !Array.isArray(pointHistory.value)) return [];
+
+                // 根據篩選條件過濾
+                return pointHistory.value.filter(points => {
+                    const isCashRecharge = filters.value.cashRecharge && points.type === 1;
+                    const isRefund = filters.value.refund && points.type === 0;
+                    const isCoursePurchase = filters.value.coursePurchase && points.type === -1;
+
+                    // 如果所有篩選都是關閉，則顯示所有紀錄
+                    if (!filters.value.cashRecharge && !filters.value.refund && !filters.value.coursePurchase) {
+                        return true;
+                    }
+
+                    return isCashRecharge || isRefund || isCoursePurchase;
+                });
+            });
+
+
+            const totalPages = computed(() => {
+                return Math.ceil(filteredPoints.value.length / pageSize.value);
+            });
+
+            const paginatedPoints = computed(() => {
+                const start = (currentPage.value - 1) * pageSize.value;
+                return filteredPoints.value.slice(start, start + pageSize.value);
+            });
+
+            const sortBy = (key) => {
+                if (sortState.value.key === key) {
+                    // 切換排序方向
+                    sortState.value.order = sortState.value.order === 'asc' ? 'desc' : 'asc';
+                } else {
+                    // 重設為正向排序
+                    sortState.value.key = key;
+                    sortState.value.order = 'asc';
+                }
+
+                pointHistory.value.sort((a, b) => {
+                    if (sortState.value.order === 'asc') {
+                        return a[key] < b[key] ? -1 : 1;
+                    } else {
+                        return a[key] > b[key] ? -1 : 1;
+                    }
+                });
+            };
+
+            // 設置每頁顯示數量的方法
+            const setPageSize = (size) => {
+                pageSize.value = size; // 更新顯示數量
+                currentPage.value = 1; // 重置當前頁碼為 1
+                document.getElementById('pageSizeDropdown').textContent = `${size} 筆`;
+            };
+
+
+
+            onMounted(async () => {
+                await fetchMemberProfile();
+                await fetchMemberPointHistory();
+            });
+
+
+            return {
+                member,
+                pointHistory,
+                isLoading,
+                filters,
+                paginatedPoints,
+                totalPages,
+                currentPage,
+                sortBy,
+                filteredPoints,
+                pageSize,
+                sortState,
+                setPageSize
+            };
+
+        }
+            }).mount("#app");
+        </script>
+    }

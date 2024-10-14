@@ -20,6 +20,11 @@ namespace Chimo.WebAPI.Site.Models.Dtos
         public int Gender { get; set; } 
 
         public DateTime UpdatedDate {  get; set; }
-       
+
+        public int Point { get; set; }
+
+        public string ProfileImage { get; set; }
+
+        
     }
 }
