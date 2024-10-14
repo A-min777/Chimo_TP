@@ -440,7 +440,7 @@
 
             const fetchMemberPoint = async () => {
                 try {
-                    const response = await fetch(`/api/getMemberPoint/${memberId}`, {
+                    const response = await fetch(`/api/profile/${memberId}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',

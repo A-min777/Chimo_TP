@@ -37,6 +37,9 @@ namespace Chimo.WebAPI.Site.Tools
 
             CreateMap<CourseDto, CategoryCourseVm>();
 
+            CreateMap<PointHistoryDto, PointHistoryVm>();
+
+
 
 
         }

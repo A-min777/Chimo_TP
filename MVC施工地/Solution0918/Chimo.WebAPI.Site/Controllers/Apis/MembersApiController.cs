@@ -208,7 +208,7 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
                     return BadRequest("儲值失敗。");
                 }
 
-               
+
                 return Ok(new
                 {
                     message = "儲值成功",
@@ -218,43 +218,30 @@ namespace Chimo.WebAPI.Site.Controllers.Apis
             {
                 return BadRequest(ex.Message); // 返回錯誤訊息
             }
-          
+
         }
 
-
-		[HttpGet]
-		[Route("api/getMemberPoint/{memberId}")]
-		public IHttpActionResult GetMemberPoint(int memberId)
-		{
-			try
-			{
-				int memberPoint = _memberService.GetMemberPoint(memberId);
-				
-				return Ok(new { memberPoint}); 
-			}
-			catch (Exception ex)
-			{
-				return InternalServerError(ex); 
-			}
-		}
-
         [HttpGet]
-        [Route("api/getMemberImage/{memberId}")]
-        public IHttpActionResult GetMemberImage(int memberId)
+        [Route("api/pointHistory/{memberId}")]
+        public IHttpActionResult GetMemberPointHistory(int memberId)
         {
             try
             {
-                string memberImage = _memberService.GetMemberImage(memberId);
-
-                return Ok(new { memberImage });
+                var memberPointHistory = _memberService.GetMemberPointHistoryById(memberId);
+                if (memberPointHistory == null)
+                {
+                    return NotFound(); // 如果會員不存在，返回 404
+                }
+                return Ok(memberPointHistory); // 返回 200 和會員資料
             }
             catch (Exception ex)
             {
-                return InternalServerError(ex);
+                return InternalServerError(ex); // 返回 500 錯誤訊息
             }
+
+
+
         }
-
-
     }
 }
 

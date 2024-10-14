@@ -103,6 +103,8 @@ namespace Chimo.WebAPI.Site.Repositories
                 Gender = memberProfile.Gender,
                 Phone = memberProfile.Phone,
                 UpdatedDate = memberProfile.UpdatedDate,
+                Point = memberProfile.Point,
+                ProfileImage = memberProfile.ProfileImage,
             };
         }
 
@@ -294,32 +296,29 @@ namespace Chimo.WebAPI.Site.Repositories
             _db.SaveChanges();
         }
 
-        /// <summary>
-        /// 取得會員所持點數
-        /// </summary>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-		internal int GetMemberPoint(int memberId)
-		{
-            var member = _db.Members
-                        .AsNoTracking()
-                        .FirstOrDefault(m => m.Id == memberId);
+ 
 
-            if (member == null) return 0;
-
-            return member.Point;
-		}
-
-        internal string GetMemberImage(int memberId)
+        public List<PointHistoryDto> GetPointHistoryById(int memberId)
         {
-            var member = _db.Members
-                                 .AsNoTracking()
-                                 .FirstOrDefault(m => m.Id == memberId);
-
+            var member = FindById(memberId);
             if (member == null) return null;
 
-            return member.ProfileImage;
+            var PointHistory = _db.PointHistories.Where
+                (PH => PH.MemberId == member.Id)
+                .OrderBy(PH => PH.GetPointDate)
+                .Select(PH => new PointHistoryDto
+                {
+                   Amount = PH.Amount,
+                   Cash = PH.Cash,
+                   Id = member.Id,
+                   Point =PH.Point,
+                   TransactionTime = PH.GetPointDate,
+                   Type = PH.GetPointType
+                }).ToList();
+
+          return PointHistory;
         }
+
     }
 }
 

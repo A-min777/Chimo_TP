@@ -18,6 +18,8 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Chimo.WebAPI.Site.Controllers.Apis;
+using Chimo.WebAPI.Site.Tools;
+using Chimo.WebAPI.Site.Models.ViewModels;
 
 
 namespace Chimo.WebAPI.Site.Services
@@ -73,7 +75,14 @@ namespace Chimo.WebAPI.Site.Services
         public ProfileDto GetMemberProfileById(int Id)
         {
 
-            return _memberRepository.GetMemberProfile(Id);
+            string prefix = "~/images/";
+
+            ProfileDto profile = _memberRepository.GetMemberProfile(Id);
+
+            profile.FormatImage(prefix); // 重組圖片檔名為絕對路徑
+            
+
+            return profile;
         }
 
         public ProfileDto UpdateMemberProfile(ProfileDto updatedProfile)
@@ -123,6 +132,19 @@ namespace Chimo.WebAPI.Site.Services
             if (collections == null) return null;
 
             return collections;
+        }
+
+        public List<PointHistoryVm> GetMemberPointHistoryById(int Id)
+        {
+
+            var pointhistory = _memberRepository.GetPointHistoryById(Id);
+
+            if (pointhistory == null) return null;
+
+            var Mypointhistory = WebApiApplication._mapper
+               .Map<List<PointHistoryVm>>(pointhistory);
+
+            return Mypointhistory;
         }
 
         public List<OrderDto> GetMemberOrderById(int Id)
@@ -201,8 +223,8 @@ namespace Chimo.WebAPI.Site.Services
 
             return new ProfileImageDto
             {
+                ProfileImage = newProfileImage,
                 Token = token,
-                ProfileImage = newProfileImage
             };
         }
 
@@ -261,15 +283,7 @@ namespace Chimo.WebAPI.Site.Services
             return false;
         }
 
-		internal int GetMemberPoint(int memberId)
-		{
-			return _memberRepository.GetMemberPoint(memberId);
-		}
-
-        internal string GetMemberImage(int memberId)
-        {
-            return _memberRepository.GetMemberImage(memberId);
-        }
+		
     }
 }
 

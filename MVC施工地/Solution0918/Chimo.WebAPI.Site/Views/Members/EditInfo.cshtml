@@ -153,7 +153,7 @@
                         <div class="profile btn border-0">
                             <form id="imageForm" method=post enctype="multipart/form-data">
                                 <input type="file" accept="image/*" v-on:change="updateAvatar" style="display: none;" id="fileInput" />
-                                <img :src="`/images/${member.avatar}`"
+                                <img :src="member.avatar"
                                      alt="profilePic"
                                      class="avatarA img-fluid m-3" />
                                 <img src="~/images/camera.png"
@@ -167,24 +167,37 @@
                         <p>
                             會員點數：<span class="specialCount">{{member.point}}</span>
                             pt
-                            <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("EditInfo", "Members")`" 
+                            <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("EditInfo", "Members")`"
                                class="chargeTag btn btn-warning p-1 ms-2">
                                 儲值
                             </a>
                         </p>
 
                     </div>
-                    <a href="#" class="list-group-item list-group-item-action active align-content-center border-0 rounded" aria-current="true">
+                    <a href="/Members/#"
+                       class="list-group-item list-group-item-action active align-content-center border-0 rounded"
+                       aria-current="true">
                         會員資料
                     </a>
-                    <a href="/Members/MyCourses" class="list-group-item list-group-item-action align-content-center border-0 rounded" aria-current="true">
+                    <a href="/Members/MyCourses"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
                         我的課程
                     </a>
-                    <a href="/Members/MyCollections" class="list-group-item list-group-item-action align-content-center border-0 rounded" aria-current="true">
+                    <a href="/Members/MyCollections"
+                       class="list-group-item list-group-item-action  align-content-center border-0 rounded"
+                       aria-current="true">
                         我的收藏
                     </a>
-                    <a href="/Members/MyOrders" class="list-group-item list-group-item-action align-content-center border-0 rounded" aria-current="true">
+                    <a href="/Members/MyOrders"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
                         購買紀錄
+                    </a>
+                    <a href="/Members/MyPointHistory"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        點數歷史紀錄
                     </a>
                 </div>
             </div>
@@ -229,7 +242,7 @@
 
 
                     <div class="text-end">
-                        <a href="@Url.Action("UpdatePassword", "Members")" class="changePwd btn btn-outline-danger me-2" v-on:click="resetPassword">重設密碼</a>
+                        <a href="@Url.Action("UpdatePassword", "Members")" class="changePwd btn btn-outline-danger me-2"    >重設密碼</a>
 
                         <button class="updateBtn btn" v-on:click="confirmUpdate">修改</button>
 
@@ -292,7 +305,6 @@
                     member.value.id = decodedMember.Id;
                     member.value.name = decodedMember.unique_name;
                     member.value.email = decodedMember.Email;
-                    member.value.point = decodedMember.Point;
                     member.value.intro = decodedMember.Intro;
                     member.value.gender = decodedMember.Gender;
                     member.value.updatedDate = formatDate(decodedMember.updatedDate);
@@ -313,6 +325,8 @@
                     const data = await response.json();
                     Object.assign(member.value, data);
                     member.value.updatedDate = formatDate(data.updatedDate);
+                    member.value.point = data.point;
+                    member.value.avatar = data.profileImage.replace('~', ''); 
                     originalMember.value = { ...member.value };
                 } catch (error) {
                     console.error("獲取會員資料失敗:", error);
@@ -325,50 +339,6 @@
             });
 
 
-
-            const fetchMemberPoint = async () => {
-      try {
-          member.value.id = decodedMember.Id;
-          const response = await fetch(`/api/getMemberPoint/${member.value.id}`, {
-              method: 'GET',
-              headers: {
-                  'Authorization': `Bearer ${token}`
-              }
-          });
-
-          if (!response.ok) {
-              throw new Error('網路請求失敗');
-          }
-
-          const data = await response.json();
-          member.value.point = data.memberPoint; // 將回傳的點數值儲存在 member 的 point 屬性中
-      } catch (error) {
-          console.error("獲取會員資料失敗:", error);
-      }
-            };
-
-            
-            const fetchMemberImage = async () => {
-                try {
-
-                    member.value.id = decodedMember.Id;
-                    const response = await fetch(`/api/getMemberImage/${member.value.id}`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('網路請求失敗');
-                    }
-
-                    const data = await response.json();
-                    member.value.avatar = data.memberImage; 
-                } catch (error) {
-                    console.error("獲取會員資料失敗:", error);
-                }
-            };
 
             const triggerFileInput = () => {
                 const fileInput = document.getElementById('fileInput');
@@ -465,16 +435,13 @@
                 }
             };
 
-            const resetPassword = () => {
-                console.log("重設密碼功能尚未實作");
-            };
+            
 
             onMounted(async () => {
                 await fetchMemberProfile();
-                await fetchMemberPoint();
-                await fetchMemberImage();
+               
             });
-            return { member, confirmUpdate, updateProfile, resetPassword, modal, updateAvatar, triggerFileInput, displayName };
+            return { member, confirmUpdate, updateProfile, modal, updateAvatar, triggerFileInput, displayName };
         }
     };
 

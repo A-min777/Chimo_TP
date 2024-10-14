@@ -104,17 +104,17 @@
             <div class="col-4 mt-3 mb-3">
                 <div class="text-center list-group">
                     <div class="list-group-item">
-                        <img :src="`/images/${member.avatar}`"
-                             alt="profile"
+                        <img :src="member.avatar"
+                             alt=""
                              class="avatarA img-fluid m-3" />
                         <h4 class="fw-bolder">{{member.name}}</h4>
                         <p>
                             會員點數：<span class="specialCount">{{member.point}}</span>
                             pt
-                                 <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("MyCollections", "Members")`"
-                                    class="chargeTag btn btn-warning p-1 ms-2">
-                                     儲值
-                                 </a>
+                            <a :href="`@Url.Action("TopUp", "Members")?returnUrl=@Url.Action("MyCollections", "Members")`"
+                               class="chargeTag btn btn-warning p-1 ms-2">
+                                儲值
+                            </a>
                         </p>
                     </div>
 
@@ -138,6 +138,12 @@
                        aria-current="true">
                         購買紀錄
                     </a>
+                    <a href="/Members/MyPointHistory"
+                       class="list-group-item list-group-item-action align-content-center border-0 rounded"
+                       aria-current="true">
+                        點數歷史紀錄
+                    </a>
+                
                 </div>
             </div>
          
@@ -147,8 +153,8 @@
                             <h4 class="fw-bolder">我的收藏</h4>
                         </div>
                         <hr />
-                        <div :class="['mt-5 text-center notFound' ,{'d-none': collections.length != 0 }]">
-                            <img src="../images/notFoundImg.png" alt="notFound" class="img-fluid mb-3" style="width:20vw"/>
+                        <div v-if="!isLoading && collections.length === 0" :class="['mt-5 text-center notFound']">
+                            <img src="../images/notFoundImg.png" alt="notFound" class="img-fluid mb-3" style="width:20vw" />
                             <h5 class="fw-bolder mb-3">還沒有收藏任何課程</h5>
                             <a href="@Url.Action("index", "Home")" class="searchBtn btn btn-lg">探索課程</a>
                         </div>
@@ -158,7 +164,7 @@
                                      :key="card.id"
                                      class="mycard col-lg-4 col-md-6 col-sm-12 p-3 pb-5 ps-0">
                                     <a :href="`@Url.Action("ViewProduct", "Products")/${card.id}`">
-                                        <img :src="card.img ? `../images/${card.img}` : '../images/thumbnail.jpg'"  
+                                        <img :src="card.img ? `../images/${card.img}` : '../images/thumbnail.jpg'"
                                              alt="collections-thumbnail "
                                              class="thumbnail pb-2 img-fluid rounded" />
                                     </a>
@@ -209,8 +215,30 @@
                     member.value.name = decodedMember.unique_name;
                     member.value.avatar = decodedMember.ProfileImage;
 
-         const collections = ref([]); // 存放會員課程資料
-         const fetchMemberCollections = async () => {
+                    const collections = ref([]); // 存放會員課程資料
+                    const isLoading = ref(true); // 新增 loading 狀態
+
+                    const fetchMemberProfile = () => {
+                        const token = '@AuthHelper.GetTokenFromCookie()';
+                        member.value.id = decodedMember.Id;
+                        $.ajax({
+                            url: `/api/profile/${member.value.id}`,
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            },
+                            success: (data) => {
+                                member.value.avatar = data.profileImage.replace('~', ''); 
+                                member.value.point = data.point
+                            },
+                            error: (xhr, status, error) => {
+                                console.error("Error:", error);
+                            }
+     });
+ };
+
+                    const fetchMemberCollections = async () => {
+                        isLoading.value = true; // 請求開始時設置為 true
              try {
                  const response = await fetch(`/api/collections/${member.value.id}`, {
                      method: 'GET',
@@ -233,61 +261,25 @@
                  }));
              } catch (error) {
                  console.error("獲取收藏紀錄資料失敗:", error);
+                        } finally 
+             {
+                 isLoading.value = false; // 確保請求結束後設置為 false
              }
+
                     };
 
-        const fetchMemberPoint = async () => {
-                        try {
-                            member.value.id = decodedMember.Id;
-                            const response = await fetch(`/api/getMemberPoint/${member.value.id}`, {
-                                method: 'GET',
-                                headers: {
-                                    'Authorization': `Bearer ${token}`
-                                }
-                            });
 
-                            if (!response.ok) {
-                                throw new Error('網路請求失敗');
-                            }
-
-                            const data = await response.json();
-                            member.value.point = data.memberPoint; // 將回傳的點數值儲存在 member 的 point 屬性中
-                        } catch (error) {
-                            console.error("獲取會員資料失敗:", error);
-                        }
-                    };
-                    const fetchMemberImage = async () => {
-                        try {
-
-                            member.value.id = decodedMember.Id;
-                            const response = await fetch(`/api/getMemberImage/${member.value.id}`, {
-                                method: 'GET',
-                                headers: {
-                                    'Authorization': `Bearer ${token}`
-                                }
-                            });
-
-                            if (!response.ok) {
-                                throw new Error('網路請求失敗');
-                            }
-
-                            const data = await response.json();
-                            member.value.avatar = data.memberImage;
-                        } catch (error) {
-                            console.error("獲取會員資料失敗:", error);
-                        }
-                    };
 
 
 
          onMounted(async () => {
 
              await fetchMemberCollections();
-             await fetchMemberPoint();
-             await fetchMemberImage();
+             await fetchMemberProfile();
+
          });
 
-                    return { member, collections, fetchMemberPoint};
+                    return { member, collections, isLoading };
      }
             }
             const app = createApp(config);
