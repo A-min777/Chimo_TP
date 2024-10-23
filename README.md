@@ -1,84 +1,56 @@
-# Chimo_TP
 
-Team Project Chimo!
+# 線上售課平台開發-Chimo!   
 
-名:
-[V] 首頁(header/footer/分類/搜尋功能/熱門推薦)
-    修改 index.cshtml
-    修改 _Layout.cshtml
-    新增 Categories.cshtml、 新增 SearchResult.cshtml
+## 專案簡介
+本專案旨在開發一個線上售課平台，讓用戶可以瀏覽、選擇並購買課程，並且提供便捷的學習體驗。平台同時確保使用者的資料安全，並具備響應式設計，適應各種設備操作。
 
-[V] 登入/註冊(登入/註冊/忘記密碼)
-    新增 LoginController  新增 Login View
-      新增 Login.cshtml、 新增 Register.cshtml、 新增 RegisterDetail.cshtml、 新增 ForgrtPassword.cshtml
+## 核心功能
+- 課程瀏覽與購買：用戶登入後可瀏覽各類課程，並選購自己感興趣的課程商品。
 
-[V] 商品頁(購買課程/觀看課程)
-    新增 ProductsController 新增 Products View
-      新增 Action ViewProduct //判斷跳轉邏輯
-      新增 Products.cshtml、 新增 Courses.cshtml
-      
-[V] 會員頁(修改個資/修改密碼/已購買課程/收藏/購買紀錄)
-    新增 MembersController 新增 Members View
-      新增 EditInfo.cshtml、 新增 UpdatePassword.cshtml、 新增 MyCourses.cshtml、 新增 MyCollections.cshtml、 新增 MyOrders.cshtml、 
-      
+- 課程學習導向：若用戶已購買某課程，點擊該商品後將自動導向該課程的內容頁面，讓用戶立即開始學習，增強學習流程的流暢性。
+
+- 安全登入與驗證：採用JWT進行登入與身分驗證，保障用戶資料的安全，確保交易過程中的隱私保護。
+
+- 響應式設計 (RWD)：支援不同設備，無論使用手機、平板或電腦，都能獲得良好的操作體驗。
+## 技術架構
+
+**用戶端 (Client Side)**
+
+ - 前端框架：Vue3 
+
+ - 資料交互：Web API
+
+ - 資料管理：Entity Framework
+
+**伺服器端 (Server Side)**
+
+- 後端框架：ASP.Net Framework MVC
+- 資料管理：Dapper
+**安全性**
+
+ - JWT 驗證：保護用戶登入與資料安全
+
+ - RWD 設計：提供跨平台一致的使用體驗，無論是行動裝置還是桌面裝置
+## 成員分工
+
+- [@Amin Chen](https://www.github.com/A-min777)
     
-[V] 交易頁(儲值/購物車/結帳/直接購買)
-    新增 MyCart.cshtml、 新增 TopUp.cshtml、 新增 Checkout.cshtml、 BuyDirectly.cshtml
+    - 前期主題規劃
+    - 專案規格規劃
+    - 網站主視覺
+    - 專案時程控管
+- [@TS](https://www.github.com/TenjouSora)
 
-[V] 自製Modal(警告/錯誤/完成/加載/儲值)   
-    
-許:
+    - 資料庫建立與維護
+    - 實作商品頁功能
+    - 實作課程頁功能
+    - 實作結帳功能
 
-[V] 在 App_Start/WebApiConfig.cs 加入一行程式，確保 webApi 傳出的 json 檔字首是小寫
-
-[V] 新增 CoursesController, CoursesApiController, RecommendedCourseVm
-
-[V] 新增 Dtos 資料夾 - 新增 CourseDto, TeacherDto
-新增 Interfaces 資料夾 - 新增 ICourseRepository
-新增 Repositories 資料夾 - 新增 CourseRepository 實作 ICourseRepository
-新增 Services 資料夾 - 新增 CourseService
-安裝 Auto Mapper 套件
-新增 Tools 資料夾 - 新增 Mappings 繼承 Profile, 加入三個自訂 mapping
-
-[V] 在 Global.asax 設定 mappings
+- [@5ccBinnie](https://www.github.com/5ccBinnie)
+    - 資料庫建立與維護 
+    - 後台建立與管理 
+    - 實作搜尋功能
+    - 實作登入與註冊功能
+    - 實作會員相關功能
 
 
- <h3>2.專案簡介  </h3>
-
-資策會專題-MVC網頁開發
-我們計劃開發一個線上售課平台，讓用戶能夠自由瀏覽各類課程商品。
-
-用戶在登入後，可以輕鬆選擇並購買自己感興趣的課程。
-
-如果用戶已經購買過某門課程，點擊該商品時，系統將自動導向該課程的內容頁面方便用戶立即開始學習，提升學習體驗的便捷性與連貫性。
-
-網站前台後端使用ASP.Net Framework 搭配API，前端則用Vue3，讓使用者在瀏覽時有更好的互動體驗。
-
-後台是使用ASP.Net Framework MVC製作。
-
-登入部分我們用了JWT進行登入與身分驗證來確保用戶資料的安全。
-
-同時，網站有RWD設計，讓使用者無論用手機還是電腦，都能獲得良好的使用體驗。
-
-
-
- <h3>3.成員分工 </h3>
-
-阿名(Amin Chen):
-專案主題規格規劃
-專案時程控管
-網站主視覺
-
-
-小許(TS):
-資料庫建立與維護
-實作商品頁功能
-實作課程頁功能
-實作結帳功能
-
-
-阿權(5ccBinnie):
-後台建立與管理
-實作登入與註冊功能，登入使用JWT Token進行驗證
-實作搜尋功能
-實作會員相關功能
